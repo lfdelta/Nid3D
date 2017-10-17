@@ -1,0 +1,14 @@
+
+### MM/DD/YYYY ###
+Name 1 & Name 2 & ...
+
+1. Enumerated list of edits made
+2. Place most recent logs above older ones
+
+
+
+### 10/17/17 ###
+Luca Frez-Albrecht
+1. set up github repo
+2. fencer model; rigged but not animated
+3. Player prefab; no functioning controls yet

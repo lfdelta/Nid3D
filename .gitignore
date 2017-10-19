@@ -1,6 +1,9 @@
 
-# ignore emacs backups
+# emacs backups
 *~
 
-# ignore the temp folder
+# the temp folder
 Nid3D/Temp
+
+# macOS stuff
+.DS_Store

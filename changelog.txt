@@ -7,6 +7,13 @@ Name 1 & Name 2 & ...
 
 
 
+### 10/19/2017 ###
+Luca Frez-Albrecht
+1. Q and E adjust player/sword height discretely and clamp to allowed range
+2. physics-based movement adapted from sample Unity third-person character controller scripts: WASD to move in horizontal plane, space to jump
+
+
+
 ### 10/17/17 ###
 Luca Frez-Albrecht
 1. set up github repo

@@ -6,7 +6,7 @@ using UnityEngine;
 [RequireComponent(typeof(CapsuleCollider))]
 public class CharController : MonoBehaviour {
 	private enum Height {Crouch, Low, Mid, High, Throw};
-
+	
 	public float moveSpeed = 20;
 	public float jumpForce = 10;
 	public float gravMultiplier = 1;

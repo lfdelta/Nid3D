@@ -1,9 +1,31 @@
 
+# see https://docs.unity3d.com/Manual/ExternalVersionControlSystemSupport.html
+# see https://unity3d.com/learn/tutorials/topics/production/mastering-unity-project-folder-structure-version-control-systems
+
 # emacs backups
 *~
 
-# the temp folder
+# the temp folder and local unity objects
+Nid3D/Library
+Nid3D/obj
 Nid3D/Temp
+Nid3D/*
+*.svd
+*.userprefs
+*.csproj
+*.pidb
+*.suo
+*.sln
+*.user
+*.unityproj
+*.booproj
+
 
 # macOS stuff
-.DS_Store
+*.DS_Store
+*.DS_Store?
+*._*
+*.Spotlight-V100
+*.Trashes
+*ehthumbs.db
+*Thumbs.db

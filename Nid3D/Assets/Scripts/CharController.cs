@@ -5,10 +5,16 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(CapsuleCollider))]
 public class CharController : MonoBehaviour {
+
+  // concerning the state of the character
+  private bool isGrounded;
 	private enum Height {Crouch, Low, Mid, High, Throw};
-	
-	public float moveForce = 200;
-  public float maxSpeed = 0.1f;
+  public enum Gait {Static, Walk, Run};
+
+	public float walkingMoveForce = 200;
+  public float runningMoveForce = 100;
+  public float runningSpeed = 2; // speed at which player isRunning
+  public float maxSpeed = 5;     // maximum speed for player
 	public float jumpForce = 10;
 	public float gravMultiplier = 1;
 	public float groundCheckDist = 0.1f;
@@ -16,12 +22,12 @@ public class CharController : MonoBehaviour {
 
 	private Rigidbody rbody;
 	private CapsuleCollider capsule;
-	private Vector3 capsuleCenter;
+ 	private Vector3 capsuleCenter;
 	private float capsuleHeight;
 	private Height height;
-	private bool isGrounded;
+  public Gait gait;
 	private Vector3 groundNormal;
-    
+  	  
 	private int i = 0; // just for debugging
 
     
@@ -35,15 +41,11 @@ public class CharController : MonoBehaviour {
 		capsuleHeight = capsule.height;
 
 		height = Height.Mid;
+    
 	}
 
 	public void Move (ControlState control_state) {
 		CheckGround ();
-
-    // convert from world space to local/object space
-		Vector3 move = moveForce *
-      transform.InverseTransformDirection(control_state.moveInXZ.normalized);
-		move = Vector3.ProjectOnPlane(move, groundNormal);
 
 		if (isGrounded) {
 			if (control_state.heightChange != 0) {
@@ -54,7 +56,7 @@ public class CharController : MonoBehaviour {
 
 			// *** handle height changes
 
-      AddForce(move);
+      MoveXZ(control_state.moveInXZ.normalized);
 			
 			if (control_state.jump)
 				rbody.AddForce (jumpForce * Vector3.up);
@@ -63,12 +65,21 @@ public class CharController : MonoBehaviour {
 		}
 	}
 
-  void AddForce (Vector3 move) {
+  void MoveXZ (Vector3 move) {
     // Adds the force to the player, but then imposes a max speed
+
+    if (rbody.velocity.magnitude == 0) gait = Gait.Static;
+    else if (rbody.velocity.magnitude < runningSpeed) gait = Gait.Walk;
+    else gait = Gait.Run;
+    float moveForce = (gait == Gait.Run) ? runningMoveForce : walkingMoveForce;
+            
+    // convert from world space to local/object space
+		move = moveForce * transform.InverseTransformDirection(move);
+		move = Vector3.ProjectOnPlane(move, groundNormal);
+
+    // apply the force and impose maximum speed
     rbody.AddForce(move);
-    if (rbody.velocity.magnitude > maxSpeed) {
-      rbody.velocity = Vector3.ClampMagnitude(rbody.velocity, maxSpeed);
-    }
+    rbody.velocity = Vector3.ClampMagnitude(rbody.velocity, maxSpeed); // impose maxspeed
   }
     
 	void CheckGround() {

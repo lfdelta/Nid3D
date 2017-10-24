@@ -1,9 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(CharController))]
 public class CharInput : MonoBehaviour {
+
+  public Text debugText;
 
 	private CharController character;
 	private Transform cam;
@@ -11,12 +14,13 @@ public class CharInput : MonoBehaviour {
   private Vector3 move;
 	public ControlState control_state;
 
-	// Use this for initialization
+  // Use this for initialization
 	void Start () {
     character = GetComponent<CharController>();
 		cam = Camera.main.transform;
     control_state = new ControlState ();
-	}
+    debugText.text = "Hello World";
+  }
 	
 	// Update is called once per frame
 	void Update () {
@@ -25,6 +29,7 @@ public class CharInput : MonoBehaviour {
 		if (control_state.heightChange == 0)
 			control_state.heightChange = (Input.GetButtonDown ("HeightUp") ? 1 : 0)
         - (Input.GetButtonDown("HeightDown") ? 1 : 0);
+    debugText.text = (character.gait == CharController.Gait.Run) ? "Run" : "Walk";
 	}
 
 	void FixedUpdate () {

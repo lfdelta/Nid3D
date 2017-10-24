@@ -20,10 +20,10 @@ public class CharController : MonoBehaviour {
 	private Height height;
 	private bool isGrounded;
 	private Vector3 groundNormal;
-
+  
 	private int i = 0; // just for debugging
 
-
+    
 	// Use this for initialization
 	void Start () {
 		rbody = GetComponent<Rigidbody> ();
@@ -36,15 +36,17 @@ public class CharController : MonoBehaviour {
 		height = Height.Mid;
 	}
 
-	public void Move (Vector3 moveInXZ, int heightkey, bool jump) {
+	public void Move (ControlState control_state) {
 		CheckGround ();
 
-		Vector3 move = moveSpeed * transform.InverseTransformDirection (moveInXZ.normalized); // convert from world space to local/object space
+     // convert from world space to local/object space
+		Vector3 move = moveSpeed *
+      transform.InverseTransformDirection(control_state.moveInXZ.normalized);
 		move = Vector3.ProjectOnPlane(move, groundNormal);
 
 		if (isGrounded) {
-			if (heightkey != 0) {
-				height += heightkey;
+			if (control_state.heightChange != 0) {
+				height += control_state.heightChange;
 				height = (Height)Tools.Clamp ((int)height, (int)Height.Crouch, (int)Height.Throw);
 				Debug.Log (height);
 			}
@@ -53,7 +55,7 @@ public class CharController : MonoBehaviour {
 
 			rbody.AddForce (move);
 
-			if (jump)
+			if (control_state.jump)
 				rbody.AddForce (jumpForce * Vector3.up);
 		} else {
 			// *** gravity

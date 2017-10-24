@@ -7,7 +7,8 @@ using UnityEngine;
 public class CharController : MonoBehaviour {
 	private enum Height {Crouch, Low, Mid, High, Throw};
 	
-	public float moveSpeed = 20;
+	public float moveForce = 200;
+  public float maxSpeed = 0.1f;
 	public float jumpForce = 10;
 	public float gravMultiplier = 1;
 	public float groundCheckDist = 0.1f;
@@ -20,7 +21,7 @@ public class CharController : MonoBehaviour {
 	private Height height;
 	private bool isGrounded;
 	private Vector3 groundNormal;
-  
+    
 	private int i = 0; // just for debugging
 
     
@@ -39,8 +40,8 @@ public class CharController : MonoBehaviour {
 	public void Move (ControlState control_state) {
 		CheckGround ();
 
-     // convert from world space to local/object space
-		Vector3 move = moveSpeed *
+    // convert from world space to local/object space
+		Vector3 move = moveForce *
       transform.InverseTransformDirection(control_state.moveInXZ.normalized);
 		move = Vector3.ProjectOnPlane(move, groundNormal);
 
@@ -53,8 +54,8 @@ public class CharController : MonoBehaviour {
 
 			// *** handle height changes
 
-			rbody.AddForce (move);
-
+      AddForce(move);
+			
 			if (control_state.jump)
 				rbody.AddForce (jumpForce * Vector3.up);
 		} else {
@@ -62,6 +63,14 @@ public class CharController : MonoBehaviour {
 		}
 	}
 
+  void AddForce (Vector3 move) {
+    // Adds the force to the player, but then imposes a max speed
+    rbody.AddForce(move);
+    if (rbody.velocity.magnitude > maxSpeed) {
+      rbody.velocity = Vector3.ClampMagnitude(rbody.velocity, maxSpeed);
+    }
+  }
+    
 	void CheckGround() {
 		RaycastHit info;
 		// send raycast from just above the feet

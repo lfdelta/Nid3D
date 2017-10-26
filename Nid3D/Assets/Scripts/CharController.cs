@@ -9,7 +9,7 @@ public class CharController : MonoBehaviour {
   // concerning the state of the character
   private bool isGrounded;
 	private enum Height {Crouch, Low, Mid, High, Throw};
-  public enum Gait {Static, Walk, Run};
+  private enum Gait {Static, Walk, Run};
 
 	public float walkingMoveForce = 200;
   public float runningMoveForce = 100;
@@ -24,7 +24,7 @@ public class CharController : MonoBehaviour {
  	private Vector3 capsuleCenter;
 	private float capsuleHeight;
 	private Height height;
-  public Gait gait;
+  private Gait gait;
 	private Vector3 groundNormal;
 
     

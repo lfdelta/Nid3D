@@ -6,8 +6,6 @@ using UnityEngine.UI;
 [RequireComponent(typeof(CharController))]
 public class CharInput : MonoBehaviour {
 
-  public Text debugText;
-
 	private CharController character;
 	private Transform cam;
   private Vector3 camInXZ;
@@ -28,7 +26,6 @@ public class CharInput : MonoBehaviour {
 		if (control_state.heightChange == 0)
 			control_state.heightChange = (Input.GetButtonDown ("HeightUp") ? 1 : 0)
         - (Input.GetButtonDown("HeightDown") ? 1 : 0);
-    debugText.text = character.gait.ToString();//(character.gait == CharController.Gait.Run) ? "Run" : "Walk";
 	}
 
 	void FixedUpdate () {

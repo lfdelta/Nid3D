@@ -15,8 +15,7 @@ public class CharController : MonoBehaviour {
   public float runningMoveForce = 100;
   public float runningSpeed = 2; // speed at which player isRunning
   public float maxSpeed = 5;     // maximum speed for player
-	public float jumpForce = 10;
-	public float gravMultiplier = 1;
+	public float jumpForce = 500;
 	public float groundCheckDist = 0.1f;
 	public Vector3 origToFeet = 1f * Vector3.down;
 
@@ -27,8 +26,6 @@ public class CharController : MonoBehaviour {
 	private Height height;
   public Gait gait;
 	private Vector3 groundNormal;
-  	  
-	private int i = 0; // just for debugging
 
     
 	// Use this for initialization
@@ -47,22 +44,20 @@ public class CharController : MonoBehaviour {
 	public void Move (ControlState control_state) {
 		CheckGround ();
 
-		if (isGrounded) {
-			if (control_state.heightChange != 0) {
-				height += control_state.heightChange;
-				height = (Height)Tools.Clamp ((int)height, (int)Height.Crouch, (int)Height.Throw);
-				Debug.Log (height);
-			}
+    if (isGrounded) {
+      if (control_state.heightChange != 0) {
+        height += control_state.heightChange;
+        height = (Height)Tools.Clamp ((int)height, (int)Height.Crouch, (int)Height.Throw);
+        Debug.Log (height);
+      }
 
-			// *** handle height changes
-
-      MoveXZ(control_state.moveInXZ.normalized);
+      // *** handle height changes
 			
-			if (control_state.jump)
-				rbody.AddForce (jumpForce * Vector3.up);
-		} else {
-			// *** gravity
-		}
+      if (control_state.jump)
+        rbody.AddForce (jumpForce * Vector3.up);
+    }
+
+    MoveXZ (control_state.moveInXZ.normalized);
 	}
 
   void MoveXZ (Vector3 move) {
@@ -75,11 +70,16 @@ public class CharController : MonoBehaviour {
             
     // convert from world space to local/object space
 		move = moveForce * transform.InverseTransformDirection(move);
-		move = Vector3.ProjectOnPlane(move, groundNormal);
+		//move = Vector3.ProjectOnPlane(move, groundNormal);
 
-    // apply the force and impose maximum speed
-    rbody.AddForce(move);
-    rbody.velocity = Vector3.ClampMagnitude(rbody.velocity, maxSpeed); // impose maxspeed
+    // apply the force and impose maximum speed (only in XZ plane)
+    rbody.AddForce (move);
+
+    Vector3 vXZ = Vector3.Scale(rbody.velocity, new Vector3(1,0,1));
+    if (vXZ.magnitude > maxSpeed) {
+      vXZ = vXZ.normalized * maxSpeed;
+      rbody.velocity = new Vector3(vXZ.x, rbody.velocity.y, vXZ.z);
+    }
   }
     
 	void CheckGround() {

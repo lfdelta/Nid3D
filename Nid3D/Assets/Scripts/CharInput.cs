@@ -19,7 +19,6 @@ public class CharInput : MonoBehaviour {
     character = GetComponent<CharController>();
 		cam = Camera.main.transform;
     control_state = new ControlState ();
-    debugText.text = "Hello World";
   }
 	
 	// Update is called once per frame
@@ -29,7 +28,7 @@ public class CharInput : MonoBehaviour {
 		if (control_state.heightChange == 0)
 			control_state.heightChange = (Input.GetButtonDown ("HeightUp") ? 1 : 0)
         - (Input.GetButtonDown("HeightDown") ? 1 : 0);
-    debugText.text = (character.gait == CharController.Gait.Run) ? "Run" : "Walk";
+    debugText.text = character.gait.ToString();//(character.gait == CharController.Gait.Run) ? "Run" : "Walk";
 	}
 
 	void FixedUpdate () {

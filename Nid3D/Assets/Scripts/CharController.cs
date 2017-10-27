@@ -26,7 +26,6 @@ public class CharController : MonoBehaviour {
 	private Height height;
   private Gait gait;
 	private Vector3 groundNormal;
-
     
 	// Use this for initialization
 	void Start () {
@@ -67,7 +66,7 @@ public class CharController : MonoBehaviour {
     else if (rbody.velocity.magnitude < runningSpeed) gait = Gait.Walk;
     else gait = Gait.Run;
     float moveForce = (gait == Gait.Run) ? runningMoveForce : walkingMoveForce;
-            
+       
     // convert from world space to local/object space
 		move = moveForce * transform.InverseTransformDirection(move);
 		//move = Vector3.ProjectOnPlane(move, groundNormal);

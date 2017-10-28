@@ -1603,7 +1603,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a6bfea1089f34b06864e67cd556b1f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debugText: {fileID: 1155612749}
 --- !u!114 &1733297717
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1615,15 +1614,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37ffb5b353ca84c2f99769d60fccd5c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  stateText: {fileID: 1155612749}
+  walkingSpeed: 0.01
+  runningSpeed: 8
   walkingMoveForce: 100
   runningMoveForce: 300
-  runningSpeed: 8
   maxSpeed: 10
   jumpForce: 500
-  gravMultiplier: 1
   groundCheckDist: 0.1
+  directionChangeThreshold: 45
   origToFeet: {x: 0, y: -1, z: 0}
-  gait: 0
 --- !u!54 &1733297718
 Rigidbody:
   m_ObjectHideFlags: 0

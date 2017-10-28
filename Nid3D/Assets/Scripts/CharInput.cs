@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 [RequireComponent(typeof(CharController))]
 public class CharInput : MonoBehaviour {
@@ -36,7 +35,7 @@ public class CharInput : MonoBehaviour {
 		move = vertIn*camInXZ + horizIn*cam.right;
     control_state.moveInXZ = move;
     
-		character.Move (control_state);
+		character.UpdateCharacter (control_state);
 		control_state.heightChange = 0;
 		control_state.jump = false;
 	}

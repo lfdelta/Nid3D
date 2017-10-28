@@ -7,6 +7,14 @@ Name 1 & Name 2 & ...
 
 
 
+### 10/27/2017 ###
+Benjamin Killeen & Luca Frez-Albrecht
+1. direction change function: determines if input vector changed direction
+2. trimmed FSM to remove independent degrees of freedom
+3. implemented basic fence/run finite state handlers
+
+
+
 ### 10/26/2017 ###
 Luca Frez-Albrecht
 1. impose maximum player speed only in the XZ plane; leave Y velocity untouched

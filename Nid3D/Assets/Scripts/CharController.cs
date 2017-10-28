@@ -1,23 +1,24 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(CapsuleCollider))]
 public class CharController : MonoBehaviour {
 
+  public Text stateText;
+
   // concerning the state of the character
   private bool isGrounded;
 	private enum Height {Low, Mid, High, Throw};
-  private enum FSM {Idle, Jerk, Walk, Run,
-                    Crouch, Jump, BunnyHop, Stab,
-                    DiveKick, Punch, Roll,
-                    Cartwheel, SweepKick,
+  private enum FSM {Fence, Run, Jump, BunnyHop, Roll,
                     LedgeGrab, Stunned};
 
+  public float walkingSpeed = 0.01f;
+  public float runningSpeed = 2; // speed at which player isRunning
 	public float walkingMoveForce = 200;
   public float runningMoveForce = 100;
-  public float runningSpeed = 2; // speed at which player isRunning
   public float maxSpeed = 5;     // maximum speed for player
 	public float jumpForce = 500;
 	public float groundCheckDist = 0.1f;
@@ -31,6 +32,7 @@ public class CharController : MonoBehaviour {
 	private Height height;
   private FSM playerState;
 	private Vector3 groundNormal;
+  private ControlState controlState;
     
 	// Use this for initialization
 	void Start () {
@@ -42,39 +44,36 @@ public class CharController : MonoBehaviour {
 		capsuleHeight = capsule.height;
 
 		height = Height.Mid;
-    
+    stateText.text = "";
+    playerState = FSM.Fence;
+    controlState = new ControlState ();
 	}
 
-	public void Move (ControlState control_state) {
-		CheckGround ();
+	public void UpdateCharacter (ControlState newControlState) {
+    controlState = newControlState;
+    
+    CheckGround ();
 
-    if (isGrounded) {
-      if (control_state.heightChange != 0) {
-        height += control_state.heightChange;
-        height = (Height)Tools.Clamp ((int)height, (int)Height.Crouch, (int)Height.Throw);
-        Debug.Log (height);
-      }
+    if (isGrounded &&controlState.jump)
+      //playerState = FSM.Jump;
+      rbody.AddForce (jumpForce * Vector3.up);
 
-      // *** handle height changes
-			
-      if (control_state.jump)
-        rbody.AddForce (jumpForce * Vector3.up);
+    switch (playerState) {
+    case FSM.Fence:
+      DoFence ();
+      break;
+    case FSM.Run:
+      DoRun ();
+      break;
     }
-
-    MoveXZ (control_state.moveInXZ.normalized);
+    stateText.text = playerState.ToString ();
 	}
 
   void MoveXZ (Vector3 move) {
     // Adds the force to the player, but then imposes a max speed
-
-    if (rbody.velocity.magnitude == 0) playerState = FSM.Idle;
-    else if (rbody.velocity.magnitude < runningSpeed) playerState = FSM.Walk;
-    else playerState = FSM.Run;
     float moveForce = (playerState == FSM.Run) ? runningMoveForce : walkingMoveForce;
-       
-    // convert from world space to local/object space
 		move = moveForce * transform.InverseTransformDirection(move);
-		//move = Vector3.ProjectOnPlane(move, groundNormal);
+		move = Vector3.ProjectOnPlane(move, groundNormal);
 
     // apply the force and impose maximum speed (only in XZ plane)
     rbody.AddForce (move);
@@ -85,70 +84,39 @@ public class CharController : MonoBehaviour {
       rbody.velocity = new Vector3(vXZ.x, rbody.velocity.y, vXZ.z);
     }
   }
-  
-  bool switchState(FSM newPlayerState) {
-    // switches the playerState to newPlayerState if the switch is allowed
-    // returns true on success
 
-    switch (playerState) {
-      case FSM.Idle:      return switchFromIdle      (newPlayerState);
-      case FSM.Jerk:      return switchFromJerk      (newPlayerState);
-      case FSM.Walk:      return switchFromWalk      (newPlayerState);
-      case FSM.Run:       return switchFromRun       (newPlayerState);
-      case FSM.Crouch:    return switchFromCrouch    (newPlayerState);
-      case FSM.Jump:      return switchFromJump      (newPlayerState);
-      case FSM.BunnyHop:  return switchFromBunnyHop  (newPlayerState);
-      case FSM.Stab:      return switchFromStab      (newPlayerState);
-      case FSM.DiveKick:  return switchFromDiveKick  (newPlayerState);
-      case FSM.Punch:     return switchFromPunch     (newPlayerState);
-      case FSM.Roll:      return switchFromRoll      (newPlayerState);
-      case FSM.Cartwheel: return switchFromCartwheel (newPlayerState);
-      case FSM.SweepKick: return switchFromSweepKick (newPlayerState);
-      case FSM.LedgeGrab: return switchFromLedgeGrab (newPlayerState);
-      case FSM.Stunned:   return switchFromStunned   (newPlayerState);
+  void DoFence () {
+    // if v > runspeed, FSM->run
+    // handle movement
+    MoveXZ(controlState.moveInXZ.normalized);
+
+    // handle sword height
+    if (controlState.heightChange != 0) {
+      height += controlState.heightChange;
+      height = (Height)Tools.Clamp ((int)height, (int)Height.Low, (int)Height.Throw);
+      Debug.Log (height);
+    }
+
+    //if (rbody.velocity.magnitude < walkingSpeed) playerState = FSM.Fence;
+    if (rbody.velocity.magnitude > runningSpeed) {
+      rbody.velocity = Vector3.zero;
+      playerState = FSM.Run;
     }
   }
 
-  void switchFromIdle(FSM newPlayerState) {
-    switch (newPlayerState) {
-      case FSM.Idle:
-        
-  }
-  void switchFromJerk(FSM newPlayerState) {
-  }
-  void switchFromWalk(FSM newPlayerState) {
-  }
-  void switchFromRun(FSM newPlayerState) {
-  }
-  void switchFromCrouch(FSM newPlayerState) {
-  }
-  void switchFromJump(FSM newPlayerState) {
-  }
-  void switchFromBunnyHop(FSM newPlayerState) {
-  }
-  void switchFromStab(FSM newPlayerState) {
-  }
-  void switchFromDiveKick(FSM newPlayerState) {
-  }
-  void switchFromPunch(FSM newPlayerState) {
-  }
-  void switchFromRoll(FSM newPlayerState) {
-  }
-  void switchFromCartwheel(FSM newPlayerState) {
-  }
-  void switchFromSweepKick(FSM newPlayerState) {
-  }
-  void switchFromLedgeGrab(FSM newPlayerState) {
-  }
-  void switchFromStunned(FSM newPlayerState) {
+  void DoRun () {
+    MoveXZ (controlState.moveInXZ.normalized);
+
+    if (rbody.velocity.magnitude < walkingSpeed)
+      playerState = FSM.Fence;
   }
     
   bool directionChange() {
     // Returns true if controlState is changing the direction of the character
     // in XZ
     Vector3 vXZ = Vector3.ProjectOnPlane(rbody.velocity, Vector3.up);
-    float angle = Vector3.angle(control_state.moveInXZ, vXZ);
-    return angle > directionChangeThreshold
+    float angle = Vector3.Angle(controlState.moveInXZ, vXZ);
+    return angle > directionChangeThreshold;
   }
   
 	void CheckGround() {

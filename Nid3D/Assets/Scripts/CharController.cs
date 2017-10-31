@@ -59,12 +59,15 @@ public class CharController : MonoBehaviour {
       rbody.AddForce (jumpForce * Vector3.up);
 
     switch (playerState) {
-    case FSM.Fence:
-      DoFence ();
-      break;
-    case FSM.Run:
-      DoRun ();
-      break;
+      case FSM.Fence:
+        DoFence ();
+        break;
+      case FSM.Run:
+        DoRun ();
+        break;
+      case FSM.Jump:
+        DoJump ();
+        break;
     }
     stateText.text = playerState.ToString ();
 	}
@@ -87,8 +90,15 @@ public class CharController : MonoBehaviour {
 
   void DoFence () {
     // if v > runspeed, FSM->run
-    // handle movement
+    // handle movement (do first)
     MoveXZ(controlState.moveInXZ.normalized);
+
+    //if (rbody.velocity.magnitude < walkingSpeed) playerState = FSM.Fence;
+    if (rbody.velocity.magnitude > runningSpeed) StartRun ();
+    if (isGrounded && controlState.jump) {
+      Debug.Log("Jumping");
+      StartJump();
+    }
 
     // handle sword height
     if (controlState.heightChange != 0) {
@@ -97,23 +107,49 @@ public class CharController : MonoBehaviour {
       Debug.Log (height);
     }
 
-    //if (rbody.velocity.magnitude < walkingSpeed) playerState = FSM.Fence;
-    if (rbody.velocity.magnitude > runningSpeed) {
-      rbody.velocity = Vector3.zero;
-      playerState = FSM.Run;
-    }
   }
 
+  void StartRun () {
+    // called for transition TO Run from some other state
+    rbody.velocity = Vector3.zero;
+    playerState = FSM.Run;
+  }
+  
   void DoRun () {
+    // apply force (do first)
     MoveXZ (controlState.moveInXZ.normalized);
 
+    if (DirectionChange ()) {
+      Debug.Log("Direction Change");
+      rbody.velocity = Vector3.zero;
+      playerState = FSM.Fence;
+    }
+    if (isGrounded && controlState.jump) StartJump();
     if (rbody.velocity.magnitude < walkingSpeed)
+      // maybe change this so < runningSpeed and decelerating?
       playerState = FSM.Fence;
   }
-    
-  bool directionChange() {
+
+  void StartJump () {
+    // called when some state Transitions TO jump, not every update
+    playerState = FSM.Jump;
+    rbody.AddForce (jumpForce * Vector3.up);
+  }
+
+  void DoJump () {
+    MoveXZ (controlState.moveInXZ.normalized);
+    // called every update during jump state
+
+    if (isGrounded && rbody.velocity.magnitude > runningSpeed)
+      playerState = FSM.Run;
+    else if (isGrounded)
+      playerState = FSM.Fence;
+  }
+  
+  bool DirectionChange() {
     // Returns true if controlState is changing the direction of the character
     // in XZ
+    if (playerState != FSM.Run) return false;
     Vector3 vXZ = Vector3.ProjectOnPlane(rbody.velocity, Vector3.up);
     float angle = Vector3.Angle(controlState.moveInXZ, vXZ);
     return angle > directionChangeThreshold;

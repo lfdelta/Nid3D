@@ -5,7 +5,13 @@ Name 1 & Name 2 & ...
 1. Enumerated list of edits made
 2. Place most recent logs above older ones
 
-
+### 10/31/2017 ###
+Benjamin Killeen
+1. added several Start<state> functions, which have frequently used transition
+   code
+2. started work on the Jump state. Added rudimentary functionality to it
+3. Moved the transition to jump from fixed update to the Do<state> functions
+   
 
 ### 10/27/2017 ###
 Benjamin Killeen & Luca Frez-Albrecht

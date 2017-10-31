@@ -1,28 +1,38 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(CapsuleCollider))]
 public class CharController : MonoBehaviour {
-	private enum Height {Crouch, Low, Mid, High, Throw};
-	
-	public float moveSpeed = 20;
-	public float jumpForce = 10;
-	public float gravMultiplier = 1;
+
+  public Text stateText;
+
+  // concerning the state of the character
+  private bool isGrounded;
+	private enum Height {Low, Mid, High, Throw};
+  private enum FSM {Fence, Run, Jump, BunnyHop, Roll,
+                    LedgeGrab, Stunned};
+
+  public float walkingSpeed = 0.01f;
+  public float runningSpeed = 2; // speed at which player isRunning
+	public float walkingMoveForce = 200;
+  public float runningMoveForce = 100;
+  public float maxSpeed = 5;     // maximum speed for player
+	public float jumpForce = 500;
 	public float groundCheckDist = 0.1f;
+  public float directionChangeThreshold = 45;
 	public Vector3 origToFeet = 1f * Vector3.down;
 
 	private Rigidbody rbody;
 	private CapsuleCollider capsule;
-	private Vector3 capsuleCenter;
+ 	private Vector3 capsuleCenter;
 	private float capsuleHeight;
 	private Height height;
-	private bool isGrounded;
+  private FSM playerState;
 	private Vector3 groundNormal;
-  
-	private int i = 0; // just for debugging
-
+  private ControlState controlState;
     
 	// Use this for initialization
 	void Start () {
@@ -34,34 +44,81 @@ public class CharController : MonoBehaviour {
 		capsuleHeight = capsule.height;
 
 		height = Height.Mid;
+    stateText.text = "";
+    playerState = FSM.Fence;
+    controlState = new ControlState ();
 	}
 
-	public void Move (ControlState control_state) {
-		CheckGround ();
+	public void UpdateCharacter (ControlState newControlState) {
+    controlState = newControlState;
+    
+    CheckGround ();
 
-     // convert from world space to local/object space
-		Vector3 move = moveSpeed *
-      transform.InverseTransformDirection(control_state.moveInXZ.normalized);
+    if (isGrounded &&controlState.jump)
+      //playerState = FSM.Jump;
+      rbody.AddForce (jumpForce * Vector3.up);
+
+    switch (playerState) {
+    case FSM.Fence:
+      DoFence ();
+      break;
+    case FSM.Run:
+      DoRun ();
+      break;
+    }
+    stateText.text = playerState.ToString ();
+	}
+
+  void MoveXZ (Vector3 move) {
+    // Adds the force to the player, but then imposes a max speed
+    float moveForce = (playerState == FSM.Run) ? runningMoveForce : walkingMoveForce;
+		move = moveForce * transform.InverseTransformDirection(move);
 		move = Vector3.ProjectOnPlane(move, groundNormal);
 
-		if (isGrounded) {
-			if (control_state.heightChange != 0) {
-				height += control_state.heightChange;
-				height = (Height)Tools.Clamp ((int)height, (int)Height.Crouch, (int)Height.Throw);
-				Debug.Log (height);
-			}
+    // apply the force and impose maximum speed (only in XZ plane)
+    rbody.AddForce (move);
 
-			// *** handle height changes
+    Vector3 vXZ = Vector3.Scale(rbody.velocity, new Vector3(1,0,1));
+    if (vXZ.magnitude > maxSpeed) {
+      vXZ = vXZ.normalized * maxSpeed;
+      rbody.velocity = new Vector3(vXZ.x, rbody.velocity.y, vXZ.z);
+    }
+  }
 
-			rbody.AddForce (move);
+  void DoFence () {
+    // if v > runspeed, FSM->run
+    // handle movement
+    MoveXZ(controlState.moveInXZ.normalized);
 
-			if (control_state.jump)
-				rbody.AddForce (jumpForce * Vector3.up);
-		} else {
-			// *** gravity
-		}
-	}
+    // handle sword height
+    if (controlState.heightChange != 0) {
+      height += controlState.heightChange;
+      height = (Height)Tools.Clamp ((int)height, (int)Height.Low, (int)Height.Throw);
+      Debug.Log (height);
+    }
 
+    //if (rbody.velocity.magnitude < walkingSpeed) playerState = FSM.Fence;
+    if (rbody.velocity.magnitude > runningSpeed) {
+      rbody.velocity = Vector3.zero;
+      playerState = FSM.Run;
+    }
+  }
+
+  void DoRun () {
+    MoveXZ (controlState.moveInXZ.normalized);
+
+    if (rbody.velocity.magnitude < walkingSpeed)
+      playerState = FSM.Fence;
+  }
+    
+  bool directionChange() {
+    // Returns true if controlState is changing the direction of the character
+    // in XZ
+    Vector3 vXZ = Vector3.ProjectOnPlane(rbody.velocity, Vector3.up);
+    float angle = Vector3.Angle(controlState.moveInXZ, vXZ);
+    return angle > directionChangeThreshold;
+  }
+  
 	void CheckGround() {
 		RaycastHit info;
 		// send raycast from just above the feet

@@ -11,12 +11,12 @@ public class CharInput : MonoBehaviour {
   private Vector3 move;
 	public ControlState control_state;
 
-	// Use this for initialization
+  // Use this for initialization
 	void Start () {
     character = GetComponent<CharController>();
 		cam = Camera.main.transform;
     control_state = new ControlState ();
-	}
+  }
 	
 	// Update is called once per frame
 	void Update () {
@@ -35,7 +35,7 @@ public class CharInput : MonoBehaviour {
 		move = vertIn*camInXZ + horizIn*cam.right;
     control_state.moveInXZ = move;
     
-		character.Move (control_state);
+		character.UpdateCharacter (control_state);
 		control_state.heightChange = 0;
 		control_state.jump = false;
 	}

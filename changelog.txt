@@ -7,6 +7,29 @@ Name 1 & Name 2 & ...
 
 
 
+### 10/27/2017 ###
+Benjamin Killeen & Luca Frez-Albrecht
+1. direction change function: determines if input vector changed direction
+2. trimmed FSM to remove independent degrees of freedom
+3. implemented basic fence/run finite state handlers
+
+
+
+### 10/26/2017 ###
+Luca Frez-Albrecht
+1. impose maximum player speed only in the XZ plane; leave Y velocity untouched
+2. allow the player to move freely in midair
+3. added high-friction Physic Material to the plane object; this will require some tweaking
+
+
+
+### 10/24/2017 ###
+Benjamin Killeen (noted afterward by LF∆)
+1. ControlState class which we can pass as an argument to the character controller without needing to change its parameters as we add new functionality
+2. imposed a maximum player velocity using wrapper function CharController.MoveXZ
+3. handle different player speeds using a Gait enum: static, walk, run
+
+
 ### 10/19/2017 ###
 Luca Frez-Albrecht
 1. Q and E adjust player/sword height discretely and clamp to allowed range

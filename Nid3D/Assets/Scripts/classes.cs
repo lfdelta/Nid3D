@@ -9,4 +9,3 @@ public class ControlState {
   public bool heightHold  = false;     // -1,0,1 holding sword up or staying crouched
   public bool attack      = false;
 }
-

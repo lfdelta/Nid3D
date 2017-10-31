@@ -4,6 +4,7 @@
 
 # emacs backups
 *~
+*#
 
 # the temp folder and local unity objects
 Nid3D/Library

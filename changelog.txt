@@ -7,6 +7,14 @@ Name 1 & Name 2 & ...
 
 
 
+### 10/31/2017 ###
+Luca Frez-Albrecht
+1. imported input manager assets, including example scenes. we will need some sort of menu to implement button remapping
+2. replaced UnityEngine.Input calls with TeamUtility.IO.InputManager
+3. player controls similarly to previous, but we need to re-tweak the gravity and sensitivity on the input axes (inside the Input Manager object)
+
+
+
 ### 10/27/2017 ###
 Benjamin Killeen & Luca Frez-Albrecht
 1. direction change function: determines if input vector changed direction

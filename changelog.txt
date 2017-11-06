@@ -12,6 +12,7 @@ Luca Frez-Albrecht
 1. condensed the Start<state> functions into one ChangeState(newState)
 2. capped the movement vector in CharInput to length 1, rather than normalizing input vectors even when they're less than unit length. this reduced jittery stopping while the digital input axes returned to zero, and paves the way for analog input
 3. added DirectionChange checking inside of DoJump to remove continuous midair movement; we make a final decision to keep/remove this check later on
+4. created a ControlState constructor to address null object references
 
 
 

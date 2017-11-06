@@ -38,6 +38,5 @@ public class CharInput : MonoBehaviour {
     character.UpdateCharacter (controlState);
 		controlState.heightChange = 0;
 		controlState.jump = false;
-    
 	}
 }

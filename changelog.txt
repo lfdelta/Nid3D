@@ -5,6 +5,16 @@ Name 1 & Name 2 & ...
 1. Enumerated list of edits made
 2. Place most recent logs above older ones
 
+
+
+### 11/6/2017 ###
+Luca Frez-Albrecht
+1. condensed the Start<state> functions into one ChangeState(newState)
+2. capped the movement vector in CharInput to length 1, rather than normalizing input vectors even when they're less than unit length. this reduced jittery stopping while the digital input axes returned to zero, and paves the way for analog input
+3. added DirectionChange checking inside of DoJump to remove continuous midair movement; we make a final decision to keep/remove this check later on
+
+
+
 ### 10/31/2017 ###
 Benjamin Killeen
 1. added several Start<state> functions, which have frequently used transition
@@ -12,6 +22,7 @@ Benjamin Killeen
 2. started work on the Jump state. Added rudimentary functionality to it
 3. Moved the transition to jump from fixed update to the Do<state> functions
    
+
 
 ### 10/27/2017 ###
 Benjamin Killeen & Luca Frez-Albrecht

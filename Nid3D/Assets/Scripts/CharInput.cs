@@ -33,8 +33,7 @@ public class CharInput : MonoBehaviour {
 	
 		camInXZ = Vector3.Scale(cam.forward, new Vector3(1, 0, 1)).normalized;
 		move = vertIn*camInXZ + horizIn*cam.right;
-    controlState.moveInXZ = move;
-
+    controlState.moveInXZ = (move.magnitude > 1) ? move.normalized : move;
 
     character.UpdateCharacter (controlState);
 		controlState.heightChange = 0;

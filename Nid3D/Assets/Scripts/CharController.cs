@@ -33,7 +33,9 @@ public class CharController : MonoBehaviour {
   private FSM playerState;
 	private Vector3 groundNormal;
   private ControlState controlState;
-    
+
+
+
 	// Use this for initialization
 	void Start () {
 		rbody = GetComponent<Rigidbody> ();
@@ -49,14 +51,12 @@ public class CharController : MonoBehaviour {
     controlState = new ControlState ();
 	}
 
+
+
 	public void UpdateCharacter (ControlState newControlState) {
     controlState = newControlState;
     
     CheckGround ();
-
-    if (isGrounded &&controlState.jump)
-      //playerState = FSM.Jump;
-      rbody.AddForce (jumpForce * Vector3.up);
 
     switch (playerState) {
       case FSM.Fence:
@@ -72,6 +72,8 @@ public class CharController : MonoBehaviour {
     stateText.text = playerState.ToString ();
 	}
 
+
+
   void MoveXZ (Vector3 move) {
     // Adds the force to the player, but then imposes a max speed
     float moveForce = (playerState == FSM.Run) ? runningMoveForce : walkingMoveForce;
@@ -83,22 +85,36 @@ public class CharController : MonoBehaviour {
 
     Vector3 vXZ = Vector3.Scale(rbody.velocity, new Vector3(1,0,1));
     if (vXZ.magnitude > maxSpeed) {
-      vXZ = vXZ.normalized * maxSpeed;
+      vXZ = vXZ.normalized * maxSpeed; //** replace this with a force ~ -vXZ
       rbody.velocity = new Vector3(vXZ.x, rbody.velocity.y, vXZ.z);
     }
   }
 
-  void DoFence () {
-    // if v > runspeed, FSM->run
-    // handle movement (do first)
-    MoveXZ(controlState.moveInXZ.normalized);
 
-    //if (rbody.velocity.magnitude < walkingSpeed) playerState = FSM.Fence;
-    if (rbody.velocity.magnitude > runningSpeed) StartRun ();
-    if (isGrounded && controlState.jump) {
-      Debug.Log("Jumping");
-      StartJump();
+
+  void ChangeState(FSM state) {
+    switch (state) {
+    case FSM.Run:
+      rbody.velocity = Vector3.zero;
+      break;
+    case FSM.Jump:
+      rbody.AddForce (jumpForce * Vector3.up);
+      break;
     }
+
+    playerState = state;
+  }
+
+
+
+  void DoFence () {
+    // handle movement (do first)
+    MoveXZ(controlState.moveInXZ);
+
+    // if v > runspeed, FSM->run
+    if (rbody.velocity.magnitude > runningSpeed) ChangeState (FSM.Run);
+    if (isGrounded && controlState.jump)
+      ChangeState(FSM.Jump);
 
     // handle sword height
     if (controlState.heightChange != 0) {
@@ -109,56 +125,57 @@ public class CharController : MonoBehaviour {
 
   }
 
-  void StartRun () {
-    // called for transition TO Run from some other state
-    rbody.velocity = Vector3.zero;
-    playerState = FSM.Run;
-  }
-  
+
+
   void DoRun () {
     // apply force (do first)
-    MoveXZ (controlState.moveInXZ.normalized);
+    MoveXZ (controlState.moveInXZ);
 
     if (DirectionChange ()) {
       Debug.Log("Direction Change");
       rbody.velocity = Vector3.zero;
       playerState = FSM.Fence;
     }
-    if (isGrounded && controlState.jump) StartJump();
+    if (isGrounded && controlState.jump) ChangeState (FSM.Jump);
     if (rbody.velocity.magnitude < walkingSpeed)
       // maybe change this so < runningSpeed and decelerating?
       playerState = FSM.Fence;
   }
 
-  void StartJump () {
-    // called when some state Transitions TO jump, not every update
-    playerState = FSM.Jump;
-    rbody.AddForce (jumpForce * Vector3.up);
-  }
+
 
   void DoJump () {
-    MoveXZ (controlState.moveInXZ.normalized);
+    MoveXZ (controlState.moveInXZ);
     // called every update during jump state
+
+    if (DirectionChange ()) { // do we want this behavior in midair?
+      Debug.Log("Direction Change");
+      rbody.velocity = new Vector3(0, rbody.velocity.y, 0);
+    }
 
     if (isGrounded && rbody.velocity.magnitude > runningSpeed)
       playerState = FSM.Run;
     else if (isGrounded)
       playerState = FSM.Fence;
   }
-  
+
+
+
   bool DirectionChange() {
-    // Returns true if controlState is changing the direction of the character
-    // in XZ
-    if (playerState != FSM.Run) return false;
+    // Returns true if controlState is changing the direction of the character in XZ
+    //if (playerState != FSM.Run) return false; // redundancy check; commented for use in DoJump
     Vector3 vXZ = Vector3.ProjectOnPlane(rbody.velocity, Vector3.up);
     float angle = Vector3.Angle(controlState.moveInXZ, vXZ);
     return angle > directionChangeThreshold;
   }
-  
+
+
+
 	void CheckGround() {
 		RaycastHit info;
 		// send raycast from just above the feet
-		if (Physics.Raycast (transform.position + origToFeet + 0.1f*Vector3.up, Vector3.down, out info, groundCheckDist)) {
+		if (Physics.Raycast (transform.position + origToFeet + 0.1f*Vector3.up,
+                         Vector3.down, out info, groundCheckDist)) {
 			isGrounded = true;
 			groundNormal = info.normal;
 		} else {

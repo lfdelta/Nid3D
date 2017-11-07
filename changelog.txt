@@ -7,6 +7,13 @@ Name 1 & Name 2 & ...
 
 
 
+### 11/7/2017 ###
+Luca Frez-Albrecht
+1. created new Axes Testing scene and AxisTesting script to visualize input axes and button presses
+2. mapped P1Keyboard, P2Keyboard, and logitech f310 buttons to P1/2Gamepad setups
+
+
+
 ### 10/31/2017 ###
 Luca Frez-Albrecht
 1. imported input manager assets, including example scenes. we will need some sort of menu to implement button remapping

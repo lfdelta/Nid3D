@@ -32,7 +32,7 @@ public class CharInput : MonoBehaviour {
   void FixedUpdate () {
     float horizIn = InputManager.GetAxis ("Horizontal", playerID);
     float vertIn = InputManager.GetAxis ("Vertical", playerID);
-	
+
     camInXZ = Vector3.Scale(cam.forward, new Vector3(1, 0, 1)).normalized;
     move = vertIn*camInXZ + horizIn*cam.right;
     controlState.moveInXZ = (move.magnitude > 1) ? move.normalized : move;

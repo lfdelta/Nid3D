@@ -46,7 +46,7 @@ public class CharController : MonoBehaviour {
 		capsuleHeight = capsule.height;
 
 		height = Height.Mid;
-    stateText.text = "";
+    if (stateText) stateText.text = "";
     playerState = FSM.Fence;
     controlState = new ControlState ();
 	}
@@ -69,7 +69,7 @@ public class CharController : MonoBehaviour {
         DoJump ();
         break;
     }
-    stateText.text = playerState.ToString ();
+    if (stateText) stateText.text = playerState.ToString ();
 	}
 
 

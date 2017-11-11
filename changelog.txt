@@ -7,6 +7,13 @@ Name 1 & Name 2 & ...
 
 
 
+### 11/11/2017 ###
+Benjamin Killeen, Ashley Li, Luca Frez-Albrecht
+1. inserted new Input Manager into Main scene
+2. added a second Player prefab into Main
+
+
+
 ### 11/7/2017 ###
 Luca Frez-Albrecht
 1. created new Axes Testing scene and AxisTesting script to visualize input axes and button presses

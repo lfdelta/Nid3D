@@ -638,7 +638,7 @@ MonoBehaviour:
       joystick: 0
     - name: Jump
       description: 
-      positive: 0
+      positive: 303
       negative: 0
       altPositive: 0
       altNegative: 0

@@ -7,6 +7,12 @@ Name 1 & Name 2 & ...
 
 
 
+### 11/14/2017 ###
+1. fleshed out the Canvas in Main scene with a PausePanel and corresponding buttons
+2. created a GameController to keep track of the pause state
+
+
+
 ### 11/11/2017 ###
 Benjamin Killeen, Ashley Li, Luca Frez-Albrecht
 1. inserted new Input Manager into Main scene

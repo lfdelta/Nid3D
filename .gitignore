@@ -29,3 +29,6 @@ Nid3D/Temp
 *.Trashes
 *ehthumbs.db
 *Thumbs.db
+
+# package manager
+Nid3d/UnityPackageManager

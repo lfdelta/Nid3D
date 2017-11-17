@@ -26,6 +26,7 @@ public class CharController : MonoBehaviour {
 	public Vector3 origToFeet = 1f * Vector3.down;
 
 	private Rigidbody rbody;
+  private Animator animator;
 	private CapsuleCollider capsule;
  	private Vector3 capsuleCenter;
 	private float capsuleHeight;
@@ -38,6 +39,7 @@ public class CharController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+    animator = GetComponent<Animator> ();
 		rbody = GetComponent<Rigidbody> ();
 		rbody.constraints = RigidbodyConstraints.FreezeRotation;
 
@@ -103,6 +105,20 @@ public class CharController : MonoBehaviour {
     }
 
     playerState = state;
+
+    /*int fsmint;
+    switch(state) {
+    case FSM.Fence:
+      fsmint = 0;
+      break;
+    case FSM.Run:
+      fsmint = 1;
+      break;
+    default:
+      fsmint = 0;
+      break;
+    }
+    animator.SetInteger ("State", fsmint);*/
   }
 
 
@@ -112,9 +128,10 @@ public class CharController : MonoBehaviour {
     MoveXZ(controlState.moveInXZ);
 
     // if v > runspeed, FSM->run
-    if (rbody.velocity.magnitude > runningSpeed) ChangeState (FSM.Run);
+    if (rbody.velocity.magnitude > runningSpeed)
+      ChangeState (FSM.Run);
     if (isGrounded && controlState.jump)
-      ChangeState(FSM.Jump);
+      ChangeState (FSM.Jump);
 
     // handle sword height
     if (controlState.heightChange != 0) {
@@ -123,6 +140,7 @@ public class CharController : MonoBehaviour {
       Debug.Log (height);
     }
 
+    animator.SetInteger ("State", 0);
   }
 
 
@@ -136,10 +154,13 @@ public class CharController : MonoBehaviour {
       rbody.velocity = Vector3.zero;
       playerState = FSM.Fence;
     }
-    if (isGrounded && controlState.jump) ChangeState (FSM.Jump);
+    if (isGrounded && controlState.jump)
+      ChangeState (FSM.Jump);
     if (rbody.velocity.magnitude < walkingSpeed)
       // maybe change this so < runningSpeed and decelerating?
       playerState = FSM.Fence;
+
+    animator.SetInteger ("State", 1);
   }
 
 

@@ -7,6 +7,14 @@ Name 1 & Name 2 & ...
 
 
 
+### 11/17/2017 ###
+Molly O'Donnell, Luca Frez-Albrecht
+1. imported new model, rig, and running animation for player
+2. replaced player prefab using new rig
+3. began implemented player control, but states currently switch rapidly between frames resulting in twitchy back-and-forth transition between animations
+
+
+
 ### 11/11/2017 ###
 Benjamin Killeen, Ashley Li, Luca Frez-Albrecht
 1. inserted new Input Manager into Main scene

@@ -488,7 +488,7 @@ GameObject:
   - component: {fileID: 114613396575183346}
   - component: {fileID: 114853462306327474}
   m_Layer: 0
-  m_Name: Player
+  m_Name: OldPlayer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1256,7 +1256,7 @@ Animator:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1908459718828576}
   m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: 0f7a0766981b1454bb1833d6fce2981b, type: 3}
+  m_Avatar: {fileID: 9000000, guid: e4995b150918941e58b135a48c71fab2, type: 3}
   m_Controller: {fileID: 0}
   m_CullingMode: 1
   m_UpdateMode: 0
@@ -1276,6 +1276,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a6bfea1089f34b06864e67cd556b1f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerID: 0
 --- !u!114 &114853462306327474
 MonoBehaviour:
   m_ObjectHideFlags: 1

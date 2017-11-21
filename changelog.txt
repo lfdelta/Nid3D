@@ -10,6 +10,7 @@ Name 1 & Name 2 & ...
 ### 11/21/2017 ###
 1. inserted a Team Utility Standalone Input Module to the EventSystem--buttons have mouse interaction now!
 2. created a shell of a Settings menu, including a volume slider (interfacing with the GameController)
+3. Controls menu now has one functioning key-binding button!
 
 
 

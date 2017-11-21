@@ -1,11 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TeamUtility.IO;
 
 public class GameController : MonoBehaviour {
 
   public Canvas pauseUI;
+  public GameObject startPanel;
+  public GameObject[] otherPanels;
 
   private bool gameIsPaused;
 
@@ -27,17 +30,26 @@ public class GameController : MonoBehaviour {
 
   public void PauseGame() {
     Time.timeScale = 0;
-    pauseUI.enabled = true;
     gameIsPaused = true;
+
+    pauseUI.enabled = true;
+    startPanel.SetActive (true);
+    for (int i = 0; i < otherPanels.Length; i++)
+      otherPanels [i].SetActive(false);
   }
 
   public void UnpauseGame() {
     Time.timeScale = 1;
-    pauseUI.enabled = false;
     gameIsPaused = false;
+
+    pauseUI.enabled = false;
   }
 
   public bool IsPaused() {
     return gameIsPaused;
+  }
+
+  public void SetVolume(float vol) {
+    AudioListener.volume = Mathf.Clamp01 (vol);
   }
 }

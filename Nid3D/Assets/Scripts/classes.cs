@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ControlState {
   public Vector3 moveInXZ;
-  public int heightChange = 0; // -1,0,1
+  public int heightChange; // -1,0,1
   public bool jump;
   public bool heightHold; // holding sword up or staying crouched
   public bool attack;

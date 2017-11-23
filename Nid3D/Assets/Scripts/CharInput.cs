@@ -10,25 +10,30 @@ public class CharInput : MonoBehaviour {
   private Transform cam;
   private Vector3 camInXZ;
   private Vector3 move;
+  private GameController gameController;
   public PlayerID playerID;
   public ControlState controlState;
 
-  // Use this for initialization
   void Start () {
+    gameController = FindObjectOfType<GameController> ();
     character = GetComponent<CharController>();
     cam = Camera.main.transform;
     controlState = new ControlState ();
   }
 
-  // Update is called once per frame
+  // Called once per frame; handle instantaneous inputs (buttons) here
   void Update () {
-    if (!controlState.jump)
-      controlState.jump = InputManager.GetButtonDown ("Jump", playerID);
-    if (controlState.heightChange == 0)
-      controlState.heightChange = (InputManager.GetButtonDown ("HeightUp", playerID) ? 1 : 0)
-        - (InputManager.GetButtonDown("HeightDown", playerID) ? 1 : 0);
+    if (!gameController.IsPaused ()) {
+      if (!controlState.jump)
+        controlState.jump = InputManager.GetButtonDown ("Jump", playerID);
+      if (controlState.heightChange == 0)
+        controlState.heightChange = (InputManager.GetButtonDown ("HeightUp", playerID) ? 1 : 0)
+        - (InputManager.GetButtonDown ("HeightDown", playerID) ? 1 : 0);
+    }
   }
 
+  // Called once per physics update; handle continuous inputs (axes) here
+  // Pass new input state to CharController and reset button press values
   void FixedUpdate () {
     float horizIn = InputManager.GetAxis ("Horizontal", playerID);
     float vertIn = InputManager.GetAxis ("Vertical", playerID);

@@ -36,7 +36,6 @@ public class CharController : MonoBehaviour {
 
 
 
-	// Use this for initialization
 	void Start () {
 		rbody = GetComponent<Rigidbody> ();
 		rbody.constraints = RigidbodyConstraints.FreezeRotation;

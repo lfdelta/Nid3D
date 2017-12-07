@@ -37,7 +37,6 @@ public class CharController : MonoBehaviour {
 
 
 
-	// Use this for initialization
 	void Start () {
     animator = GetComponent<Animator> ();
 		rbody = GetComponent<Rigidbody> ();

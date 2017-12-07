@@ -12,6 +12,25 @@ Molly O'Donnell, Luca Frez-Albrecht
 1. imported new model, rig, and running animation for player
 2. replaced player prefab using new rig
 3. began implemented player control, but states currently switch rapidly between frames resulting in twitchy back-and-forth transition between animations
+### 11/23/2017 ###
+Luca Frez-Albrecht
+1. copied and edited the Team Utility Example1 RebindInput script to interact with the built in UIButton interface
+2. CharInput ignores button presses while the game is paused
+
+
+
+### 11/21/2017 ###
+Luca Frez-Albrecht
+1. inserted a Team Utility Standalone Input Module to the EventSystem--buttons have mouse interaction now!
+2. created a shell of a Settings menu, including a volume slider (interfacing with the GameController)
+3. Controls menu now has one functioning key-binding button!
+
+
+
+### 11/14/2017 ###
+Luca Frez-Albrecht
+1. fleshed out the Canvas in Main scene with a PausePanel and corresponding buttons
+2. created a GameController to keep track of the pause state
 
 
 

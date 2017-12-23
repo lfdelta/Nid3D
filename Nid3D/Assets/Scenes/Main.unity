@@ -1115,7 +1115,7 @@ Prefab:
     - target: {fileID: 224957459294980704, guid: 923c507112e5c43ee9881e0fc7460ec6,
         type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -471
       objectReference: {fileID: 0}
     - target: {fileID: 224957459294980704, guid: 923c507112e5c43ee9881e0fc7460ec6,
         type: 2}
@@ -1125,7 +1125,7 @@ Prefab:
     - target: {fileID: 224957459294980704, guid: 923c507112e5c43ee9881e0fc7460ec6,
         type: 2}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 94
       objectReference: {fileID: 0}
     - target: {fileID: 224957459294980704, guid: 923c507112e5c43ee9881e0fc7460ec6,
         type: 2}
@@ -1685,6 +1685,36 @@ Prefab:
       propertyPath: stateText
       value: 
       objectReference: {fileID: 1155612749}
+    - target: {fileID: 114849607460782418, guid: 56a1a9d4d021e43e7b35fc7396aee6c3,
+        type: 2}
+      propertyPath: runningSpeed
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 114849607460782418, guid: 56a1a9d4d021e43e7b35fc7396aee6c3,
+        type: 2}
+      propertyPath: walkingMoveForce
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 114849607460782418, guid: 56a1a9d4d021e43e7b35fc7396aee6c3,
+        type: 2}
+      propertyPath: runningMoveForce
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 114849607460782418, guid: 56a1a9d4d021e43e7b35fc7396aee6c3,
+        type: 2}
+      propertyPath: maxSpeed
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114849607460782418, guid: 56a1a9d4d021e43e7b35fc7396aee6c3,
+        type: 2}
+      propertyPath: frictionCoefficient
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114849607460782418, guid: 56a1a9d4d021e43e7b35fc7396aee6c3,
+        type: 2}
+      propertyPath: terminalDragForce
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 56a1a9d4d021e43e7b35fc7396aee6c3, type: 2}
   m_IsPrefabParent: 0
@@ -3097,6 +3127,36 @@ Prefab:
     - target: {fileID: 114564980041330906, guid: 56a1a9d4d021e43e7b35fc7396aee6c3,
         type: 2}
       propertyPath: playerID
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114849607460782418, guid: 56a1a9d4d021e43e7b35fc7396aee6c3,
+        type: 2}
+      propertyPath: runningSpeed
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 114849607460782418, guid: 56a1a9d4d021e43e7b35fc7396aee6c3,
+        type: 2}
+      propertyPath: walkingMoveForce
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 114849607460782418, guid: 56a1a9d4d021e43e7b35fc7396aee6c3,
+        type: 2}
+      propertyPath: runningMoveForce
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 114849607460782418, guid: 56a1a9d4d021e43e7b35fc7396aee6c3,
+        type: 2}
+      propertyPath: maxSpeed
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114849607460782418, guid: 56a1a9d4d021e43e7b35fc7396aee6c3,
+        type: 2}
+      propertyPath: frictionCoefficient
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114849607460782418, guid: 56a1a9d4d021e43e7b35fc7396aee6c3,
+        type: 2}
+      propertyPath: terminalDragForce
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []

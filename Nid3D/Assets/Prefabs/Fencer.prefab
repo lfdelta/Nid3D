@@ -885,13 +885,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stateText: {fileID: 0}
   walkingSpeed: 0.01
-  runningSpeed: 2
-  walkingMoveForce: 200
-  runningMoveForce: 100
-  maxSpeed: 5
+  runningSpeed: 1
+  walkingMoveForce: 1
+  runningMoveForce: 1
+  maxSpeed: 1
   jumpForce: 500
   groundCheckDist: 0.1
   directionChangeThreshold: 45
+  frictionCoefficient: 100
+  terminalDragForce: 10
   origToFeet: {x: 0, y: -0.5, z: 0}
 --- !u!136 &136669546813195884
 CapsuleCollider:

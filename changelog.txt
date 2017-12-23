@@ -7,6 +7,13 @@ Name 1 & Name 2 & ...
 
 
 
+### 12/23/2017 ###
+Luca Frez-Albrecht
+1. implemented a basic linear friction function
+2. began overhauling player movement based on classical mechanics model--still needs a lot of work
+
+
+
 ### 12/7/2017 ###
 1. merging the menu and new player models into master
 

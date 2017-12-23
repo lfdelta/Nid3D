@@ -23,6 +23,8 @@ public class CharController : MonoBehaviour {
 	public float jumpForce = 500;
 	public float groundCheckDist = 0.1f;
   public float directionChangeThreshold = 45;
+  public float frictionCoefficient = 1;
+  public float terminalDragForce = 1;
 	public Vector3 origToFeet = 1f * Vector3.down;
 
 	private Rigidbody rbody;
@@ -75,7 +77,26 @@ public class CharController : MonoBehaviour {
 
 
 
+  Vector3 Friction (Vector3 v) {
+    return -frictionCoefficient * v;
+  }
+
+
+
+  // we'll need to overhaul this thing to handle turning implicitly
   void MoveXZ (Vector3 move) {
+    move = runningMoveForce * transform.InverseTransformDirection (move);
+    move = Vector3.ProjectOnPlane (move, groundNormal);
+
+    rbody.AddForce (move);
+    rbody.AddForce (Friction (rbody.velocity));
+
+    Vector3 vXZ = Vector3.ProjectOnPlane (rbody.velocity, groundNormal);
+    if (vXZ.magnitude > maxSpeed) {
+      rbody.AddForce(-terminalDragForce * rbody.velocity.normalized);
+    }
+
+    /*
     // Adds the force to the player, but then imposes a max speed
     float moveForce = (playerState == FSM.Run) ? runningMoveForce : walkingMoveForce;
 		move = moveForce * transform.InverseTransformDirection(move);
@@ -89,6 +110,7 @@ public class CharController : MonoBehaviour {
       vXZ = vXZ.normalized * maxSpeed; //** replace this with a force ~ -vXZ
       rbody.velocity = new Vector3(vXZ.x, rbody.velocity.y, vXZ.z);
     }
+    */
   }
 
 
@@ -148,11 +170,11 @@ public class CharController : MonoBehaviour {
     // apply force (do first)
     MoveXZ (controlState.moveInXZ);
 
-    if (DirectionChange ()) {
+    /*if (DirectionChange ()) {
       Debug.Log("Direction Change");
       rbody.velocity = Vector3.zero;
       playerState = FSM.Fence;
-    }
+    }*/
     if (isGrounded && controlState.jump)
       ChangeState (FSM.Jump);
     if (rbody.velocity.magnitude < walkingSpeed)
@@ -168,10 +190,10 @@ public class CharController : MonoBehaviour {
     MoveXZ (controlState.moveInXZ);
     // called every update during jump state
 
-    if (DirectionChange ()) { // do we want this behavior in midair?
+    /*if (DirectionChange ()) { // do we want this behavior in midair?
       Debug.Log("Direction Change");
       rbody.velocity = new Vector3(0, rbody.velocity.y, 0);
-    }
+    }*/
 
     if (isGrounded && rbody.velocity.magnitude > runningSpeed)
       playerState = FSM.Run;

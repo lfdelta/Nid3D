@@ -17,14 +17,17 @@ public class CharController : MonoBehaviour {
 
   public float walkingSpeed = 0.01f;
   public float runningSpeed = 2; // speed at which player isRunning
-	public float walkingMoveForce = 200;
-  public float runningMoveForce = 100;
-  public float maxSpeed = 5;     // maximum speed for player
+  float sqrWalkingSpeed, sqrRunningSpeed;
+  public float moveForce = 50;
 	public float jumpForce = 500;
 	public float groundCheckDist = 0.1f;
-  public float directionChangeThreshold = 45;
-	public Vector3 origToFeet = 1f * Vector3.down;
+  //public float directionChangeThreshold = 45;
+  public float vMaxSlope = 1;
+  public float frictionCoefficient = 1;
+  public float dragSlope = 1;
+	public Vector3 originToFeet = 1f * Vector3.down; // vector for player mesh
 
+  private Vector3 vXZ;
 	private Rigidbody rbody;
   private Animator animator;
 	private CapsuleCollider capsule;
@@ -38,6 +41,9 @@ public class CharController : MonoBehaviour {
 
 
 	void Start () {
+    sqrWalkingSpeed = walkingSpeed * walkingSpeed;
+    sqrRunningSpeed = runningSpeed * runningSpeed;
+
     animator = GetComponent<Animator> ();
 		rbody = GetComponent<Rigidbody> ();
 		rbody.constraints = RigidbodyConstraints.FreezeRotation;
@@ -58,6 +64,7 @@ public class CharController : MonoBehaviour {
     controlState = newControlState;
     
     CheckGround ();
+    vXZ = Vector3.ProjectOnPlane(rbody.velocity, groundNormal);
 
     switch (playerState) {
       case FSM.Fence:
@@ -75,20 +82,46 @@ public class CharController : MonoBehaviour {
 
 
 
+  float VMax () {
+    return vMaxSlope * controlState.moveInXZ.magnitude;
+  }
+
+  float SqrVMax () {
+    return vMaxSlope * vMaxSlope * controlState.moveInXZ.sqrMagnitude;
+  }
+
+  float Friction (float v) {
+    return frictionCoefficient * v;
+  }
+
+  float Drag (float v) {
+    return dragSlope * (v - VMax ());
+  }
+
+
+
+  // we'll need to overhaul this thing to handle turning implicitly
   void MoveXZ (Vector3 move) {
-    // Adds the force to the player, but then imposes a max speed
-    float moveForce = (playerState == FSM.Run) ? runningMoveForce : walkingMoveForce;
-		move = moveForce * transform.InverseTransformDirection(move);
-		move = Vector3.ProjectOnPlane(move, groundNormal);
+    float v = vXZ.magnitude;
+    float sqrV = vXZ.sqrMagnitude;
+    float inputDotVel = Vector3.Dot (controlState.moveInXZ, vXZ);
+    Vector3 ihat = controlState.moveInXZ.normalized;
+    Vector3 vhat = vXZ.normalized;
 
-    // apply the force and impose maximum speed (only in XZ plane)
-    rbody.AddForce (move);
-
-    Vector3 vXZ = Vector3.Scale(rbody.velocity, new Vector3(1,0,1));
-    if (vXZ.magnitude > maxSpeed) {
-      vXZ = vXZ.normalized * maxSpeed; //** replace this with a force ~ -vXZ
-      rbody.velocity = new Vector3(vXZ.x, rbody.velocity.y, vXZ.z);
+    Vector3 moveForceVec;
+    if (controlState.moveInXZ.sqrMagnitude == 0) {
+      moveForceVec = -Friction(v) * vhat;
+    } else if (sqrV < SqrVMax() || inputDotVel < 0) {
+      moveForceVec = moveForce * ihat;
+    } else {
+      // centripetal force (player input perpendicular to velocity) plus drag
+      Vector3 perpInput = controlState.moveInXZ - inputDotVel/sqrV * vXZ;
+      moveForceVec = moveForce * perpInput - Drag(v) * vhat;
     }
+
+    rbody.AddForce (moveForceVec);
+
+    //Debug.Log (sqrV);
   }
 
 
@@ -96,7 +129,7 @@ public class CharController : MonoBehaviour {
   void ChangeState(FSM state) {
     switch (state) {
     case FSM.Run:
-      rbody.velocity = Vector3.zero;
+      //rbody.velocity = Vector3.zero;
       break;
     case FSM.Jump:
       rbody.AddForce (jumpForce * Vector3.up);
@@ -104,20 +137,6 @@ public class CharController : MonoBehaviour {
     }
 
     playerState = state;
-
-    /*int fsmint;
-    switch(state) {
-    case FSM.Fence:
-      fsmint = 0;
-      break;
-    case FSM.Run:
-      fsmint = 1;
-      break;
-    default:
-      fsmint = 0;
-      break;
-    }
-    animator.SetInteger ("State", fsmint);*/
   }
 
 
@@ -127,7 +146,7 @@ public class CharController : MonoBehaviour {
     MoveXZ(controlState.moveInXZ);
 
     // if v > runspeed, FSM->run
-    if (rbody.velocity.magnitude > runningSpeed)
+    if (vXZ.sqrMagnitude > sqrRunningSpeed)
       ChangeState (FSM.Run);
     if (isGrounded && controlState.jump)
       ChangeState (FSM.Jump);
@@ -148,14 +167,14 @@ public class CharController : MonoBehaviour {
     // apply force (do first)
     MoveXZ (controlState.moveInXZ);
 
-    if (DirectionChange ()) {
+    /*if (DirectionChange ()) {
       Debug.Log("Direction Change");
       rbody.velocity = Vector3.zero;
       playerState = FSM.Fence;
-    }
+    }*/
     if (isGrounded && controlState.jump)
       ChangeState (FSM.Jump);
-    if (rbody.velocity.magnitude < walkingSpeed)
+    if (vXZ.sqrMagnitude < sqrWalkingSpeed)
       // maybe change this so < runningSpeed and decelerating?
       playerState = FSM.Fence;
 
@@ -168,12 +187,12 @@ public class CharController : MonoBehaviour {
     MoveXZ (controlState.moveInXZ);
     // called every update during jump state
 
-    if (DirectionChange ()) { // do we want this behavior in midair?
+    /*if (DirectionChange ()) { // do we want this behavior in midair?
       Debug.Log("Direction Change");
       rbody.velocity = new Vector3(0, rbody.velocity.y, 0);
-    }
+    }*/
 
-    if (isGrounded && rbody.velocity.magnitude > runningSpeed)
+    if (isGrounded && vXZ.sqrMagnitude > sqrRunningSpeed)
       playerState = FSM.Run;
     else if (isGrounded)
       playerState = FSM.Fence;
@@ -181,20 +200,21 @@ public class CharController : MonoBehaviour {
 
 
 
+  /*
   bool DirectionChange() {
     // Returns true if controlState is changing the direction of the character in XZ
-    //if (playerState != FSM.Run) return false; // redundancy check; commented for use in DoJump
     Vector3 vXZ = Vector3.ProjectOnPlane(rbody.velocity, Vector3.up);
     float angle = Vector3.Angle(controlState.moveInXZ, vXZ);
     return angle > directionChangeThreshold;
   }
+  */
 
 
 
 	void CheckGround() {
 		RaycastHit info;
 		// send raycast from just above the feet
-		if (Physics.Raycast (transform.position + origToFeet + 0.1f*Vector3.up,
+		if (Physics.Raycast (transform.position + originToFeet + 0.1f*Vector3.up,
                          Vector3.down, out info, groundCheckDist)) {
 			isGrounded = true;
 			groundNormal = info.normal;

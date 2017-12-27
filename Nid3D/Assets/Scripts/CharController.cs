@@ -17,18 +17,15 @@ public class CharController : MonoBehaviour {
 
   public float walkingSpeed = 0.01f;
   public float runningSpeed = 2; // speed at which player isRunning
-  //public float maxSpeed = 5; // maximum speed for player
-  float sqrWalkingSpeed, sqrRunningSpeed;//, sqrMaxSpeed;
+  float sqrWalkingSpeed, sqrRunningSpeed;
   public float moveForce = 50;
-	//public float walkingMoveForce = 200;
-  //public float runningMoveForce = 100;
 	public float jumpForce = 500;
 	public float groundCheckDist = 0.1f;
   public float directionChangeThreshold = 45;
   public float vMaxSlope = 1;
   public float frictionCoefficient = 1;
   public float dragSlope = 1;
-	public Vector3 originToFeet = 1f * Vector3.down;
+	public Vector3 originToFeet = 1f * Vector3.down; // vector for player mesh
 
 	private Rigidbody rbody;
   private Animator animator;
@@ -45,7 +42,6 @@ public class CharController : MonoBehaviour {
 	void Start () {
     sqrWalkingSpeed = walkingSpeed * walkingSpeed;
     sqrRunningSpeed = runningSpeed * runningSpeed;
-    //sqrMaxSpeed = maxSpeed * maxSpeed;
 
     animator = GetComponent<Animator> ();
 		rbody = GetComponent<Rigidbody> ();
@@ -92,21 +88,19 @@ public class CharController : MonoBehaviour {
     return vMaxSlope * vMaxSlope * controlState.moveInXZ.sqrMagnitude;
   }
 
-  float Friction (float sqrV) {
-    return frictionCoefficient * sqrV;
+  float Friction (float v) {
+    return frictionCoefficient * v;
   }
 
-  float Drag (float sqrV) {
-    return dragSlope * (sqrV - SqrVMax ());
+  float Drag (float v) {
+    return dragSlope * (v - VMax ());
   }
 
 
 
   // we'll need to overhaul this thing to handle turning implicitly
   void MoveXZ (Vector3 move) {
-    //Vector3 moveXZ = runningMoveForce * transform.InverseTransformDirection (move);
-    //moveXZ = Vector3.ProjectOnPlane (move, groundNormal);
-
+    float v = rbody.velocity.magnitude;
     float sqrV = rbody.velocity.sqrMagnitude;
     float inputDotVel = Vector3.Dot (controlState.moveInXZ, rbody.velocity);
     Vector3 ihat = controlState.moveInXZ.normalized;
@@ -114,39 +108,18 @@ public class CharController : MonoBehaviour {
 
     Vector3 moveForceVec;
     if (controlState.moveInXZ.sqrMagnitude == 0) {
-      moveForceVec = -Friction(rbody.velocity.sqrMagnitude) * vhat;
+      moveForceVec = -Friction(v) * vhat;
     } else if (sqrV < SqrVMax() || inputDotVel < 0) {
       moveForceVec = moveForce * ihat;
     } else {
       // centripetal force (player input perpendicular to velocity) plus drag
-      Vector3 perpInput = controlState.moveInXZ - inputDotVel * rbody.velocity;
-      moveForceVec = moveForce * perpInput - Drag(sqrV) * vhat;
+      Vector3 perpInput = controlState.moveInXZ - inputDotVel/sqrV * rbody.velocity;
+      moveForceVec = moveForce * perpInput - Drag(v) * vhat;
     }
 
     rbody.AddForce (moveForceVec);
 
-    /*
-    Vector3 vXZ = Vector3.ProjectOnPlane (rbody.velocity, groundNormal);
-    if (vXZ.sqrMagnitude > sqrMaxSpeed) {
-      rbody.AddForce(-dragSlope * rbody.velocity.normalized);
-    }
-    */
-
-    /*
-    // Adds the force to the player, but then imposes a max speed
-    float moveForce = (playerState == FSM.Run) ? runningMoveForce : walkingMoveForce;
-		move = moveForce * transform.InverseTransformDirection(move);
-		move = Vector3.ProjectOnPlane(move, groundNormal);
-
-    // apply the force and impose maximum speed (only in XZ plane)
-    rbody.AddForce (move);
-
-    Vector3 vXZ = Vector3.Scale(rbody.velocity, new Vector3(1,0,1));
-    if (vXZ.sqrMagnitude > sqrMaxSpeed) {
-      vXZ = vXZ.normalized * maxSpeed; //** replace this with a force ~ -vXZ
-      rbody.velocity = new Vector3(vXZ.x, rbody.velocity.y, vXZ.z);
-    }
-    */
+    Debug.Log (sqrV);
   }
 
 
@@ -162,20 +135,6 @@ public class CharController : MonoBehaviour {
     }
 
     playerState = state;
-
-    /*int fsmint;
-    switch(state) {
-    case FSM.Fence:
-      fsmint = 0;
-      break;
-    case FSM.Run:
-      fsmint = 1;
-      break;
-    default:
-      fsmint = 0;
-      break;
-    }
-    animator.SetInteger ("State", fsmint);*/
   }
 
 
@@ -241,7 +200,6 @@ public class CharController : MonoBehaviour {
 
   bool DirectionChange() {
     // Returns true if controlState is changing the direction of the character in XZ
-    //if (playerState != FSM.Run) return false; // redundancy check; commented for use in DoJump
     Vector3 vXZ = Vector3.ProjectOnPlane(rbody.velocity, Vector3.up);
     float angle = Vector3.Angle(controlState.moveInXZ, vXZ);
     return angle > directionChangeThreshold;

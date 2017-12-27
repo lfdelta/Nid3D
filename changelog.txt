@@ -7,6 +7,14 @@ Name 1 & Name 2 & ...
 
 
 
+### 12/27/2017 ###
+Luca Frez-Albrecht
+1. minor optimizations to CharController.cs by comparing vectors' square magnitudes rather than their magnitudes
+2. edited Input Manager values so that keyboard axes respond more quickly
+3. implemented new player physics as designed on paper, with a new set of parameters for the friction and drag forces. some odd behavior, such as the player being kicked backward after reaching max velocity, which must be addressed.
+
+
+
 ### 12/23/2017 ###
 Luca Frez-Albrecht
 1. implemented a basic linear friction function

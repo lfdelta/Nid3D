@@ -1708,12 +1708,27 @@ Prefab:
     - target: {fileID: 114849607460782418, guid: 56a1a9d4d021e43e7b35fc7396aee6c3,
         type: 2}
       propertyPath: frictionCoefficient
-      value: 1
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 114849607460782418, guid: 56a1a9d4d021e43e7b35fc7396aee6c3,
         type: 2}
       propertyPath: terminalDragForce
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114849607460782418, guid: 56a1a9d4d021e43e7b35fc7396aee6c3,
+        type: 2}
+      propertyPath: vMaxSlope
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114849607460782418, guid: 56a1a9d4d021e43e7b35fc7396aee6c3,
+        type: 2}
+      propertyPath: dragSlope
+      value: 0.001
+      objectReference: {fileID: 0}
+    - target: {fileID: 114849607460782418, guid: 56a1a9d4d021e43e7b35fc7396aee6c3,
+        type: 2}
+      propertyPath: moveForce
+      value: 20
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 56a1a9d4d021e43e7b35fc7396aee6c3, type: 2}
@@ -2831,7 +2846,7 @@ MeshCollider:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1595086542}
-  m_Material: {fileID: 13400000, guid: 1a6a8d1b56b1a4517bfe5d24bafcb900, type: 2}
+  m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2

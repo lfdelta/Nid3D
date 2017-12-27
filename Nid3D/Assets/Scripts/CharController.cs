@@ -17,16 +17,18 @@ public class CharController : MonoBehaviour {
 
   public float walkingSpeed = 0.01f;
   public float runningSpeed = 2; // speed at which player isRunning
-  public float maxSpeed = 5; // maximum speed for player
-  float sqrWalkingSpeed, sqrRunningSpeed, sqrMaxSpeed;
-	public float walkingMoveForce = 200;
-  public float runningMoveForce = 100;
+  //public float maxSpeed = 5; // maximum speed for player
+  float sqrWalkingSpeed, sqrRunningSpeed;//, sqrMaxSpeed;
+  public float moveForce = 50;
+	//public float walkingMoveForce = 200;
+  //public float runningMoveForce = 100;
 	public float jumpForce = 500;
 	public float groundCheckDist = 0.1f;
   public float directionChangeThreshold = 45;
+  public float vMaxSlope = 1;
   public float frictionCoefficient = 1;
-  public float terminalDragForce = 1;
-	public Vector3 origToFeet = 1f * Vector3.down;
+  public float dragSlope = 1;
+	public Vector3 originToFeet = 1f * Vector3.down;
 
 	private Rigidbody rbody;
   private Animator animator;
@@ -43,7 +45,7 @@ public class CharController : MonoBehaviour {
 	void Start () {
     sqrWalkingSpeed = walkingSpeed * walkingSpeed;
     sqrRunningSpeed = runningSpeed * runningSpeed;
-    sqrMaxSpeed = maxSpeed * maxSpeed;
+    //sqrMaxSpeed = maxSpeed * maxSpeed;
 
     animator = GetComponent<Animator> ();
 		rbody = GetComponent<Rigidbody> ();
@@ -82,24 +84,53 @@ public class CharController : MonoBehaviour {
 
 
 
-  Vector3 Friction (Vector3 v) {
-    return -frictionCoefficient * v;
+  float VMax () {
+    return vMaxSlope * controlState.moveInXZ.magnitude;
+  }
+
+  float SqrVMax () {
+    return vMaxSlope * vMaxSlope * controlState.moveInXZ.sqrMagnitude;
+  }
+
+  float Friction (float sqrV) {
+    return frictionCoefficient * sqrV;
+  }
+
+  float Drag (float sqrV) {
+    return dragSlope * (sqrV - SqrVMax ());
   }
 
 
 
   // we'll need to overhaul this thing to handle turning implicitly
   void MoveXZ (Vector3 move) {
-    move = runningMoveForce * transform.InverseTransformDirection (move);
-    move = Vector3.ProjectOnPlane (move, groundNormal);
+    //Vector3 moveXZ = runningMoveForce * transform.InverseTransformDirection (move);
+    //moveXZ = Vector3.ProjectOnPlane (move, groundNormal);
 
-    rbody.AddForce (move);
-    rbody.AddForce (Friction (rbody.velocity));
+    float sqrV = rbody.velocity.sqrMagnitude;
+    float inputDotVel = Vector3.Dot (controlState.moveInXZ, rbody.velocity);
+    Vector3 ihat = controlState.moveInXZ.normalized;
+    Vector3 vhat = rbody.velocity.normalized;
 
+    Vector3 moveForceVec;
+    if (controlState.moveInXZ.sqrMagnitude == 0) {
+      moveForceVec = -Friction(rbody.velocity.sqrMagnitude) * vhat;
+    } else if (sqrV < SqrVMax() || inputDotVel < 0) {
+      moveForceVec = moveForce * ihat;
+    } else {
+      // centripetal force (player input perpendicular to velocity) plus drag
+      Vector3 perpInput = controlState.moveInXZ - inputDotVel * rbody.velocity;
+      moveForceVec = moveForce * perpInput - Drag(sqrV) * vhat;
+    }
+
+    rbody.AddForce (moveForceVec);
+
+    /*
     Vector3 vXZ = Vector3.ProjectOnPlane (rbody.velocity, groundNormal);
     if (vXZ.sqrMagnitude > sqrMaxSpeed) {
-      rbody.AddForce(-terminalDragForce * rbody.velocity.normalized);
+      rbody.AddForce(-dragSlope * rbody.velocity.normalized);
     }
+    */
 
     /*
     // Adds the force to the player, but then imposes a max speed
@@ -221,7 +252,7 @@ public class CharController : MonoBehaviour {
 	void CheckGround() {
 		RaycastHit info;
 		// send raycast from just above the feet
-		if (Physics.Raycast (transform.position + origToFeet + 0.1f*Vector3.up,
+		if (Physics.Raycast (transform.position + originToFeet + 0.1f*Vector3.up,
                          Vector3.down, out info, groundCheckDist)) {
 			isGrounded = true;
 			groundNormal = info.normal;

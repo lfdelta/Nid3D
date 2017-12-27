@@ -21,7 +21,7 @@ public class CharController : MonoBehaviour {
   public float moveForce = 50;
 	public float jumpForce = 500;
 	public float groundCheckDist = 0.1f;
-  public float directionChangeThreshold = 45;
+  //public float directionChangeThreshold = 45;
   public float vMaxSlope = 1;
   public float frictionCoefficient = 1;
   public float dragSlope = 1;
@@ -132,7 +132,6 @@ public class CharController : MonoBehaviour {
       //rbody.velocity = Vector3.zero;
       break;
     case FSM.Jump:
-      Debug.Log ("doing a jump");
       rbody.AddForce (jumpForce * Vector3.up);
       break;
     }
@@ -201,12 +200,14 @@ public class CharController : MonoBehaviour {
 
 
 
+  /*
   bool DirectionChange() {
     // Returns true if controlState is changing the direction of the character in XZ
     Vector3 vXZ = Vector3.ProjectOnPlane(rbody.velocity, Vector3.up);
     float angle = Vector3.Angle(controlState.moveInXZ, vXZ);
     return angle > directionChangeThreshold;
   }
+  */
 
 
 

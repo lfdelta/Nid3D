@@ -15,6 +15,7 @@ Luca Frez-Albrecht
 4. "No Friction" physic material to ensure that CharController.cs is the only thing influencing player movement
 5. replaced references to velocity (in relation to running speed, etc.) with references to velocity in the XZ plane
 6. modified Fencer capsule collider and CharController origin-to-feet value to match new player mesh
+7. commented out DirectionChange code, as this is now deprecated, pending review by the team
 
 
 

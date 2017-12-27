@@ -27,6 +27,7 @@ public class CharController : MonoBehaviour {
   public float dragSlope = 1;
 	public Vector3 originToFeet = 1f * Vector3.down; // vector for player mesh
 
+  private Vector3 vXZ;
 	private Rigidbody rbody;
   private Animator animator;
 	private CapsuleCollider capsule;
@@ -63,6 +64,7 @@ public class CharController : MonoBehaviour {
     controlState = newControlState;
     
     CheckGround ();
+    vXZ = Vector3.ProjectOnPlane(rbody.velocity, groundNormal);
 
     switch (playerState) {
       case FSM.Fence:
@@ -100,11 +102,11 @@ public class CharController : MonoBehaviour {
 
   // we'll need to overhaul this thing to handle turning implicitly
   void MoveXZ (Vector3 move) {
-    float v = rbody.velocity.magnitude;
-    float sqrV = rbody.velocity.sqrMagnitude;
-    float inputDotVel = Vector3.Dot (controlState.moveInXZ, rbody.velocity);
+    float v = vXZ.magnitude;
+    float sqrV = vXZ.sqrMagnitude;
+    float inputDotVel = Vector3.Dot (controlState.moveInXZ, vXZ);
     Vector3 ihat = controlState.moveInXZ.normalized;
-    Vector3 vhat = rbody.velocity.normalized;
+    Vector3 vhat = vXZ.normalized;
 
     Vector3 moveForceVec;
     if (controlState.moveInXZ.sqrMagnitude == 0) {
@@ -113,13 +115,13 @@ public class CharController : MonoBehaviour {
       moveForceVec = moveForce * ihat;
     } else {
       // centripetal force (player input perpendicular to velocity) plus drag
-      Vector3 perpInput = controlState.moveInXZ - inputDotVel/sqrV * rbody.velocity;
+      Vector3 perpInput = controlState.moveInXZ - inputDotVel/sqrV * vXZ;
       moveForceVec = moveForce * perpInput - Drag(v) * vhat;
     }
 
     rbody.AddForce (moveForceVec);
 
-    Debug.Log (sqrV);
+    //Debug.Log (sqrV);
   }
 
 
@@ -127,9 +129,10 @@ public class CharController : MonoBehaviour {
   void ChangeState(FSM state) {
     switch (state) {
     case FSM.Run:
-      rbody.velocity = Vector3.zero;
+      //rbody.velocity = Vector3.zero;
       break;
     case FSM.Jump:
+      Debug.Log ("doing a jump");
       rbody.AddForce (jumpForce * Vector3.up);
       break;
     }
@@ -144,7 +147,7 @@ public class CharController : MonoBehaviour {
     MoveXZ(controlState.moveInXZ);
 
     // if v > runspeed, FSM->run
-    if (rbody.velocity.sqrMagnitude > sqrRunningSpeed)
+    if (vXZ.sqrMagnitude > sqrRunningSpeed)
       ChangeState (FSM.Run);
     if (isGrounded && controlState.jump)
       ChangeState (FSM.Jump);
@@ -172,7 +175,7 @@ public class CharController : MonoBehaviour {
     }*/
     if (isGrounded && controlState.jump)
       ChangeState (FSM.Jump);
-    if (rbody.velocity.sqrMagnitude < sqrWalkingSpeed)
+    if (vXZ.sqrMagnitude < sqrWalkingSpeed)
       // maybe change this so < runningSpeed and decelerating?
       playerState = FSM.Fence;
 
@@ -190,7 +193,7 @@ public class CharController : MonoBehaviour {
       rbody.velocity = new Vector3(0, rbody.velocity.y, 0);
     }*/
 
-    if (isGrounded && rbody.velocity.sqrMagnitude > sqrRunningSpeed)
+    if (isGrounded && vXZ.sqrMagnitude > sqrRunningSpeed)
       playerState = FSM.Run;
     else if (isGrounded)
       playerState = FSM.Fence;

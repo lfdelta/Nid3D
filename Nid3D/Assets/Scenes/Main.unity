@@ -1645,7 +1645,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4738592198627820, guid: 56a1a9d4d021e43e7b35fc7396aee6c3, type: 2}
       propertyPath: m_LocalPosition.y
-      value: 2.69
+      value: 2.24
       objectReference: {fileID: 0}
     - target: {fileID: 4738592198627820, guid: 56a1a9d4d021e43e7b35fc7396aee6c3, type: 2}
       propertyPath: m_LocalPosition.z
@@ -1680,62 +1680,6 @@ Prefab:
       propertyPath: m_Name
       value: Player1
       objectReference: {fileID: 0}
-    - target: {fileID: 114849607460782418, guid: 56a1a9d4d021e43e7b35fc7396aee6c3,
-        type: 2}
-      propertyPath: stateText
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 114849607460782418, guid: 56a1a9d4d021e43e7b35fc7396aee6c3,
-        type: 2}
-      propertyPath: runningSpeed
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 114849607460782418, guid: 56a1a9d4d021e43e7b35fc7396aee6c3,
-        type: 2}
-      propertyPath: walkingMoveForce
-      value: 200
-      objectReference: {fileID: 0}
-    - target: {fileID: 114849607460782418, guid: 56a1a9d4d021e43e7b35fc7396aee6c3,
-        type: 2}
-      propertyPath: runningMoveForce
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 114849607460782418, guid: 56a1a9d4d021e43e7b35fc7396aee6c3,
-        type: 2}
-      propertyPath: maxSpeed
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 114849607460782418, guid: 56a1a9d4d021e43e7b35fc7396aee6c3,
-        type: 2}
-      propertyPath: frictionCoefficient
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 114849607460782418, guid: 56a1a9d4d021e43e7b35fc7396aee6c3,
-        type: 2}
-      propertyPath: terminalDragForce
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 114849607460782418, guid: 56a1a9d4d021e43e7b35fc7396aee6c3,
-        type: 2}
-      propertyPath: vMaxSlope
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 114849607460782418, guid: 56a1a9d4d021e43e7b35fc7396aee6c3,
-        type: 2}
-      propertyPath: dragSlope
-      value: 20
-      objectReference: {fileID: 0}
-    - target: {fileID: 114849607460782418, guid: 56a1a9d4d021e43e7b35fc7396aee6c3,
-        type: 2}
-      propertyPath: moveForce
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 136669546813195884, guid: 56a1a9d4d021e43e7b35fc7396aee6c3,
-        type: 2}
-      propertyPath: m_Material
-      value: 
-      objectReference: {fileID: 13400000, guid: 595b1e31d5a45423598d53bd38b17ea3,
-        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 56a1a9d4d021e43e7b35fc7396aee6c3, type: 2}
   m_IsPrefabParent: 0
@@ -3074,36 +3018,6 @@ Prefab:
     - target: {fileID: 114564980041330906, guid: 56a1a9d4d021e43e7b35fc7396aee6c3,
         type: 2}
       propertyPath: playerID
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 114849607460782418, guid: 56a1a9d4d021e43e7b35fc7396aee6c3,
-        type: 2}
-      propertyPath: runningSpeed
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 114849607460782418, guid: 56a1a9d4d021e43e7b35fc7396aee6c3,
-        type: 2}
-      propertyPath: walkingMoveForce
-      value: 200
-      objectReference: {fileID: 0}
-    - target: {fileID: 114849607460782418, guid: 56a1a9d4d021e43e7b35fc7396aee6c3,
-        type: 2}
-      propertyPath: runningMoveForce
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 114849607460782418, guid: 56a1a9d4d021e43e7b35fc7396aee6c3,
-        type: 2}
-      propertyPath: maxSpeed
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 114849607460782418, guid: 56a1a9d4d021e43e7b35fc7396aee6c3,
-        type: 2}
-      propertyPath: frictionCoefficient
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 114849607460782418, guid: 56a1a9d4d021e43e7b35fc7396aee6c3,
-        type: 2}
-      propertyPath: terminalDragForce
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []

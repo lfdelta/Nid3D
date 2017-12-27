@@ -11,8 +11,10 @@ Name 1 & Name 2 & ...
 Luca Frez-Albrecht
 1. minor optimizations to CharController.cs by comparing vectors' square magnitudes rather than their magnitudes
 2. edited Input Manager values so that keyboard axes respond more quickly
-3. implemented new player physics as designed on paper, with a new set of parameters for the friction and drag forces
-4. "No Friction" physic material so that we have full control in the code
+3. implemented new player physics as designed on paper, with a new set of parameters for the friction and drag forces: now everything works the same on the ground and in the air without any extra tweaking, and we
+4. "No Friction" physic material to ensure that CharController.cs is the only thing influencing player movement
+5. replaced references to velocity (in relation to running speed, etc.) with references to velocity in the XZ plane
+6. modified Fencer capsule collider and CharController origin-to-feet value to match new player mesh
 
 
 

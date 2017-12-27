@@ -30,6 +30,9 @@ public class CharInput : MonoBehaviour {
         controlState.heightChange = (InputManager.GetButtonDown ("HeightUp", playerID) ? 1 : 0)
         - (InputManager.GetButtonDown ("HeightDown", playerID) ? 1 : 0);
     }
+
+    if (controlState.jump)
+      Debug.Log (playerID);
   }
 
   // Called once per physics update; handle continuous inputs (axes) here

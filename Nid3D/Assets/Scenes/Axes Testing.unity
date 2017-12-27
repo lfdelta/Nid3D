@@ -704,8 +704,8 @@ MonoBehaviour:
       altPositive: 0
       altNegative: 0
       deadZone: 0
-      gravity: 3
-      sensitivity: 3
+      gravity: 10
+      sensitivity: 10
       snap: 0
       invert: 0
       type: 2
@@ -718,8 +718,8 @@ MonoBehaviour:
       altPositive: 0
       altNegative: 0
       deadZone: 0
-      gravity: 3
-      sensitivity: 3
+      gravity: 10
+      sensitivity: 10
       snap: 0
       invert: 0
       type: 2

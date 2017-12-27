@@ -17,9 +17,10 @@ public class CharController : MonoBehaviour {
 
   public float walkingSpeed = 0.01f;
   public float runningSpeed = 2; // speed at which player isRunning
+  public float maxSpeed = 5; // maximum speed for player
+  float sqrWalkingSpeed, sqrRunningSpeed, sqrMaxSpeed;
 	public float walkingMoveForce = 200;
   public float runningMoveForce = 100;
-  public float maxSpeed = 5;     // maximum speed for player
 	public float jumpForce = 500;
 	public float groundCheckDist = 0.1f;
   public float directionChangeThreshold = 45;
@@ -40,6 +41,10 @@ public class CharController : MonoBehaviour {
 
 
 	void Start () {
+    sqrWalkingSpeed = walkingSpeed * walkingSpeed;
+    sqrRunningSpeed = runningSpeed * runningSpeed;
+    sqrMaxSpeed = maxSpeed * maxSpeed;
+
     animator = GetComponent<Animator> ();
 		rbody = GetComponent<Rigidbody> ();
 		rbody.constraints = RigidbodyConstraints.FreezeRotation;
@@ -92,7 +97,7 @@ public class CharController : MonoBehaviour {
     rbody.AddForce (Friction (rbody.velocity));
 
     Vector3 vXZ = Vector3.ProjectOnPlane (rbody.velocity, groundNormal);
-    if (vXZ.magnitude > maxSpeed) {
+    if (vXZ.sqrMagnitude > sqrMaxSpeed) {
       rbody.AddForce(-terminalDragForce * rbody.velocity.normalized);
     }
 
@@ -106,7 +111,7 @@ public class CharController : MonoBehaviour {
     rbody.AddForce (move);
 
     Vector3 vXZ = Vector3.Scale(rbody.velocity, new Vector3(1,0,1));
-    if (vXZ.magnitude > maxSpeed) {
+    if (vXZ.sqrMagnitude > sqrMaxSpeed) {
       vXZ = vXZ.normalized * maxSpeed; //** replace this with a force ~ -vXZ
       rbody.velocity = new Vector3(vXZ.x, rbody.velocity.y, vXZ.z);
     }
@@ -149,7 +154,7 @@ public class CharController : MonoBehaviour {
     MoveXZ(controlState.moveInXZ);
 
     // if v > runspeed, FSM->run
-    if (rbody.velocity.magnitude > runningSpeed)
+    if (rbody.velocity.sqrMagnitude > sqrRunningSpeed)
       ChangeState (FSM.Run);
     if (isGrounded && controlState.jump)
       ChangeState (FSM.Jump);
@@ -177,7 +182,7 @@ public class CharController : MonoBehaviour {
     }*/
     if (isGrounded && controlState.jump)
       ChangeState (FSM.Jump);
-    if (rbody.velocity.magnitude < walkingSpeed)
+    if (rbody.velocity.sqrMagnitude < sqrWalkingSpeed)
       // maybe change this so < runningSpeed and decelerating?
       playerState = FSM.Fence;
 
@@ -195,7 +200,7 @@ public class CharController : MonoBehaviour {
       rbody.velocity = new Vector3(0, rbody.velocity.y, 0);
     }*/
 
-    if (isGrounded && rbody.velocity.magnitude > runningSpeed)
+    if (isGrounded && rbody.velocity.sqrMagnitude > sqrRunningSpeed)
       playerState = FSM.Run;
     else if (isGrounded)
       playerState = FSM.Fence;

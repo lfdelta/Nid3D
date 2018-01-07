@@ -7,6 +7,14 @@ Name 1 & Name 2 & ...
 
 
 
+### 1/7/2018 ###
+Ashley Li w/ Luca Frez-Albrecht, Benjamin Killeen
+1. GetOtherPlayers function stores an array of all other player GameObjects
+2. PointCharacter function rotates the player in a given direction
+3. LookAtLastVelocity and LookAtNearestPlayer functions differentially orient the player based on context
+
+
+
 ### 12/27/2017 ###
 Luca Frez-Albrecht
 1. minor optimizations to CharController.cs by comparing vectors' square magnitudes rather than their magnitudes

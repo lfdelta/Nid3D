@@ -17,6 +17,7 @@ public class CharController : MonoBehaviour {
 
   public float walkingSpeed = 0.01f;
   public float runningSpeed = 2; // speed at which player isRunning
+  public float rotationSpeed = 12;
   float sqrWalkingSpeed, sqrRunningSpeed;
   public float moveForce = 50;
 	public float jumpForce = 500;
@@ -25,7 +26,7 @@ public class CharController : MonoBehaviour {
   public float vMaxSlope = 1;
   public float frictionCoefficient = 1;
   public float dragSlope = 1;
-	public Vector3 originToFeet = 1f * Vector3.down; // vector for player mesh
+  public Vector3 originToFeet = 1f * Vector3.down; // vector for player mesh
 
   private Vector3 vXZ;
 	private Rigidbody rbody;
@@ -37,6 +38,7 @@ public class CharController : MonoBehaviour {
   private FSM playerState;
 	private Vector3 groundNormal;
   private ControlState controlState;
+  private GameObject[] otherplayers;
 
 
 
@@ -56,6 +58,8 @@ public class CharController : MonoBehaviour {
     if (stateText) stateText.text = "";
     playerState = FSM.Fence;
     controlState = new ControlState ();
+
+    otherplayers = GetOtherPlayers (4);
 	}
 
 
@@ -67,18 +71,22 @@ public class CharController : MonoBehaviour {
     vXZ = Vector3.ProjectOnPlane(rbody.velocity, groundNormal);
 
     switch (playerState) {
-      case FSM.Fence:
-        DoFence ();
-        break;
-      case FSM.Run:
-        DoRun ();
-        break;
-      case FSM.Jump:
-        DoJump ();
-        break;
+    case FSM.Fence:
+      LookAtNearestPlayer();
+      DoFence ();
+      break;
+    case FSM.Run:
+      LookAtLastVelocity ();
+      DoRun ();
+      break;
+    case FSM.Jump:
+      LookAtLastVelocity();
+      DoJump ();
+      break;
     }
+
     if (stateText) stateText.text = playerState.ToString ();
-	}
+  }
 
 
 
@@ -100,7 +108,6 @@ public class CharController : MonoBehaviour {
 
 
 
-  // we'll need to overhaul this thing to handle turning implicitly
   void MoveXZ (Vector3 move) {
     float v = vXZ.magnitude;
     float sqrV = vXZ.sqrMagnitude;
@@ -121,16 +128,13 @@ public class CharController : MonoBehaviour {
 
     rbody.AddForce (moveForceVec);
 
-    //Debug.Log (sqrV);
+    Debug.Log (v);
   }
 
 
 
   void ChangeState(FSM state) {
     switch (state) {
-    case FSM.Run:
-      //rbody.velocity = Vector3.zero;
-      break;
     case FSM.Jump:
       rbody.AddForce (jumpForce * Vector3.up);
       break;
@@ -167,11 +171,6 @@ public class CharController : MonoBehaviour {
     // apply force (do first)
     MoveXZ (controlState.moveInXZ);
 
-    /*if (DirectionChange ()) {
-      Debug.Log("Direction Change");
-      rbody.velocity = Vector3.zero;
-      playerState = FSM.Fence;
-    }*/
     if (isGrounded && controlState.jump)
       ChangeState (FSM.Jump);
     if (vXZ.sqrMagnitude < sqrWalkingSpeed)
@@ -186,12 +185,6 @@ public class CharController : MonoBehaviour {
   void DoJump () {
     MoveXZ (controlState.moveInXZ);
     // called every update during jump state
-
-    /*if (DirectionChange ()) { // do we want this behavior in midair?
-      Debug.Log("Direction Change");
-      rbody.velocity = new Vector3(0, rbody.velocity.y, 0);
-    }*/
-
     if (isGrounded && vXZ.sqrMagnitude > sqrRunningSpeed)
       playerState = FSM.Run;
     else if (isGrounded)
@@ -200,14 +193,39 @@ public class CharController : MonoBehaviour {
 
 
 
-  /*
-  bool DirectionChange() {
-    // Returns true if controlState is changing the direction of the character in XZ
-    Vector3 vXZ = Vector3.ProjectOnPlane(rbody.velocity, Vector3.up);
-    float angle = Vector3.Angle(controlState.moveInXZ, vXZ);
-    return angle > directionChangeThreshold;
+  Quaternion PointCharacter(Vector3 newdir, bool instant = false) {
+    newdir = new Vector3 (-newdir.x, 0, -newdir.z);
+
+    if (instant) {
+      rbody.transform.rotation = Quaternion.LookRotation(newdir);
+    } else {
+      rbody.transform.rotation = Quaternion.Slerp (rbody.transform.rotation, Quaternion.LookRotation(newdir), rotationSpeed*Time.deltaTime);
+    }
+
+    return rbody.transform.rotation;
   }
-  */
+
+  void LookAtNearestPlayer() {
+    float mindistance = 9999999999;
+    float newdistance = 0;
+    int minindex = -1;
+    for (int i = 0; i < otherplayers.Length; i++) {
+      if (otherplayers [i] == null)
+        continue;
+      newdistance = Vector3.Distance (otherplayers [i].transform.position, this.gameObject.transform.position);
+      if (newdistance <= mindistance) {
+        mindistance = newdistance;
+        minindex = i;
+      }
+    }
+    PointCharacter (otherplayers[minindex].transform.position - transform.position);
+  }
+
+  void LookAtLastVelocity() {
+    Vector3 v = rbody.velocity;
+    if (v.sqrMagnitude > 0)
+      PointCharacter (v);
+  }
 
 
 
@@ -223,4 +241,28 @@ public class CharController : MonoBehaviour {
 			groundNormal = Vector3.up;
 		}
 	}
+
+
+
+  GameObject[] GetOtherPlayers(int totalplayers) {
+    GameObject[] others = new GameObject[totalplayers-1];
+    int j = 0;
+    Object[] allcharcontrollers = Object.FindObjectsOfType(typeof(CharController));
+    for (int i = 0; i < allcharcontrollers.Length; i++) {
+      if (allcharcontrollers [i] == this) {
+        print (((CharController)allcharcontrollers [i]).gameObject.GetComponent<CharInput> ().playerID);
+      } else if (j < others.Length) {
+        others [j] = ((CharController)allcharcontrollers [i]).gameObject;
+        j++;
+      } else {
+        break;
+      }
+    }
+    if (allcharcontrollers.Length <= others.Length) {
+      for (int i = allcharcontrollers.Length; i < others.Length; i++) {
+        others [i] = null;
+      }
+    }
+    return others;
+  }
 }

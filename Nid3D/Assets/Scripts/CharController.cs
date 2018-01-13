@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TeamUtility.IO;
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(CapsuleCollider))]
@@ -13,8 +14,9 @@ public class CharController : MonoBehaviour {
   private bool isGrounded;
 	private enum Height {Low, Mid, High, Throw};
   private enum FSM {Fence, Run, Jump, BunnyHop, Roll,
-                    LedgeGrab, Stunned};
+                   LedgeGrab, Stunned, Dead};
 
+  public PlayerID playerid;
   public float walkingSpeed = 0.01f;
   public float runningSpeed = 2; // speed at which player isRunning
   public float rotationSpeed = 12;
@@ -22,11 +24,11 @@ public class CharController : MonoBehaviour {
   public float moveForce = 50;
 	public float jumpForce = 500;
 	public float groundCheckDist = 0.1f;
-  //public float directionChangeThreshold = 45;
   public float vMaxSlope = 1;
   public float frictionCoefficient = 1;
   public float dragSlope = 1;
   public Vector3 originToFeet = 1f * Vector3.down; // vector for player mesh
+  public float respawnTime = 1;
 
   private Vector3 vXZ;
 	private Rigidbody rbody;
@@ -39,6 +41,7 @@ public class CharController : MonoBehaviour {
 	private Vector3 groundNormal;
   private ControlState controlState;
   private GameObject[] otherplayers;
+  private float deathTime;
 
 
 
@@ -83,9 +86,38 @@ public class CharController : MonoBehaviour {
       LookAtLastVelocity();
       DoJump ();
       break;
+    case FSM.Dead:
+      DoDead ();
+      break;
     }
 
     if (stateText) stateText.text = playerState.ToString ();
+  }
+
+  void ChangeState(FSM state) {
+    switch (state) {
+    case FSM.Jump:
+      rbody.AddForce (jumpForce * Vector3.up);
+      break;
+    case FSM.Dead:
+      deathTime = Time.time;
+      break;
+    }
+
+    playerState = state;
+  }
+
+
+
+  // these exist to be called externally via SendMessage
+  void Die () {
+    ChangeState (FSM.Dead);
+  }
+
+  void Respawn (Vector3 spawnLoc) {
+    transform.position = spawnLoc;
+    rbody.velocity = Vector3.zero;
+    ChangeState (FSM.Fence);
   }
 
 
@@ -127,20 +159,6 @@ public class CharController : MonoBehaviour {
     }
 
     rbody.AddForce (moveForceVec);
-
-    Debug.Log (v);
-  }
-
-
-
-  void ChangeState(FSM state) {
-    switch (state) {
-    case FSM.Jump:
-      rbody.AddForce (jumpForce * Vector3.up);
-      break;
-    }
-
-    playerState = state;
   }
 
 
@@ -165,8 +183,6 @@ public class CharController : MonoBehaviour {
     animator.SetInteger ("State", 0);
   }
 
-
-
   void DoRun () {
     // apply force (do first)
     MoveXZ (controlState.moveInXZ);
@@ -180,8 +196,6 @@ public class CharController : MonoBehaviour {
     animator.SetInteger ("State", 1);
   }
 
-
-
   void DoJump () {
     MoveXZ (controlState.moveInXZ);
     // called every update during jump state
@@ -189,6 +203,11 @@ public class CharController : MonoBehaviour {
       playerState = FSM.Run;
     else if (isGrounded)
       playerState = FSM.Fence;
+  }
+
+  void DoDead() {
+    if (Time.time - deathTime >= respawnTime)
+      Respawn (transform.position); //** in the future, coordinate with the camera to choose a location
   }
 
 

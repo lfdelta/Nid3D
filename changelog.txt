@@ -7,6 +7,14 @@ Name 1 & Name 2 & ...
 
 
 
+### 1/12/2018 ###
+Luca Frez-Albrecht
+1. created Sword object (not yet a prefab) with attached Sword script
+2. implemented basic system for changing player state to Dead when colliding with another player's sword
+3. players return from the Dead state after a public float respawnTime, set by default to 1 second
+
+
+
 ### 1/7/2018 ###
 Ashley Li w/ Luca Frez-Albrecht, Benjamin Killeen
 1. GetOtherPlayers function stores an array of all other player GameObjects

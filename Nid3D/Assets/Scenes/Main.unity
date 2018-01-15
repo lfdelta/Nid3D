@@ -1793,11 +1793,6 @@ Prefab:
       propertyPath: m_Name
       value: Player1
       objectReference: {fileID: 0}
-    - target: {fileID: 114849607460782418, guid: 56a1a9d4d021e43e7b35fc7396aee6c3,
-        type: 2}
-      propertyPath: runningSpeed
-      value: 8
-      objectReference: {fileID: 0}
     - target: {fileID: 4354650755885386, guid: 56a1a9d4d021e43e7b35fc7396aee6c3, type: 2}
       propertyPath: m_LocalRotation.x
       value: 0
@@ -1841,16 +1836,6 @@ Prefab:
     - target: {fileID: 4388551384189302, guid: 56a1a9d4d021e43e7b35fc7396aee6c3, type: 2}
       propertyPath: m_LocalEulerAnglesHint.y
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114849607460782418, guid: 56a1a9d4d021e43e7b35fc7396aee6c3,
-        type: 2}
-      propertyPath: walkingSpeed
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 114849607460782418, guid: 56a1a9d4d021e43e7b35fc7396aee6c3,
-        type: 2}
-      propertyPath: rotationSpeed
-      value: 15
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 56a1a9d4d021e43e7b35fc7396aee6c3, type: 2}
@@ -3236,21 +3221,6 @@ Prefab:
       propertyPath: m_LocalEulerAnglesHint.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114849607460782418, guid: 56a1a9d4d021e43e7b35fc7396aee6c3,
-        type: 2}
-      propertyPath: runningSpeed
-      value: 8
-      objectReference: {fileID: 0}
-    - target: {fileID: 114849607460782418, guid: 56a1a9d4d021e43e7b35fc7396aee6c3,
-        type: 2}
-      propertyPath: walkingSpeed
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 114849607460782418, guid: 56a1a9d4d021e43e7b35fc7396aee6c3,
-        type: 2}
-      propertyPath: rotationSpeed
-      value: 15
-      objectReference: {fileID: 0}
     - target: {fileID: 4354650755885386, guid: 56a1a9d4d021e43e7b35fc7396aee6c3, type: 2}
       propertyPath: m_RootOrder
       value: 2
@@ -3259,13 +3229,13 @@ Prefab:
       propertyPath: m_RootOrder
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1514122275284168, guid: 56a1a9d4d021e43e7b35fc7396aee6c3, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 114849607460782418, guid: 56a1a9d4d021e43e7b35fc7396aee6c3,
         type: 2}
       propertyPath: playerid
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1514122275284168, guid: 56a1a9d4d021e43e7b35fc7396aee6c3, type: 2}
-      propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []

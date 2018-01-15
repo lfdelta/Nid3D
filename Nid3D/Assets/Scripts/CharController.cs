@@ -191,7 +191,7 @@ public class CharController : MonoBehaviour {
       ChangeState (FSM.Jump);
     if (vXZ.sqrMagnitude < sqrWalkingSpeed)
       // maybe change this so < runningSpeed and decelerating?
-      playerState = FSM.Fence;
+      ChangeState (FSM.Fence);
 
     animator.SetInteger ("State", 1);
   }
@@ -199,10 +199,14 @@ public class CharController : MonoBehaviour {
   void DoJump () {
     MoveXZ (controlState.moveInXZ);
     // called every update during jump state
-    if (isGrounded && vXZ.sqrMagnitude > sqrRunningSpeed)
-      playerState = FSM.Run;
-    else if (isGrounded)
-      playerState = FSM.Fence;
+    if (isGrounded) {
+      if (vXZ.sqrMagnitude > sqrRunningSpeed)
+        ChangeState (FSM.Run);
+      else
+        ChangeState (FSM.Fence);
+    }
+
+    Debug.Log (isGrounded);
   }
 
   void DoDead() {
@@ -241,9 +245,8 @@ public class CharController : MonoBehaviour {
   }
 
   void LookAtLastVelocity() {
-    Vector3 v = rbody.velocity;
-    if (v.sqrMagnitude > 0)
-      PointCharacter (v);
+    if (vXZ.sqrMagnitude > 0.01)
+      PointCharacter (vXZ);
   }
 
 

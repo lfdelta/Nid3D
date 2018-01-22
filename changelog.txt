@@ -7,6 +7,12 @@ Name 1 & Name 2 & ...
 
 
 
+### 1/21/2018 ###
+Luca Frez-Albrecht
+1. fixed a player animation issue by changing the "Run_001" setting to loop playback
+
+
+
 ### 1/12/2018 ###
 Luca Frez-Albrecht
 1. created Sword object (not yet a prefab) with attached Sword script

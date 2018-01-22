@@ -96,10 +96,21 @@ public class CharController : MonoBehaviour {
 
   void ChangeState(FSM state) {
     switch (state) {
+    case FSM.Fence:
+      animator.SetInteger ("State", 0);
+      //animator.Play ("FenceIdle");
+      Debug.Log("Fence: " + vXZ.magnitude.ToString());
+      break;
+    case FSM.Run:
+      animator.SetInteger ("State", 1);
+      //animator.Play ("Run");
+      Debug.Log("Run: " + vXZ.magnitude.ToString());
+      break;
     case FSM.Jump:
       rbody.AddForce (jumpForce * Vector3.up);
       break;
     case FSM.Dead:
+      rbody.velocity = Vector3.zero;
       deathTime = Time.time;
       break;
     }
@@ -116,7 +127,7 @@ public class CharController : MonoBehaviour {
 
   void Respawn (Vector3 spawnLoc) {
     transform.position = spawnLoc;
-    rbody.velocity = Vector3.zero;
+    //rbody.velocity = Vector3.zero;
     ChangeState (FSM.Fence);
   }
 
@@ -179,8 +190,6 @@ public class CharController : MonoBehaviour {
       height = (Height)Tools.Clamp ((int)height, (int)Height.Low, (int)Height.Throw);
       Debug.Log (height);
     }
-
-    animator.SetInteger ("State", 0);
   }
 
   void DoRun () {
@@ -192,8 +201,6 @@ public class CharController : MonoBehaviour {
     if (vXZ.sqrMagnitude < sqrWalkingSpeed)
       // maybe change this so < runningSpeed and decelerating?
       ChangeState (FSM.Fence);
-
-    animator.SetInteger ("State", 1);
   }
 
   void DoJump () {
@@ -205,8 +212,6 @@ public class CharController : MonoBehaviour {
       else
         ChangeState (FSM.Fence);
     }
-
-    Debug.Log (isGrounded);
   }
 
   void DoDead() {

@@ -13,6 +13,7 @@ Luca Frez-Albrecht
 2. GameController now stores an array of CharControllers in order to test for right-of-way
 3. optimizations to CharController's GetOtherPlayers() function; also altered its behavior to collect all other players without any restriction on the number, because of the potential for undesired/undefined behavior under "unusual" conditions, ie more players in the scene than the number indexed by the function
 4. made PlayerControlState its own class, previously classes.ControlState, for clarity
+5. CharController sends a message to GameController upon death, at which point the latter evaluates right-of-way
 
 
 

@@ -30,6 +30,8 @@ public class CharController : MonoBehaviour {
   public Vector3 originToFeet = 1f * Vector3.down; // vector for player mesh
   public float respawnTime = 1;
 
+  [System.NonSerialized] public bool isDead;
+
   private Vector3 vXZ;
 	private Rigidbody rbody;
   private Animator animator;
@@ -42,6 +44,7 @@ public class CharController : MonoBehaviour {
   private PlayerControlState controlState;
   private GameObject[] otherplayers;
   private float deathTime;
+  private GameController gameController;
 
 
 
@@ -60,9 +63,12 @@ public class CharController : MonoBehaviour {
 		height = Height.Mid;
     if (stateText) stateText.text = "";
     playerState = FSM.Fence;
+    isDead = false;
     controlState = new PlayerControlState ();
 
-    otherplayers = GetOtherPlayers (); //4);
+    otherplayers = GetOtherPlayers ();
+
+    gameController = FindObjectOfType<GameController>();
 	}
 
 
@@ -110,8 +116,10 @@ public class CharController : MonoBehaviour {
       rbody.AddForce (jumpForce * Vector3.up);
       break;
     case FSM.Dead:
+      isDead = true;
       rbody.velocity = Vector3.zero;
       deathTime = Time.time;
+      gameController.SendMessage ("PlayerDied", playerid);
       break;
     }
 
@@ -122,10 +130,13 @@ public class CharController : MonoBehaviour {
 
   // these exist to be called externally via SendMessage
   void Die () {
+    // handle all state-transition factors in ChangeState
     ChangeState (FSM.Dead);
   }
 
   void Respawn (Vector3 spawnLoc) {
+    // handle state-transition factors here, because there is no FSM.Respawn
+    isDead = false;
     transform.position = spawnLoc;
     rbody.velocity = Vector3.zero;
     ChangeState (FSM.Fence);
@@ -133,6 +144,7 @@ public class CharController : MonoBehaviour {
 
 
 
+  // maximum velocity is based on the magnitude of player input
   float VMax () {
     return vMaxSlope * controlState.moveInXZ.magnitude;
   }
@@ -164,7 +176,7 @@ public class CharController : MonoBehaviour {
     } else if (sqrV < SqrVMax() || inputDotVel < 0) {
       moveForceVec = moveForce * ihat;
     } else {
-      // centripetal force (player input perpendicular to velocity) plus drag
+      // ~centripetal force (player input perpendicular to velocity) plus drag
       Vector3 perpInput = controlState.moveInXZ - inputDotVel/sqrV * vXZ;
       moveForceVec = moveForce * perpInput - Drag(v) * vhat;
     }

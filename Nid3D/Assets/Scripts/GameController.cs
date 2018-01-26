@@ -36,10 +36,21 @@ public class GameController : MonoBehaviour {
     }
   }
 
-  void PlayerDied(PlayerID player) {
+  // *** CURRENTLY ONLY WORKS FOR TWO PLAYERS (not designed to handle more)
+  // determine right-of-way based upon player deaths
+  // this function is meant to be called by the CharController upon player death
+  void PlayerDied(PlayerID deadPlayer) {
     for (int i = 0; i < players.Length; i++) {
-      
+      CharController p = players [i];
+      if (p.playerid != deadPlayer) {
+        if (p.isDead) // verbosely written to appease the type checker
+          rightOfWay = null;
+        else
+          rightOfWay = p.playerid;
+      }
     }
+
+    //Debug.Log (rightOfWay);
   }
 
   void PauseGame() {

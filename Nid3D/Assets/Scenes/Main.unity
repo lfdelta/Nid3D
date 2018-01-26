@@ -1374,6 +1374,10 @@ MonoBehaviour:
   otherPanels:
   - {fileID: 148745903}
   - {fileID: 477132046}
+  camera: {fileID: 0}
+  players:
+  - {fileID: 1292633463}
+  - {fileID: 1025052839}
 --- !u!224 &627842371
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1919,6 +1923,12 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 988226739}
+--- !u!114 &1025052839 stripped
+MonoBehaviour:
+  m_PrefabParentObject: {fileID: 114849607460782418, guid: 56a1a9d4d021e43e7b35fc7396aee6c3,
+    type: 2}
+  m_PrefabInternal: {fileID: 1743673661}
+  m_Script: {fileID: 11500000, guid: 37ffb5b353ca84c2f99769d60fccd5c1, type: 3}
 --- !u!1 &1070419269
 GameObject:
   m_ObjectHideFlags: 0
@@ -2141,6 +2151,12 @@ RectTransform:
   m_AnchoredPosition: {x: 512, y: 271.2}
   m_SizeDelta: {x: 424, y: 42.4}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1292633463 stripped
+MonoBehaviour:
+  m_PrefabParentObject: {fileID: 114849607460782418, guid: 56a1a9d4d021e43e7b35fc7396aee6c3,
+    type: 2}
+  m_PrefabInternal: {fileID: 959118749}
+  m_Script: {fileID: 11500000, guid: 37ffb5b353ca84c2f99769d60fccd5c1, type: 3}
 --- !u!1 &1335100107
 GameObject:
   m_ObjectHideFlags: 0

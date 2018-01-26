@@ -12,13 +12,13 @@ public class CharInput : MonoBehaviour {
   private Vector3 move;
   private GameController gameController;
   public PlayerID playerID;
-  public ControlState controlState;
+  public PlayerControlState controlState;
 
   void Start () {
     gameController = FindObjectOfType<GameController> ();
     character = GetComponent<CharController>();
     cam = Camera.main.transform;
-    controlState = new ControlState ();
+    controlState = new PlayerControlState ();
   }
 
   // Called once per frame; handle instantaneous inputs (buttons) here

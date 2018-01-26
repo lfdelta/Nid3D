@@ -7,6 +7,15 @@ Name 1 & Name 2 & ...
 
 
 
+### 1/24/2018 ###
+Luca Frez-Albrecht
+1. GameController tracks the rightOfWay, which is either null or a PlayerID
+2. GameController now stores an array of CharControllers in order to test for right-of-way
+3. optimizations to CharController's GetOtherPlayers() function; also altered its behavior to collect all other players without any restriction on the number, because of the potential for undesired/undefined behavior under "unusual" conditions, ie more players in the scene than the number indexed by the function
+4. made PlayerControlState its own class, previously classes.ControlState, for clarity
+
+
+
 ### 1/21/2018 ###
 Luca Frez-Albrecht
 1. fixed a player animation issue by changing the "Run_001" setting to loop playback

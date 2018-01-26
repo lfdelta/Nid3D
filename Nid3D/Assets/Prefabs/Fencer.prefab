@@ -886,7 +886,7 @@ MonoBehaviour:
   stateText: {fileID: 0}
   playerid: 0
   walkingSpeed: 4
-  runningSpeed: 8
+  runningSpeed: 10
   rotationSpeed: 15
   moveForce: 100
   jumpForce: 500

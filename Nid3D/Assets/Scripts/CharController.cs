@@ -39,7 +39,7 @@ public class CharController : MonoBehaviour {
 	private Height height;
   private FSM playerState;
 	private Vector3 groundNormal;
-  private ControlState controlState;
+  private PlayerControlState controlState;
   private GameObject[] otherplayers;
   private float deathTime;
 
@@ -60,14 +60,14 @@ public class CharController : MonoBehaviour {
 		height = Height.Mid;
     if (stateText) stateText.text = "";
     playerState = FSM.Fence;
-    controlState = new ControlState ();
+    controlState = new PlayerControlState ();
 
-    otherplayers = GetOtherPlayers (4);
+    otherplayers = GetOtherPlayers (); //4);
 	}
 
 
 
-	public void UpdateCharacter (ControlState newControlState) {
+	public void UpdateCharacter (PlayerControlState newControlState) {
     controlState = newControlState;
     
     CheckGround ();
@@ -127,7 +127,7 @@ public class CharController : MonoBehaviour {
 
   void Respawn (Vector3 spawnLoc) {
     transform.position = spawnLoc;
-    //rbody.velocity = Vector3.zero;
+    rbody.velocity = Vector3.zero;
     ChangeState (FSM.Fence);
   }
 
@@ -271,25 +271,41 @@ public class CharController : MonoBehaviour {
 
 
 
-  GameObject[] GetOtherPlayers(int totalplayers) {
-    GameObject[] others = new GameObject[totalplayers-1];
+  GameObject[] GetOtherPlayers(/*int maxNum*/) {
+    Object[] allChars = Object.FindObjectsOfType(typeof(CharController));
+    GameObject[] others = new GameObject[allChars.Length - 1];
+
     int j = 0;
-    Object[] allcharcontrollers = Object.FindObjectsOfType(typeof(CharController));
-    for (int i = 0; i < allcharcontrollers.Length; i++) {
-      if (allcharcontrollers [i] == this) {
-        print (((CharController)allcharcontrollers [i]).gameObject.GetComponent<CharInput> ().playerID);
-      } else if (j < others.Length) {
-        others [j] = ((CharController)allcharcontrollers [i]).gameObject;
+    for (int i = 0; i < allChars.Length; i++) {
+      if (allChars [i] != this)
+        others [j++] = ((CharController)allChars [i]).gameObject;
+    }
+    return others;
+  }
+
+  // store the first (maxNum - 1) other characters from the scene into an array
+  /*GameObject[] GetOtherPlayers(int maxNum) {
+    int j = 0;
+    Object[] allChars = Object.FindObjectsOfType(typeof(CharController));
+
+    int size = (maxNum < allChars.Length) ? maxNum : allChars.Length;
+    GameObject[] others = new GameObject[size-1];
+
+    for (int i = 0; i < size + 1; i++) {
+      if (allChars [i] == this) {
+        ;
+      } else if (j < size) {
+        others [j] = ((CharController)allChars [i]).gameObject;
         j++;
       } else {
         break;
       }
     }
-    if (allcharcontrollers.Length <= others.Length) {
-      for (int i = allcharcontrollers.Length; i < others.Length; i++) {
-        others [i] = null;
-      }
+
+    // fill all remaining array elements with null
+    for (int i = allChars.Length; i < others.Length; i++) {
+      others [i] = null;
     }
     return others;
-  }
+  }*/
 }

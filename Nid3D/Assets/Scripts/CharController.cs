@@ -4,6 +4,20 @@ using UnityEngine;
 using UnityEngine.UI;
 using TeamUtility.IO;
 
+
+
+public class PlayerAlive {
+  public PlayerID playerid;
+  public bool alive;
+
+  public PlayerAlive(PlayerID id, bool l) {
+    playerid = id;
+    alive = l;
+  }
+}
+
+
+
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(CapsuleCollider))]
 public class CharController : MonoBehaviour {
@@ -30,7 +44,7 @@ public class CharController : MonoBehaviour {
   public Vector3 originToFeet = 1f * Vector3.down; // vector for player mesh
   public float respawnTime = 1;
 
-  [System.NonSerialized] public bool isDead;
+  [HideInInspector] public bool isDead;
 
   private Vector3 vXZ;
 	private Rigidbody rbody;
@@ -105,12 +119,12 @@ public class CharController : MonoBehaviour {
     case FSM.Fence:
       animator.SetInteger ("State", 0);
       //animator.Play ("FenceIdle");
-      Debug.Log("Fence: " + vXZ.magnitude.ToString());
+      //Debug.Log("Fence: " + vXZ.magnitude.ToString());
       break;
     case FSM.Run:
       animator.SetInteger ("State", 1);
       //animator.Play ("Run");
-      Debug.Log("Run: " + vXZ.magnitude.ToString());
+      //Debug.Log("Run: " + vXZ.magnitude.ToString());
       break;
     case FSM.Jump:
       rbody.AddForce (jumpForce * Vector3.up);
@@ -119,7 +133,7 @@ public class CharController : MonoBehaviour {
       isDead = true;
       rbody.velocity = Vector3.zero;
       deathTime = Time.time;
-      gameController.SendMessage ("PlayerDied", playerid);
+      gameController.SendMessage ("PlayerIsAlive", new PlayerAlive(playerid, false));
       break;
     }
 
@@ -139,6 +153,7 @@ public class CharController : MonoBehaviour {
     isDead = false;
     transform.position = spawnLoc;
     rbody.velocity = Vector3.zero;
+    gameController.SendMessage ("PlayerIsAlive", new PlayerAlive(playerid, true));
     ChangeState (FSM.Fence);
   }
 

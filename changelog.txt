@@ -7,6 +7,16 @@ Name 1 & Name 2 & ...
 
 
 
+### 1/27/2018 ###
+Luca Frez-Albrecht
+1. CameraController script to track players and change angle based upon right of way
+2. Sword is now a prefab, and one is currently permanently attached to each player
+3. PlayerDied(PlayerID) -> PlayerIsAlive({PlayerID, bool}), so players communicate with GameController both upon death and upon revival, in order for more robust camera tracking
+4. PlayerAlive class and constructor, defined in CharController, in order to pass info to PlayerIsAlive function in GameController
+5. CameraController tracks average position of all living players, and tilts toward either "endzone" depending on who currently has the right of way
+
+
+
 ### 1/24/2018 ###
 Luca Frez-Albrecht
 1. GameController tracks the rightOfWay, which is either null or a PlayerID

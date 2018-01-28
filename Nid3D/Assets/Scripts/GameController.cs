@@ -1,11 +1,11 @@
-﻿//using System.Nullable;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TeamUtility.IO;
 
 public class GameController : MonoBehaviour {
+  
   public Canvas pauseUI;
   public GameObject startPanel;
   public GameObject[] otherPanels;
@@ -13,7 +13,7 @@ public class GameController : MonoBehaviour {
   private System.Nullable<PlayerID> rightOfWay;
   private bool gameIsPaused;
   private CharController[] players;
-  //private CameraController cam;
+  private CameraController cam;
 
 	void Awake () {
     pauseUI.enabled = false;
@@ -22,7 +22,10 @@ public class GameController : MonoBehaviour {
 	}
 
   void Start () {
-    players = GetPlayers (4);
+    players = GetPlayers ();
+
+    cam = FindObjectOfType<CameraController> ();
+    UpdateCamera ();
   }
 
   void Update() {
@@ -36,10 +39,21 @@ public class GameController : MonoBehaviour {
     }
   }
 
+
+
+  // * this function is meant to be called by the CharController upon player death and revival
+  // * parameter should be a 2-element list of the form {PlayerID, bool}
+  // update rightOfWay and camera targets based upon player death or revival
+  void PlayerIsAlive(PlayerAlive pinfo) {
+    if (!pinfo.alive)
+      UpdateRightOfWay (pinfo.playerid);
+
+    UpdateCamera ();
+  }
+
   // *** CURRENTLY ONLY WORKS FOR TWO PLAYERS (not designed to handle more)
-  // determine right-of-way based upon player deaths
-  // this function is meant to be called by the CharController upon player death
-  void PlayerDied(PlayerID deadPlayer) {
+  // evaluate rightOfWay based upon given player's death
+  void UpdateRightOfWay(PlayerID deadPlayer) {
     for (int i = 0; i < players.Length; i++) {
       CharController p = players [i];
       if (p.playerid != deadPlayer) {
@@ -50,8 +64,28 @@ public class GameController : MonoBehaviour {
       }
     }
 
-    //Debug.Log (rightOfWay);
+    Debug.Log ("ROW: " + rightOfWay.ToString());
   }
+
+  // tell camera to target only living players, and update rightOfWay
+  void UpdateCamera () {
+    int alive = 0;
+    for (int i = 0; i < players.Length; i++)
+      if (!players [i].isDead)
+        alive++;
+
+    Transform[] ts = new Transform [alive];
+    int j = 0;
+    for (int i = 0; i < players.Length; i++) {
+      if (!players [i].isDead)
+        ts [j++] = players [i].transform;
+    }
+
+    cam.targets = ts;
+    cam.rightOfWay = rightOfWay;
+  }
+
+
 
   void PauseGame() {
     Time.timeScale = 0;
@@ -78,7 +112,18 @@ public class GameController : MonoBehaviour {
     AudioListener.volume = Mathf.Clamp01 (vol);
   }
 
-  CharController[] GetPlayers(int maxNum) {
+  // return a list of all CharControllers in the scene
+  CharController[] GetPlayers() {
+    Object[] allChars = Object.FindObjectsOfType(typeof(CharController));
+
+    CharController[] players = new CharController[allChars.Length];
+    for (int i = 0; i < allChars.Length; i++)
+      players [i] = (CharController)allChars [i];
+
+    return players;
+  }
+
+  /*CharController[] GetPlayers(int maxNum) {
     // collect the first maxNum CharControllers in the scene
     Object[] allChars = Object.FindObjectsOfType(typeof(CharController));
     int size = (maxNum < allChars.Length) ? maxNum : allChars.Length;
@@ -88,5 +133,5 @@ public class GameController : MonoBehaviour {
       players [i] = (CharController)allChars [i];
     }
     return players;
-  }
+  }*/
 }

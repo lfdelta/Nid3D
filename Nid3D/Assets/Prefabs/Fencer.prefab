@@ -895,7 +895,8 @@ MonoBehaviour:
   frictionCoefficient: 10
   dragSlope: 20
   originToFeet: {x: 0, y: -0.05, z: 0}
-  respawnTime: 1
+  respawnTime: 2
+  isDead: 0
 --- !u!136 &136669546813195884
 CapsuleCollider:
   m_ObjectHideFlags: 1

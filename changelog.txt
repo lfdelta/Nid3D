@@ -7,6 +7,12 @@ Name 1 & Name 2 & ...
 
 
 
+### 2/9/2018 ###
+Luca Frez-Albrecht, Ashley Li
+1. created a Pyramid model to visualize camera path-control nodes
+
+
+
 ### 1/27/2018 ###
 Luca Frez-Albrecht
 1. CameraController script to track players and change angle based upon right of way

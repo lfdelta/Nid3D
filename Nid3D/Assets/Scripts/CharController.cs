@@ -43,6 +43,7 @@ public class CharController : MonoBehaviour {
   public float dragSlope = 1;
   public Vector3 originToFeet = 1f * Vector3.down; // vector for player mesh
   public float respawnTime = 1;
+  public Object swordPrefab;
 
   [HideInInspector] public bool isDead;
 
@@ -59,6 +60,7 @@ public class CharController : MonoBehaviour {
   private GameObject[] otherplayers;
   private float deathTime;
   private GameController gameController;
+  private Sword attachedSword;
 
 
 
@@ -83,6 +85,9 @@ public class CharController : MonoBehaviour {
     otherplayers = GetOtherPlayers ();
 
     gameController = FindObjectOfType<GameController>();
+
+    Object s = Instantiate (swordPrefab);
+    AttachSword (((GameObject)s).GetComponent<Sword>());
 	}
 
 
@@ -201,6 +206,24 @@ public class CharController : MonoBehaviour {
 
 
 
+  void AttachSword(Sword s) {
+    attachedSword = s;
+    s.transform.parent = transform;
+    s.transform.localPosition = new Vector3 (0, 16.8f, -9.9f);
+    s.transform.localRotation = Quaternion.Euler (new Vector3 (90, 0, 0));
+    s.transform.localScale = new Vector3 (1, 5, 1);
+    s.thisPlayer = playerid;
+  }
+
+  void DropSword() {
+    // set sword's angular and translational velocity
+    attachedSword.thisPlayer = null;
+
+    attachedSword = null;
+  }
+
+
+
   void DoFence () {
     // handle movement (do first)
     MoveXZ(controlState.moveInXZ);
@@ -211,8 +234,8 @@ public class CharController : MonoBehaviour {
     if (isGrounded && controlState.jump)
       ChangeState (FSM.Jump);
 
-    // handle sword height
-    if (controlState.heightChange != 0) {
+    // handle sword height, if a sword is attached
+    if (controlState.heightChange != 0 && attachedSword) {
       height += controlState.heightChange;
       height = (Height)Tools.Clamp ((int)height, (int)Height.Low, (int)Height.Throw);
       Debug.Log (height);
@@ -298,7 +321,8 @@ public class CharController : MonoBehaviour {
 
 
 
-  GameObject[] GetOtherPlayers(/*int maxNum*/) {
+  // return an array of all other CharControllers in the scene
+  GameObject[] GetOtherPlayers() {
     Object[] allChars = Object.FindObjectsOfType(typeof(CharController));
     GameObject[] others = new GameObject[allChars.Length - 1];
 
@@ -309,30 +333,4 @@ public class CharController : MonoBehaviour {
     }
     return others;
   }
-
-  // store the first (maxNum - 1) other characters from the scene into an array
-  /*GameObject[] GetOtherPlayers(int maxNum) {
-    int j = 0;
-    Object[] allChars = Object.FindObjectsOfType(typeof(CharController));
-
-    int size = (maxNum < allChars.Length) ? maxNum : allChars.Length;
-    GameObject[] others = new GameObject[size-1];
-
-    for (int i = 0; i < size + 1; i++) {
-      if (allChars [i] == this) {
-        ;
-      } else if (j < size) {
-        others [j] = ((CharController)allChars [i]).gameObject;
-        j++;
-      } else {
-        break;
-      }
-    }
-
-    // fill all remaining array elements with null
-    for (int i = allChars.Length; i < others.Length; i++) {
-      others [i] = null;
-    }
-    return others;
-  }*/
 }

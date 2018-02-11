@@ -10,6 +10,7 @@ Name 1 & Name 2 & ...
 ### 2/11/2018 ###
 Luca Frez-Albrecht
 1. created a rectangular frustum model and a SwordCollider object layer in order to prevent players holding swords from impaling one another simply by walking
+2. CharController now creates a sword for each player at runtime, using the new AttachSword method
 
 
 

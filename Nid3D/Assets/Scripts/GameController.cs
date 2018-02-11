@@ -112,7 +112,7 @@ public class GameController : MonoBehaviour {
     AudioListener.volume = Mathf.Clamp01 (vol);
   }
 
-  // return a list of all CharControllers in the scene
+  // return an array of all CharControllers in the scene
   CharController[] GetPlayers() {
     Object[] allChars = Object.FindObjectsOfType(typeof(CharController));
 
@@ -122,16 +122,4 @@ public class GameController : MonoBehaviour {
 
     return players;
   }
-
-  /*CharController[] GetPlayers(int maxNum) {
-    // collect the first maxNum CharControllers in the scene
-    Object[] allChars = Object.FindObjectsOfType(typeof(CharController));
-    int size = (maxNum < allChars.Length) ? maxNum : allChars.Length;
-
-    CharController[] players = new CharController[size];
-    for (int i = 0; i < size; i++) {
-      players [i] = (CharController)allChars [i];
-    }
-    return players;
-  }*/
 }

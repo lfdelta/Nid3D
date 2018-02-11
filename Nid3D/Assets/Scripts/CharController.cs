@@ -222,6 +222,20 @@ public class CharController : MonoBehaviour {
     attachedSword = null;
   }
 
+  float SwordHeightPos () {
+    switch (height) {
+    case Height.Low:
+      return 12.8f;
+    default:
+    case Height.Mid:
+      return 16.8f;
+    case Height.High:
+      return 20.8f;
+    case Height.Throw:
+      return 24.8f;
+    }
+  }
+
 
 
   void DoFence () {
@@ -238,7 +252,8 @@ public class CharController : MonoBehaviour {
     if (controlState.heightChange != 0 && attachedSword) {
       height += controlState.heightChange;
       height = (Height)Tools.Clamp ((int)height, (int)Height.Low, (int)Height.Throw);
-      Debug.Log (height);
+      Vector3 pos = attachedSword.transform.localPosition;
+      attachedSword.transform.localPosition = new Vector3(pos.x, SwordHeightPos (), pos.z);
     }
   }
 

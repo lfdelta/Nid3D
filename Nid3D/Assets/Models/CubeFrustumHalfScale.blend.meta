@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: f8da241e8ca3c4adfa9b04ef338b62d5
-timeCreated: 1518226003
+guid: 8adc1807092e341f8ba9ef7fa590c223
+timeCreated: 1518231464
 licenseType: Free
 ModelImporter:
   serializedVersion: 21
@@ -10,7 +10,7 @@ ModelImporter:
     2300000: //RootNode
     3300000: //RootNode
     4300000: Cube
-    4300002: Pyramid
+    4300002: CubeFrustumHalfScale
     7400000: Default Take
     9500000: //RootNode
   materials:

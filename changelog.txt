@@ -7,8 +7,14 @@ Name 1 & Name 2 & ...
 
 
 
+### 2/11/2018 ###
+Luca Frez-Albrecht
+1. created a rectangular frustum model and a SwordCollider object layer in order to prevent players holding swords from impaling one another simply by walking
+
+
+
 ### 2/9/2018 ###
-Luca Frez-Albrecht, Ashley Li
+Luca Frez-Albrecht
 1. created a Pyramid model to visualize camera path-control nodes
 
 

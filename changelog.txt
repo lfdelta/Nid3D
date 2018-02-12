@@ -12,6 +12,10 @@ Luca Frez-Albrecht
 1. created a rectangular frustum model and a SwordCollider object layer in order to prevent players holding swords from impaling one another simply by walking
 2. CharController now creates a sword for each player at runtime, using the new AttachSword method
 3. players changing the sword height status now affects the actual position of their attached sword
+4. added FSM.Stab state to handle player attacks
+5. created DoStab() and StabAnimation() to parametrize sword stabbing as a function of time
+6. StabAnimation() currently implemented as a linear increase and decrease in position
+7. fixed a bug in MoveXZ() behavior by using the inputted "Vector3 move" instead of bypassing the arguments with direct access of controlState.moveInXZ
 
 
 

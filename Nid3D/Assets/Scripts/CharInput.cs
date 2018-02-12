@@ -29,6 +29,8 @@ public class CharInput : MonoBehaviour {
       if (controlState.heightChange == 0)
         controlState.heightChange = (InputManager.GetButtonDown ("HeightUp", playerID) ? 1 : 0)
         - (InputManager.GetButtonDown ("HeightDown", playerID) ? 1 : 0);
+      if (!controlState.attack)
+        controlState.attack = InputManager.GetButtonDown ("Attack", playerID);
     }
   }
 
@@ -45,5 +47,6 @@ public class CharInput : MonoBehaviour {
     character.UpdateCharacter (controlState);
     controlState.heightChange = 0;
     controlState.jump = false;
+    controlState.attack = false;
   }
 }

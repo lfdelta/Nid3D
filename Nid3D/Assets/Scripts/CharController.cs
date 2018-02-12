@@ -27,8 +27,8 @@ public class CharController : MonoBehaviour {
   // concerning the state of the character
   private bool isGrounded;
 	private enum Height {Low, Mid, High, Throw};
-  private enum FSM {Fence, Run, Jump, BunnyHop, Roll,
-                   LedgeGrab, Stunned, Dead};
+  private enum FSM {Fence, Stab, Run, Jump, BunnyHop,
+                   Roll, LedgeGrab, Stunned, Dead};
 
   public PlayerID playerid;
   public float walkingSpeed = 0.01f;
@@ -58,9 +58,10 @@ public class CharController : MonoBehaviour {
 	private Vector3 groundNormal;
   private PlayerControlState controlState;
   private GameObject[] otherplayers;
-  private float deathTime;
+  private float deathTime, stabTime;
   private GameController gameController;
   private Sword attachedSword;
+  private Vector3 swordInitPos = new Vector3(0, 16.8f, -9.9f);
 
 
 
@@ -103,6 +104,10 @@ public class CharController : MonoBehaviour {
       LookAtNearestPlayer();
       DoFence ();
       break;
+    case FSM.Stab:
+      LookAtLastVelocity ();
+      DoStab ();
+      break;
     case FSM.Run:
       LookAtLastVelocity ();
       DoRun ();
@@ -126,6 +131,9 @@ public class CharController : MonoBehaviour {
       //animator.Play ("FenceIdle");
       //Debug.Log("Fence: " + vXZ.magnitude.ToString());
       break;
+    case FSM.Stab:
+      stabTime = Time.time;
+      break;
     case FSM.Run:
       animator.SetInteger ("State", 1);
       //animator.Play ("Run");
@@ -140,6 +148,8 @@ public class CharController : MonoBehaviour {
       deathTime = Time.time;
       gameController.SendMessage ("PlayerIsAlive", new PlayerAlive(playerid, false));
       break;
+    default:
+      break;
     }
 
     playerState = state;
@@ -147,7 +157,7 @@ public class CharController : MonoBehaviour {
 
 
 
-  // these exist to be called externally via SendMessage
+  // Die() and Respawn() exist to be called externally via SendMessage
   void Die () {
     // handle all state-transition factors in ChangeState
     ChangeState (FSM.Dead);
@@ -186,53 +196,55 @@ public class CharController : MonoBehaviour {
   void MoveXZ (Vector3 move) {
     float v = vXZ.magnitude;
     float sqrV = vXZ.sqrMagnitude;
-    float inputDotVel = Vector3.Dot (controlState.moveInXZ, vXZ);
-    Vector3 ihat = controlState.moveInXZ.normalized;
+    float inputDotVel = Vector3.Dot (move, vXZ);
+    Vector3 ihat = move.normalized;
     Vector3 vhat = vXZ.normalized;
 
     Vector3 moveForceVec;
-    if (controlState.moveInXZ.sqrMagnitude == 0) {
+    if (move.sqrMagnitude == 0) {
       moveForceVec = -Friction(v) * vhat;
     } else if (sqrV < SqrVMax() || inputDotVel < 0) {
       moveForceVec = moveForce * ihat;
     } else {
       // ~centripetal force (player input perpendicular to velocity) plus drag
-      Vector3 perpInput = controlState.moveInXZ - inputDotVel/sqrV * vXZ;
+      Vector3 perpInput = move - inputDotVel/sqrV * vXZ;
       moveForceVec = moveForce * perpInput - Drag(v) * vhat;
     }
 
     rbody.AddForce (moveForceVec);
   }
-
+ 
 
 
   void AttachSword(Sword s) {
     attachedSword = s;
     s.transform.parent = transform;
-    s.transform.localPosition = new Vector3 (0, 16.8f, -9.9f);
+    s.transform.localPosition = swordInitPos;
     s.transform.localRotation = Quaternion.Euler (new Vector3 (90, 0, 0));
     s.transform.localScale = new Vector3 (1, 5, 1);
     s.thisPlayer = playerid;
   }
 
   void DropSword() {
-    // set sword's angular and translational velocity
+    //** set sword's angular and translational velocity
     attachedSword.thisPlayer = null;
+    attachedSword.transform.parent = null;
 
     attachedSword = null;
   }
 
   float SwordHeightPos () {
+    float init = swordInitPos.y;
     switch (height) {
     case Height.Low:
-      return 12.8f;
+      return init - 4;
     default:
     case Height.Mid:
-      return 16.8f;
+      return init;
     case Height.High:
-      return 20.8f;
+      return init + 4;
     case Height.Throw:
-      return 24.8f;
+      return init + 8;
     }
   }
 
@@ -255,6 +267,42 @@ public class CharController : MonoBehaviour {
       Vector3 pos = attachedSword.transform.localPosition;
       attachedSword.transform.localPosition = new Vector3(pos.x, SwordHeightPos (), pos.z);
     }
+
+    if (controlState.attack && attachedSword)
+      ChangeState (FSM.Stab);
+  }
+    
+  // initiate a sequence of nested helper functions
+  void DoStab() {
+    MoveXZ (Vector3.zero); // ignore player inputs while stabbing
+
+    float dSword = StabAnimation(Time.time);
+    Vector3 pos = attachedSword.transform.localPosition;
+
+    if (dSword > 0) {
+      attachedSword.transform.localPosition = new Vector3 (pos.x, pos.y, swordInitPos.z - dSword);
+    } else {
+      attachedSword.transform.localPosition = new Vector3(pos.x, pos.y, swordInitPos.z);
+      ChangeState (FSM.Fence);
+    }
+  }
+
+  // returns the sword's horizontal deviation as a function of time
+  // must return >0 until stab is finished, by construction of DoStab()
+  float StabAnimation(float t) {
+    float dt = t - stabTime;
+    return LinearStab (10, 0.1f, dt);
+  }
+
+  float LinearStab(float maxDist, float halfDuration, float dt) {
+    float slope = maxDist / halfDuration;
+
+    if (dt < halfDuration)
+      return slope * dt;
+    else if (dt < 2*halfDuration)
+      return slope * (2*halfDuration - dt);
+    
+    return -1;
   }
 
   void DoRun () {
@@ -264,8 +312,9 @@ public class CharController : MonoBehaviour {
     if (isGrounded && controlState.jump)
       ChangeState (FSM.Jump);
     if (vXZ.sqrMagnitude < sqrWalkingSpeed)
-      // maybe change this so < runningSpeed and decelerating?
       ChangeState (FSM.Fence);
+    if (controlState.attack && attachedSword)
+      ChangeState (FSM.Stab);
   }
 
   void DoJump () {
@@ -281,7 +330,7 @@ public class CharController : MonoBehaviour {
 
   void DoDead() {
     if (Time.time - deathTime >= respawnTime)
-      Respawn (transform.position); //** in the future, coordinate with the camera to choose a location
+      Respawn (transform.position); //** in the future, coordinate with the camera/game controller to choose a location
   }
 
 

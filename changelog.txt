@@ -7,6 +7,13 @@ Name 1 & Name 2 & ...
 
 
 
+### 2/14/2018 ###
+Luca Frez-Albrecht
+1. AsymmetricLinearStab() for different rising and falling times
+2. players may only stab while standing on the ground
+
+
+
 ### 2/11/2018 ###
 Luca Frez-Albrecht
 1. created a rectangular frustum model and a SwordCollider object layer in order to prevent players holding swords from impaling one another simply by walking

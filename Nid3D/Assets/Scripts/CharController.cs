@@ -71,7 +71,7 @@ public class CharController : MonoBehaviour {
 
     animator = GetComponent<Animator> ();
 		rbody = GetComponent<Rigidbody> ();
-		rbody.constraints = RigidbodyConstraints.FreezeRotation;
+    rbody.constraints = RigidbodyConstraints.FreezeRotation;
 
 		capsule = GetComponent<CapsuleCollider> ();
 		capsuleCenter = capsule.center;
@@ -105,7 +105,8 @@ public class CharController : MonoBehaviour {
       DoFence ();
       break;
     case FSM.Stab:
-      LookAtLastVelocity ();
+      //LookAtLastVelocity ();
+      LookAtNearestPlayer();
       DoStab ();
       break;
     case FSM.Run:
@@ -268,7 +269,7 @@ public class CharController : MonoBehaviour {
       attachedSword.transform.localPosition = new Vector3(pos.x, SwordHeightPos (), pos.z);
     }
 
-    if (controlState.attack && attachedSword)
+    if (controlState.attack && isGrounded && attachedSword)
       ChangeState (FSM.Stab);
   }
     
@@ -291,7 +292,8 @@ public class CharController : MonoBehaviour {
   // must return >0 until stab is finished, by construction of DoStab()
   float StabAnimation(float t) {
     float dt = t - stabTime;
-    return LinearStab (10, 0.1f, dt);
+    //return LinearStab (10, 0.1f, dt);
+    return AsymmetricLinearStab (15, 0.05f, 0.15f, dt);
   }
 
   float LinearStab(float maxDist, float halfDuration, float dt) {
@@ -303,6 +305,16 @@ public class CharController : MonoBehaviour {
       return slope * (2*halfDuration - dt);
     
     return -1;
+  }
+
+  float AsymmetricLinearStab(float maxDist, float upTime, float downTime, float dt) {
+    if (dt < upTime) {
+      float slope = maxDist / upTime;
+      return slope * dt;
+    } else {
+      float slope = maxDist / downTime;
+      return maxDist - slope * (dt - upTime);
+    }
   }
 
   void DoRun () {

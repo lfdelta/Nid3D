@@ -11,15 +11,15 @@ public class TriggerColliderRepel : MonoBehaviour {
     rbody = transform.parent.parent.GetComponent<Rigidbody> ();
   }
     
+  // be careful not to do this if there is no parent
   void OnTriggerEnter(Collider other) {
-    Debug.Log ("collision");
-    Vector3 r1 = transform.position;
-    Vector3 r2 = other.transform.position;
+    Vector3 r1 = transform.parent.parent.position;
+    Vector3 r2 = other.transform.parent.parent.position;
     Vector3 r = r2 - r1; // vector from this to other
 
     Rigidbody otherbody = other.transform.parent.parent.GetComponent<Rigidbody> ();
-    otherbody.AddForce (forceScalingFactor * r);
-    rbody.AddForce (-forceScalingFactor * r);
+    otherbody.AddForce (forceScalingFactor * r / r.sqrMagnitude);
+    rbody.AddForce (-forceScalingFactor * r / r.sqrMagnitude);
   }
 
   void OnTriggerStay(Collider other) {

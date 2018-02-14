@@ -11,6 +11,7 @@ Name 1 & Name 2 & ...
 Luca Frez-Albrecht
 1. AsymmetricLinearStab() for different rising and falling times
 2. players may only stab while standing on the ground
+3. using TriggerColliders in the SwordBox objects to more carefully control how players' swords push off one another
 
 
 

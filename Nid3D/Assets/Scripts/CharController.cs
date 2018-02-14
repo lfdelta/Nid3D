@@ -2,6 +2,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TeamUtility.IO;
+
+
+
+public class PlayerAlive {
+  public PlayerID playerid;
+  public bool alive;
+
+  public PlayerAlive(PlayerID id, bool l) {
+    playerid = id;
+    alive = l;
+  }
+}
+
+
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(CapsuleCollider))]
@@ -12,9 +27,10 @@ public class CharController : MonoBehaviour {
   // concerning the state of the character
   private bool isGrounded;
 	private enum Height {Low, Mid, High, Throw};
-  private enum FSM {Fence, Run, Jump, BunnyHop, Roll,
-                    LedgeGrab, Stunned};
+  private enum FSM {Fence, Stab, Run, Jump, BunnyHop,
+                   Roll, LedgeGrab, Stunned, Dead};
 
+  public PlayerID playerid;
   public float walkingSpeed = 0.01f;
   public float runningSpeed = 2; // speed at which player isRunning
   public float rotationSpeed = 12;
@@ -22,11 +38,14 @@ public class CharController : MonoBehaviour {
   public float moveForce = 50;
 	public float jumpForce = 500;
 	public float groundCheckDist = 0.1f;
-  //public float directionChangeThreshold = 45;
   public float vMaxSlope = 1;
   public float frictionCoefficient = 1;
   public float dragSlope = 1;
   public Vector3 originToFeet = 1f * Vector3.down; // vector for player mesh
+  public float respawnTime = 1;
+  public Object swordPrefab;
+
+  [HideInInspector] public bool isDead;
 
   private Vector3 vXZ;
 	private Rigidbody rbody;
@@ -37,8 +56,12 @@ public class CharController : MonoBehaviour {
 	private Height height;
   private FSM playerState;
 	private Vector3 groundNormal;
-  private ControlState controlState;
+  private PlayerControlState controlState;
   private GameObject[] otherplayers;
+  private float deathTime, stabTime;
+  private GameController gameController;
+  private Sword attachedSword;
+  private Vector3 swordInitPos = new Vector3(0, 16.8f, -9.9f);
 
 
 
@@ -48,7 +71,7 @@ public class CharController : MonoBehaviour {
 
     animator = GetComponent<Animator> ();
 		rbody = GetComponent<Rigidbody> ();
-		rbody.constraints = RigidbodyConstraints.FreezeRotation;
+    rbody.constraints = RigidbodyConstraints.FreezeRotation;
 
 		capsule = GetComponent<CapsuleCollider> ();
 		capsuleCenter = capsule.center;
@@ -57,14 +80,20 @@ public class CharController : MonoBehaviour {
 		height = Height.Mid;
     if (stateText) stateText.text = "";
     playerState = FSM.Fence;
-    controlState = new ControlState ();
+    isDead = false;
+    controlState = new PlayerControlState ();
 
-    otherplayers = GetOtherPlayers (4);
+    otherplayers = GetOtherPlayers ();
+
+    gameController = FindObjectOfType<GameController>();
+
+    Object s = Instantiate (swordPrefab);
+    AttachSword (((GameObject)s).GetComponent<Sword>());
 	}
 
 
 
-	public void UpdateCharacter (ControlState newControlState) {
+	public void UpdateCharacter (PlayerControlState newControlState) {
     controlState = newControlState;
     
     CheckGround ();
@@ -75,6 +104,11 @@ public class CharController : MonoBehaviour {
       LookAtNearestPlayer();
       DoFence ();
       break;
+    case FSM.Stab:
+      //LookAtLastVelocity ();
+      LookAtNearestPlayer();
+      DoStab ();
+      break;
     case FSM.Run:
       LookAtLastVelocity ();
       DoRun ();
@@ -83,13 +117,65 @@ public class CharController : MonoBehaviour {
       LookAtLastVelocity();
       DoJump ();
       break;
+    case FSM.Dead:
+      DoDead ();
+      break;
     }
 
     if (stateText) stateText.text = playerState.ToString ();
   }
 
+  void ChangeState(FSM state) {
+    switch (state) {
+    case FSM.Fence:
+      animator.SetInteger ("State", 0);
+      //animator.Play ("FenceIdle");
+      //Debug.Log("Fence: " + vXZ.magnitude.ToString());
+      break;
+    case FSM.Stab:
+      stabTime = Time.time;
+      break;
+    case FSM.Run:
+      animator.SetInteger ("State", 1);
+      //animator.Play ("Run");
+      //Debug.Log("Run: " + vXZ.magnitude.ToString());
+      break;
+    case FSM.Jump:
+      rbody.AddForce (jumpForce * Vector3.up);
+      break;
+    case FSM.Dead:
+      isDead = true;
+      rbody.velocity = Vector3.zero;
+      deathTime = Time.time;
+      gameController.SendMessage ("PlayerIsAlive", new PlayerAlive(playerid, false));
+      break;
+    default:
+      break;
+    }
+
+    playerState = state;
+  }
 
 
+
+  // Die() and Respawn() exist to be called externally via SendMessage
+  void Die () {
+    // handle all state-transition factors in ChangeState
+    ChangeState (FSM.Dead);
+  }
+
+  void Respawn (Vector3 spawnLoc) {
+    // handle state-transition factors here, because there is no FSM.Respawn
+    isDead = false;
+    transform.position = spawnLoc;
+    rbody.velocity = Vector3.zero;
+    gameController.SendMessage ("PlayerIsAlive", new PlayerAlive(playerid, true));
+    ChangeState (FSM.Fence);
+  }
+
+
+
+  // maximum velocity is based on the magnitude of player input
   float VMax () {
     return vMaxSlope * controlState.moveInXZ.magnitude;
   }
@@ -111,36 +197,56 @@ public class CharController : MonoBehaviour {
   void MoveXZ (Vector3 move) {
     float v = vXZ.magnitude;
     float sqrV = vXZ.sqrMagnitude;
-    float inputDotVel = Vector3.Dot (controlState.moveInXZ, vXZ);
-    Vector3 ihat = controlState.moveInXZ.normalized;
+    float inputDotVel = Vector3.Dot (move, vXZ);
+    Vector3 ihat = move.normalized;
     Vector3 vhat = vXZ.normalized;
 
     Vector3 moveForceVec;
-    if (controlState.moveInXZ.sqrMagnitude == 0) {
+    if (move.sqrMagnitude == 0) {
       moveForceVec = -Friction(v) * vhat;
     } else if (sqrV < SqrVMax() || inputDotVel < 0) {
       moveForceVec = moveForce * ihat;
     } else {
-      // centripetal force (player input perpendicular to velocity) plus drag
-      Vector3 perpInput = controlState.moveInXZ - inputDotVel/sqrV * vXZ;
+      // ~centripetal force (player input perpendicular to velocity) plus drag
+      Vector3 perpInput = move - inputDotVel/sqrV * vXZ;
       moveForceVec = moveForce * perpInput - Drag(v) * vhat;
     }
 
     rbody.AddForce (moveForceVec);
+  }
+ 
 
-    Debug.Log (v);
+
+  void AttachSword(Sword s) {
+    attachedSword = s;
+    s.transform.parent = transform;
+    s.transform.localPosition = swordInitPos;
+    s.transform.localRotation = Quaternion.Euler (new Vector3 (90, 0, 0));
+    s.transform.localScale = new Vector3 (1, 5, 1);
+    s.thisPlayer = playerid;
   }
 
+  void DropSword() {
+    //** set sword's angular and translational velocity
+    attachedSword.thisPlayer = null;
+    attachedSword.transform.parent = null;
 
+    attachedSword = null;
+  }
 
-  void ChangeState(FSM state) {
-    switch (state) {
-    case FSM.Jump:
-      rbody.AddForce (jumpForce * Vector3.up);
-      break;
+  float SwordHeightPos () {
+    float init = swordInitPos.y;
+    switch (height) {
+    case Height.Low:
+      return init - 4;
+    default:
+    case Height.Mid:
+      return init;
+    case Height.High:
+      return init + 4;
+    case Height.Throw:
+      return init + 8;
     }
-
-    playerState = state;
   }
 
 
@@ -155,17 +261,61 @@ public class CharController : MonoBehaviour {
     if (isGrounded && controlState.jump)
       ChangeState (FSM.Jump);
 
-    // handle sword height
-    if (controlState.heightChange != 0) {
+    // handle sword height, if a sword is attached
+    if (controlState.heightChange != 0 && attachedSword) {
       height += controlState.heightChange;
       height = (Height)Tools.Clamp ((int)height, (int)Height.Low, (int)Height.Throw);
-      Debug.Log (height);
+      Vector3 pos = attachedSword.transform.localPosition;
+      attachedSword.transform.localPosition = new Vector3(pos.x, SwordHeightPos (), pos.z);
     }
 
-    animator.SetInteger ("State", 0);
+    if (controlState.attack && isGrounded && attachedSword)
+      ChangeState (FSM.Stab);
+  }
+    
+  // initiate a sequence of nested helper functions
+  void DoStab() {
+    MoveXZ (Vector3.zero); // ignore player inputs while stabbing
+
+    float dSword = StabAnimation(Time.time);
+    Vector3 pos = attachedSword.transform.localPosition;
+
+    if (dSword > 0) {
+      attachedSword.transform.localPosition = new Vector3 (pos.x, pos.y, swordInitPos.z - dSword);
+    } else {
+      attachedSword.transform.localPosition = new Vector3(pos.x, pos.y, swordInitPos.z);
+      ChangeState (FSM.Fence);
+    }
   }
 
+  // returns the sword's horizontal deviation as a function of time
+  // must return >0 until stab is finished, by construction of DoStab()
+  float StabAnimation(float t) {
+    float dt = t - stabTime;
+    //return LinearStab (10, 0.1f, dt);
+    return AsymmetricLinearStab (15, 0.05f, 0.15f, dt);
+  }
 
+  float LinearStab(float maxDist, float halfDuration, float dt) {
+    float slope = maxDist / halfDuration;
+
+    if (dt < halfDuration)
+      return slope * dt;
+    else if (dt < 2*halfDuration)
+      return slope * (2*halfDuration - dt);
+    
+    return -1;
+  }
+
+  float AsymmetricLinearStab(float maxDist, float upTime, float downTime, float dt) {
+    if (dt < upTime) {
+      float slope = maxDist / upTime;
+      return slope * dt;
+    } else {
+      float slope = maxDist / downTime;
+      return maxDist - slope * (dt - upTime);
+    }
+  }
 
   void DoRun () {
     // apply force (do first)
@@ -174,21 +324,25 @@ public class CharController : MonoBehaviour {
     if (isGrounded && controlState.jump)
       ChangeState (FSM.Jump);
     if (vXZ.sqrMagnitude < sqrWalkingSpeed)
-      // maybe change this so < runningSpeed and decelerating?
-      playerState = FSM.Fence;
-
-    animator.SetInteger ("State", 1);
+      ChangeState (FSM.Fence);
+    if (controlState.attack && attachedSword)
+      ChangeState (FSM.Stab);
   }
-
-
 
   void DoJump () {
     MoveXZ (controlState.moveInXZ);
     // called every update during jump state
-    if (isGrounded && vXZ.sqrMagnitude > sqrRunningSpeed)
-      playerState = FSM.Run;
-    else if (isGrounded)
-      playerState = FSM.Fence;
+    if (isGrounded) {
+      if (vXZ.sqrMagnitude > sqrRunningSpeed)
+        ChangeState (FSM.Run);
+      else
+        ChangeState (FSM.Fence);
+    }
+  }
+
+  void DoDead() {
+    if (Time.time - deathTime >= respawnTime)
+      Respawn (transform.position); //** in the future, coordinate with the camera/game controller to choose a location
   }
 
 
@@ -222,9 +376,8 @@ public class CharController : MonoBehaviour {
   }
 
   void LookAtLastVelocity() {
-    Vector3 v = rbody.velocity;
-    if (v.sqrMagnitude > 0)
-      PointCharacter (v);
+    if (vXZ.sqrMagnitude > 0.01)
+      PointCharacter (vXZ);
   }
 
 
@@ -244,24 +397,15 @@ public class CharController : MonoBehaviour {
 
 
 
-  GameObject[] GetOtherPlayers(int totalplayers) {
-    GameObject[] others = new GameObject[totalplayers-1];
+  // return an array of all other CharControllers in the scene
+  GameObject[] GetOtherPlayers() {
+    Object[] allChars = Object.FindObjectsOfType(typeof(CharController));
+    GameObject[] others = new GameObject[allChars.Length - 1];
+
     int j = 0;
-    Object[] allcharcontrollers = Object.FindObjectsOfType(typeof(CharController));
-    for (int i = 0; i < allcharcontrollers.Length; i++) {
-      if (allcharcontrollers [i] == this) {
-        print (((CharController)allcharcontrollers [i]).gameObject.GetComponent<CharInput> ().playerID);
-      } else if (j < others.Length) {
-        others [j] = ((CharController)allcharcontrollers [i]).gameObject;
-        j++;
-      } else {
-        break;
-      }
-    }
-    if (allcharcontrollers.Length <= others.Length) {
-      for (int i = allcharcontrollers.Length; i < others.Length; i++) {
-        others [i] = null;
-      }
+    for (int i = 0; i < allChars.Length; i++) {
+      if (allChars [i] != this)
+        others [j++] = ((CharController)allChars [i]).gameObject;
     }
     return others;
   }

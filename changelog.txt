@@ -7,6 +7,66 @@ Name 1 & Name 2 & ...
 
 
 
+### 2/14/2018 ###
+Luca Frez-Albrecht
+1. AsymmetricLinearStab() for different rising and falling times
+2. players may only stab while standing on the ground
+3. using TriggerColliders in the SwordBox objects to more carefully control how players' swords push off one another
+
+
+
+### 2/11/2018 ###
+Luca Frez-Albrecht
+1. created a rectangular frustum model and a SwordCollider object layer in order to prevent players holding swords from impaling one another simply by walking
+2. CharController now creates a sword for each player at runtime, using the new AttachSword method
+3. players changing the sword height status now affects the actual position of their attached sword
+4. added FSM.Stab state to handle player attacks
+5. created DoStab() and StabAnimation() to parametrize sword stabbing as a function of time
+6. StabAnimation() currently implemented as a linear increase and decrease in position
+7. fixed a bug in MoveXZ() behavior by using the inputted "Vector3 move" instead of bypassing the arguments with direct access of controlState.moveInXZ
+
+
+
+### 2/9/2018 ###
+Luca Frez-Albrecht
+1. created a Pyramid model to visualize camera path-control nodes
+
+
+
+### 1/27/2018 ###
+Luca Frez-Albrecht
+1. CameraController script to track players and change angle based upon right of way
+2. Sword is now a prefab, and one is currently permanently attached to each player
+3. PlayerDied(PlayerID) -> PlayerIsAlive({PlayerID, bool}), so players communicate with GameController both upon death and upon revival, in order for more robust camera tracking
+4. PlayerAlive class and constructor, defined in CharController, in order to pass info to PlayerIsAlive function in GameController
+5. CameraController tracks average position of all living players, and tilts toward either "endzone" depending on who currently has the right of way
+
+
+
+### 1/24/2018 ###
+Luca Frez-Albrecht
+1. GameController tracks the rightOfWay, which is either null or a PlayerID
+2. GameController now stores an array of CharControllers in order to test for right-of-way
+3. optimizations to CharController's GetOtherPlayers() function; also altered its behavior to collect all other players without any restriction on the number, because of the potential for undesired/undefined behavior under "unusual" conditions, ie more players in the scene than the number indexed by the function
+4. made PlayerControlState its own class, previously classes.ControlState, for clarity
+5. CharController sends a message to GameController upon death, at which point the latter evaluates right-of-way
+
+
+
+### 1/21/2018 ###
+Luca Frez-Albrecht
+1. fixed a player animation issue by changing the "Run_001" setting to loop playback
+
+
+
+### 1/12/2018 ###
+Luca Frez-Albrecht
+1. created Sword object (not yet a prefab) with attached Sword script
+2. implemented basic system for changing player state to Dead when colliding with another player's sword
+3. players return from the Dead state after a public float respawnTime, set by default to 1 second
+
+
+
 ### 1/7/2018 ###
 Ashley Li w/ Luca Frez-Albrecht, Benjamin Killeen
 1. GetOtherPlayers function stores an array of all other player GameObjects

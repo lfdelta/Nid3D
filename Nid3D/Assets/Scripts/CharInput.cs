@@ -12,13 +12,13 @@ public class CharInput : MonoBehaviour {
   private Vector3 move;
   private GameController gameController;
   public PlayerID playerID;
-  public ControlState controlState;
+  public PlayerControlState controlState;
 
   void Start () {
     gameController = FindObjectOfType<GameController> ();
     character = GetComponent<CharController>();
     cam = Camera.main.transform;
-    controlState = new ControlState ();
+    controlState = new PlayerControlState ();
   }
 
   // Called once per frame; handle instantaneous inputs (buttons) here
@@ -29,6 +29,8 @@ public class CharInput : MonoBehaviour {
       if (controlState.heightChange == 0)
         controlState.heightChange = (InputManager.GetButtonDown ("HeightUp", playerID) ? 1 : 0)
         - (InputManager.GetButtonDown ("HeightDown", playerID) ? 1 : 0);
+      if (!controlState.attack)
+        controlState.attack = InputManager.GetButtonDown ("Attack", playerID);
     }
   }
 
@@ -45,5 +47,6 @@ public class CharInput : MonoBehaviour {
     character.UpdateCharacter (controlState);
     controlState.heightChange = 0;
     controlState.jump = false;
+    controlState.attack = false;
   }
 }

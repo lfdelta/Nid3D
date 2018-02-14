@@ -884,16 +884,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stateText: {fileID: 0}
+  playerid: 0
   walkingSpeed: 4
-  runningSpeed: 8
+  runningSpeed: 10
+  rotationSpeed: 15
   moveForce: 100
   jumpForce: 500
   groundCheckDist: 0.1
   vMaxSlope: 10
   frictionCoefficient: 10
   dragSlope: 20
-  rotationSpeed: 15
-  originToFeet: {x: 0, y: -0.1, z: 0}
+  originToFeet: {x: 0, y: -0.05, z: 0}
+  respawnTime: 1
+  swordPrefab: {fileID: 1480079597263848, guid: 95d8afc1e8923412b92336e8835617c1,
+    type: 2}
+  isDead: 0
 --- !u!136 &136669546813195884
 CapsuleCollider:
   m_ObjectHideFlags: 1

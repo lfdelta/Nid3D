@@ -7,6 +7,12 @@ Name 1 & Name 2 & ...
 
 
 
+### 2/17/2018 ###
+Luca Frez-Albrecht w/ Molly O'Donnell
+1. replaced Fencer.blend with Molly's new version, including an en garde animation in place of the default T pose
+
+
+
 ### 2/14/2018 ###
 Luca Frez-Albrecht
 1. AsymmetricLinearStab() for different rising and falling times

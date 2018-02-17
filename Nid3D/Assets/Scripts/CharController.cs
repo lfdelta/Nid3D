@@ -169,6 +169,7 @@ public class CharController : MonoBehaviour {
     isDead = false;
     transform.position = spawnLoc;
     rbody.velocity = Vector3.zero;
+    attachedSword.transform.localPosition = swordInitPos;
     gameController.SendMessage ("PlayerIsAlive", new PlayerAlive(playerid, true));
     ChangeState (FSM.Fence);
   }

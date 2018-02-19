@@ -7,11 +7,24 @@ Name 1 & Name 2 & ...
 
 
 
+### 2/17/2018 ###
+Luca Frez-Albrecht w/ Molly O'Donnell, Ashley Li
+1. replaced Fencer.blend with Molly's new version, including an en garde animation in place of the default T pose
+2. copied (and modified) Ashley's new camera controller system, which is built upon a doubly-linked list of camera nodes, each of which is associated with one world node, where all nodes are GameObjects placed in the editor (or, theoretically, generated in code)
+3. modified CamerController code to find average player position to handle zero targets without freaking out
+4. reset sword position on respawn, to prevent swords sticking out if the player was mid-stab when killed
+
+
+
 ### 2/14/2018 ###
 Luca Frez-Albrecht
 1. AsymmetricLinearStab() for different rising and falling times
 2. players may only stab while standing on the ground
 3. using TriggerColliders in the SwordBox objects to more carefully control how players' swords push off one another
+4. replaced frustum collider for SwordBox with a CubeCollider because the frustum benefits (convenient repulsion physics) are no longer relevant
+5. added another check into DoFence() to make sure players can't be forced into FSM.Run unless they have movement input in the same direction, regardless of their velocity
+6. increased gravity and CharController jump force; this may need further tweaking down the line
+7. increased physics solver iterations from 6 to 10
 
 
 

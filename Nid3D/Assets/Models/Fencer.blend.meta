@@ -33,6 +33,7 @@ ModelImporter:
     100050: Upper_Arm_R
     100052: Upper_Leg_L
     100054: Upper_Leg_R
+    100056: Fencer
     400000: Armature
     400002: Chest
     400004: Cube
@@ -61,11 +62,14 @@ ModelImporter:
     400050: Upper_Arm_R
     400052: Upper_Leg_L
     400054: Upper_Leg_R
+    400056: Fencer
     4300000: Cube
+    4300002: Fencer
     7400000: Default Take
     7400002: Run_001
     9500000: //RootNode
     13700000: Cube
+    13700002: Fencer
   materials:
     importMaterials: 1
     materialName: 0

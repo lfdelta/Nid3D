@@ -169,6 +169,7 @@ public class CharController : MonoBehaviour {
     isDead = false;
     transform.position = spawnLoc;
     rbody.velocity = Vector3.zero;
+    attachedSword.transform.localPosition = swordInitPos;
     gameController.SendMessage ("PlayerIsAlive", new PlayerAlive(playerid, true));
     ChangeState (FSM.Fence);
   }
@@ -256,7 +257,7 @@ public class CharController : MonoBehaviour {
     MoveXZ(controlState.moveInXZ);
 
     // if v > runspeed, FSM->run
-    if (vXZ.sqrMagnitude > sqrRunningSpeed)
+    if (vXZ.sqrMagnitude > sqrRunningSpeed && Vector3.Dot(vXZ, controlState.moveInXZ) > 0)
       ChangeState (FSM.Run);
     if (isGrounded && controlState.jump)
       ChangeState (FSM.Jump);
@@ -283,7 +284,7 @@ public class CharController : MonoBehaviour {
     if (dSword > 0) {
       attachedSword.transform.localPosition = new Vector3 (pos.x, pos.y, swordInitPos.z - dSword);
     } else {
-      attachedSword.transform.localPosition = new Vector3(pos.x, pos.y, swordInitPos.z);
+      attachedSword.transform.localPosition = new Vector3(swordInitPos.x, pos.y, swordInitPos.z);
       ChangeState (FSM.Fence);
     }
   }
@@ -292,19 +293,7 @@ public class CharController : MonoBehaviour {
   // must return >0 until stab is finished, by construction of DoStab()
   float StabAnimation(float t) {
     float dt = t - stabTime;
-    //return LinearStab (10, 0.1f, dt);
-    return AsymmetricLinearStab (15, 0.05f, 0.15f, dt);
-  }
-
-  float LinearStab(float maxDist, float halfDuration, float dt) {
-    float slope = maxDist / halfDuration;
-
-    if (dt < halfDuration)
-      return slope * dt;
-    else if (dt < 2*halfDuration)
-      return slope * (2*halfDuration - dt);
-    
-    return -1;
+    return AsymmetricLinearStab (12, 0.1f, 0.15f, dt);
   }
 
   float AsymmetricLinearStab(float maxDist, float upTime, float downTime, float dt) {

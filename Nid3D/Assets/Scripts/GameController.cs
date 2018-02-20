@@ -13,7 +13,9 @@ public class GameController : MonoBehaviour {
   private System.Nullable<PlayerID> rightOfWay;
   private bool gameIsPaused;
   private CharController[] players;
+  private Transform[] livePlayers;
   private CameraController cam;
+  private Vector3 avgPlayerPos;
 
 	void Awake () {
     pauseUI.enabled = false;
@@ -23,9 +25,12 @@ public class GameController : MonoBehaviour {
 
   void Start () {
     players = GetPlayers ();
+    livePlayers = new Transform[players.Length];
+    for (int i = 0; i < players.Length; i++)
+      livePlayers [i] = players [i].transform;
 
     cam = FindObjectOfType<CameraController> ();
-    UpdateCamera ();
+    cam.UpdateROW(rightOfWay);
   }
 
   void Update() {
@@ -37,6 +42,9 @@ public class GameController : MonoBehaviour {
       else
         PauseGame ();
     }
+
+    GetAvgPlayerPosition ();
+    cam.avgpos = avgPlayerPos;
   }
 
 
@@ -48,7 +56,32 @@ public class GameController : MonoBehaviour {
     if (!pinfo.alive)
       UpdateRightOfWay (pinfo.playerid);
 
-    UpdateCamera ();
+    GetLivePlayers ();
+  }
+
+  void GetLivePlayers() {
+    int alive = 0;
+    for (int i = 0; i < players.Length; i++)
+      if (!players [i].isDead)
+        alive++;
+    
+    livePlayers = new Transform [alive];
+    int j = 0;
+    for (int i = 0; i < players.Length; i++) {
+      if (!players [i].isDead)
+        livePlayers [j++] = players [i].transform;
+    }
+  }
+
+  Vector3 GetAvgPlayerPosition() {
+    if (livePlayers.Length > 0) {
+      avgPlayerPos = Vector3.zero;
+      for (int i = 0; i < livePlayers.Length; i++)
+        avgPlayerPos += livePlayers [i].position;
+      avgPlayerPos /= livePlayers.Length;
+    }
+
+    return avgPlayerPos;
   }
 
   // *** CURRENTLY ONLY WORKS FOR TWO PLAYERS (not designed to handle more)
@@ -64,25 +97,9 @@ public class GameController : MonoBehaviour {
       }
     }
 
+    cam.UpdateROW (rightOfWay);
+
     Debug.Log ("ROW: " + rightOfWay.ToString());
-  }
-
-  // tell camera to target only living players, and update rightOfWay
-  void UpdateCamera () {
-    int alive = 0;
-    for (int i = 0; i < players.Length; i++)
-      if (!players [i].isDead)
-        alive++;
-
-    Transform[] ts = new Transform [alive];
-    int j = 0;
-    for (int i = 0; i < players.Length; i++) {
-      if (!players [i].isDead)
-        ts [j++] = players [i].transform;
-    }
-
-    cam.targets = ts;
-    cam.rightOfWay = rightOfWay;
   }
 
 

@@ -6,6 +6,14 @@ Name 1 & Name 2 & ...
 2. Place most recent logs above older ones
 
 
+### 2/19/2018 ###
+Luca Frez-Albrecht
+1. establishing code in WorldNodeScript
+2. placed more of the player-tracking workload (average position) inside of the GameController instead of the CameraController, so that the information can be calculated once and used by various objects in every frame
+3. removed the unused code in CameraNodeScript
+4. UpdateTilt() function in CameraController allows the update to occur only when the right-of-way changes rather than with every update
+
+
 
 ### 2/17/2018 ###
 Luca Frez-Albrecht w/ Molly O'Donnell, Ashley Li

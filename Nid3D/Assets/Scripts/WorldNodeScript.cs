@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class WorldNodeScript : MonoBehaviour {
-  public WorldNodeScript prevNode = null;
+  [HideInInspector] public WorldNodeScript prevNode = null;
   public WorldNodeScript nextNode = null;
   //public Vector3 camDistance;
   //public Vector3 camEuler;
@@ -18,6 +18,8 @@ public class WorldNodeScript : MonoBehaviour {
     Vector3 projection = new Vector3 (1, 0, 1);
     segmentHat = (nextNode != null) ? (nextNode.transform.position - transform.position) : Vector3.zero;
     segmentHat = Vector3.Scale(segmentHat, projection).normalized;
+    if (nextNode != null)
+      nextNode.prevNode = this;
   }
 
   void Start () {

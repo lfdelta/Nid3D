@@ -11,6 +11,9 @@ Name 1 & Name 2 & ...
 Luca Frez-Albrecht
 1. new initialization code for WorldNodeScript to calculate the "segment" unit vectors connecting each node, as well as to compute the angle-bisector of the segments connecting each node to its predecessor and follower
 2. implemented relatively efficient (mostly float multiplication) parametrization of any world-space position onto the XZ-projected world nodes' connecting line segments inside of CameraController WorldToLine(), using the angle-bisectors
+3. smooth camera translation and rotation controlled by public parameters
+4. WorldNodeScript shows only nextNode in inspector; prevNode is automatically initialized. if appropriate, this can be easily reversed (manual initialization) by removing the [HideInInspector] tag and the "nextNode.prevNode = this" segment in Awake()
+5. deleted CameraNode prefab and script, now that its functionality has been (mostly) rewritten elsewhere. again, we can use git history to reacquire these files if appropriate
 
 
 

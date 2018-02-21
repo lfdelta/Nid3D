@@ -90,7 +90,7 @@ public class GameController : MonoBehaviour {
     for (int i = 0; i < players.Length; i++) {
       CharController p = players [i];
       if (p.playerid != deadPlayer) {
-        if (p.isDead) // verbosely written to appease the type checker
+        if (p.isDead) // type checker won't accept ternary operator
           rightOfWay = null;
         else
           rightOfWay = p.playerid;

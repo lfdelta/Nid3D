@@ -41,7 +41,6 @@ public class CharController : MonoBehaviour {
   public float vMaxSlope = 1;
   public float frictionCoefficient = 1;
   public float dragSlope = 1;
-  public Vector3 originToFeet = 1f * Vector3.down; // vector for player mesh
   public float respawnTime = 1;
   public Object swordPrefab;
 
@@ -53,6 +52,7 @@ public class CharController : MonoBehaviour {
 	private CapsuleCollider capsule;
  	private Vector3 capsuleCenter;
 	private float capsuleHeight;
+  private Vector3 originToFeet = 0.05f * Vector3.down; // vector for player mesh
 	private Height height;
   private FSM playerState;
 	private Vector3 groundNormal;
@@ -349,7 +349,7 @@ public class CharController : MonoBehaviour {
   }
 
   void LookAtNearestPlayer() {
-    float mindistance = 9999999999;
+    float mindistance = Mathf.Infinity;
     float newdistance = 0;
     int minindex = -1;
     for (int i = 0; i < otherplayers.Length; i++) {

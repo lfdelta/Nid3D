@@ -4,7 +4,7 @@ using UnityEngine;
 using TeamUtility.IO;
 
 public class CameraController : MonoBehaviour {
-
+  public bool debug = false;
   public float trackDistanceXZ = 10;
   public float height = 5;
   public float vertAngle = 10;
@@ -40,7 +40,8 @@ public class CameraController : MonoBehaviour {
     Vector3 b1 = endNode.bisectorHat;
     float t1 = (r1.x * b1.z - r1.z * b1.x) / (l1.x * b1.z - l1.z * b1.x);
 
-    Debug.Log ("t: " + t0 / (t0 + t1));
+    if (debug)
+      Debug.Log (startNode.name + " t: " + t0 / (t0 + t1));
 
     return t0 / (t0 + t1);
   }

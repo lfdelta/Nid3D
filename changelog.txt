@@ -7,6 +7,12 @@ Name 1 & Name 2 & ...
 
 
 
+### 2/23/2018 ###
+Luca Frez-Albrecht
+1. NodeDrawBisector script to assist visualization and debugging
+
+
+
 ### 2/20/2018 ###
 Luca Frez-Albrecht
 1. new initialization code for WorldNodeScript to calculate the "segment" unit vectors connecting each node, as well as to compute the angle-bisector of the segments connecting each node to its predecessor and follower

@@ -524,6 +524,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b59f836ac993346cfbc083ba8fed75d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  debug: 0
   trackDistanceXZ: 15
   height: 12
   vertAngle: 35

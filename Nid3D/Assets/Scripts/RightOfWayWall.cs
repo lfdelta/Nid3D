@@ -3,28 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 using TeamUtility.IO;
 
-public class CameraController : MonoBehaviour {
-  public bool debug = false;
-  public float trackDistanceXZ = 10;
-  public float height = 5;
-  public float vertAngle = 10;
-  public float rightOfWayTilt = 10;
-  public float translationSpeed = 1;
-  public float rotationSpeed = 1;
-  //public WorldNodeScript firstNode;
+public class RightOfWayWall : MonoBehaviour {
+  public float distance;
+  [HideInInspector] public PlayerID player;
   [HideInInspector] public Vector3 avgPlayerPos;
 
-  private float tilt;
-  private WorldNodeScript startNode;
+  public WorldNodeScript startNode;
   private WorldNodeScript endNode;
 
-  /*void Start() {
-    startNode = firstNode;
-    endNode = startNode.nextNode;
-  }*/
+//  void Start() {
+//    endNode = startNode.nextNode;
+//  }
 
   // to be called by the GameController
-  public void Initialize (WorldNodeScript fnode) {
+  public void Initialize (PlayerID pid, WorldNodeScript fnode) {
+    player = pid;
     startNode = fnode;
     endNode = startNode.nextNode;
   }
@@ -46,30 +39,12 @@ public class CameraController : MonoBehaviour {
     Vector3 b1 = endNode.bisectorHat;
     float t1 = (r1.x * b1.z - r1.z * b1.x) / (l1.x * b1.z - l1.z * b1.x);
 
-    if (debug)
-      Debug.Log (startNode.name + " t: " + t0 / (t0 + t1));
-
     return t0 / (t0 + t1);
   }
 
   // converts a t value to the linear interpolation between start and end node positions
   Vector3 LinetoWorld(float t) {
     return startNode.transform.position + t*(endNode.transform.position - startNode.transform.position);
-  }
-
-  // find the camera angle from right of way
-  public void UpdateROW(System.Nullable<PlayerID> rightOfWay) {
-    switch (rightOfWay) {
-    case null:
-      tilt = 0;
-      break;
-    case PlayerID.One:
-      tilt = rightOfWayTilt;
-      break;
-    case PlayerID.Two:
-      tilt = -rightOfWayTilt;
-      break;
-    }
   }
 
   // if players have exceeded the bounds of this segment, move to the adjacent segment
@@ -86,18 +61,33 @@ public class CameraController : MonoBehaviour {
       t = WorldtoLine (avgPlayerPos);
     }
   }
+	
+  void WalkAlongSegments () {
+    float dist = distance;
+    Vector3 pos = transform.position;
+    WorldNodeScript node = (player == PlayerID.One) ? startNode : endNode;
 
-  void Update () {
+    Vector3 playerT = LinetoWorld(WorldtoLine(avgPlayerPos));
+    Vector3 playerTtoNode = node.transform.position - playerT;
+
+    while (playerTtoNode.sqrMagnitude < dist * dist) {
+      dist -= playerTtoNode.magnitude;
+      playerT = node.transform.position;
+      WorldNodeScript newnode = (player == PlayerID.One) ? node.prevNode : node.nextNode;
+      if (newnode == null) // can't progress further
+        break;
+      node = newnode;
+      playerTtoNode = node.transform.position - playerT;
+    }
+
+    Vector3 wallDir = (player == PlayerID.One) ? node.prevSegmentHat : node.segmentHat;
+    transform.position = playerT + dist*wallDir;
+  }
+
+	// Update is called once per frame
+	void Update () {
     CheckNodeTransition ();
 
-    Vector3 cameraLoc = avgPlayerPos; //LinetoWorld (t);
-
-    // smoothly follow and point at avgPlayerPos
-    Vector3 separation = new Vector3(Mathf.Sin(Mathf.Deg2Rad * tilt), 0, Mathf.Cos(Mathf.Deg2Rad * tilt)); // unit length
-    Vector3 newPos = cameraLoc - trackDistanceXZ * separation + new Vector3(0, height, 0);
-    Quaternion newRot = Quaternion.Euler(vertAngle, tilt, 0);
-
-    transform.position = Vector3.Lerp(transform.position, newPos, translationSpeed * Time.deltaTime);
-    transform.rotation = Quaternion.Slerp (transform.rotation, newRot, rotationSpeed*Time.deltaTime);
-  }
+    WalkAlongSegments ();
+	}
 }

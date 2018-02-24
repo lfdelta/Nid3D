@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44662917, g: 0.49647003, b: 0.57484686, a: 1}
+  m_IndirectSpecularColor: {r: 0.444808, g: 0.49435568, b: 0.573547, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -531,8 +531,7 @@ MonoBehaviour:
   rightOfWayTilt: 10
   translationSpeed: 5
   rotationSpeed: 20
-  firstNode: {fileID: 1844287588}
-  avgpos: {x: 0, y: 0, z: 0}
+  avgPlayerPos: {x: 0, y: 0, z: 0}
 --- !u!1001 &364284970
 Prefab:
   m_ObjectHideFlags: 0
@@ -1362,11 +1361,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a1cc9e7da9c84f5080f0810215157cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  startingNode: {fileID: 1844287588}
   pauseUI: {fileID: 2111843518}
   startPanel: {fileID: 514175230}
   otherPanels:
   - {fileID: 148745903}
   - {fileID: 477132046}
+  wallPrefab: {fileID: 1394828055398724, guid: 83a0a85cbbb5549c7936d4a9a5272739, type: 2}
 --- !u!224 &627842371
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1695,13 +1696,13 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 903026210}
-  m_LocalRotation: {x: 0.76468307, y: 0.22664756, z: -0.4871568, w: 0.3557654}
-  m_LocalPosition: {x: 6.478, y: 4.024, z: 0}
+  m_LocalRotation: {x: 0.38943484, y: 0.47659057, z: -0.24809735, w: 0.74809736}
+  m_LocalPosition: {x: 6.478, y: 13.8, z: 0}
   m_LocalScale: {x: 0.20000008, y: 0.20000026, z: 0.20000029}
   m_Children: []
   m_Father: {fileID: 1911350621}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 130.1, y: 65, z: 0}
+  m_LocalEulerAnglesHint: {x: 55, y: 65, z: 0}
 --- !u!1 &935304694
 GameObject:
   m_ObjectHideFlags: 0

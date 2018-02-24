@@ -10,7 +10,8 @@ Name 1 & Name 2 & ...
 ### 2/23/2018 ###
 Luca Frez-Albrecht
 1. NodeDrawBisector script to assist visualization and debugging
-
+2. first WorldNode is now set in the GameController, which passes it along the CameraController on initialization
+3. RightOfWayWalls are technically in place, but their positioning algorithm is seriously busted, probably due to a misnavigation of the segments
 
 
 ### 2/20/2018 ###

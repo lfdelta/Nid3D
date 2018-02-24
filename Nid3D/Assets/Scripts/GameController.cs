@@ -5,10 +5,11 @@ using UnityEngine.UI;
 using TeamUtility.IO;
 
 public class GameController : MonoBehaviour {
-  
+  public WorldNodeScript startingNode;
   public Canvas pauseUI;
   public GameObject startPanel;
   public GameObject[] otherPanels;
+  public Object wallPrefab;
 
   private System.Nullable<PlayerID> rightOfWay;
   private bool gameIsPaused;
@@ -17,10 +18,18 @@ public class GameController : MonoBehaviour {
   private CameraController cam;
   private Vector3 avgPlayerPos;
 
+  private RightOfWayWall leftWall;
+  private RightOfWayWall rightWall;
+
 	void Awake () {
     pauseUI.enabled = false;
     gameIsPaused = false;
     rightOfWay = null;
+
+    leftWall = ((GameObject)Instantiate (wallPrefab)).GetComponent<RightOfWayWall> ();
+    rightWall = ((GameObject)Instantiate (wallPrefab)).GetComponent<RightOfWayWall> ();
+    leftWall.Initialize (PlayerID.One, startingNode);
+    rightWall.Initialize (PlayerID.Two, startingNode);
 	}
 
   void Start () {
@@ -30,6 +39,7 @@ public class GameController : MonoBehaviour {
       livePlayers [i] = players [i].transform;
 
     cam = FindObjectOfType<CameraController> ();
+    cam.Initialize (startingNode);
     cam.UpdateROW(rightOfWay);
   }
 
@@ -44,7 +54,10 @@ public class GameController : MonoBehaviour {
     }
 
     GetAvgPlayerPosition ();
-    cam.avgpos = avgPlayerPos;
+    cam.avgPlayerPos = avgPlayerPos;
+
+    leftWall.avgPlayerPos = avgPlayerPos;
+    rightWall.avgPlayerPos = avgPlayerPos;
   }
 
 

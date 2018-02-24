@@ -25,17 +25,19 @@ public class WorldNodeScript : MonoBehaviour {
   }
 
   // now that the list is doubly-linked, calculate vector to previous node and angle bisector of segments
-  // if this is the end of the list, fill in the appropriate segment vector based upon adjacent node's position
+  // if this is the end of the list, copy in the connected segment vector
   void Start () {
     prevSegmentHat = (prevNode != null) ? prevNode.segmentHat : Vector3.zero;
     bisectorHat = VectorBisector (prevSegmentHat, segmentHat);
 
-    if (segmentHat == Vector3.zero) {
-      segmentHat = prevSegmentHat;//transform.position - prevNode.transform.position;
-      //segmentHat = Vector3.Scale(segmentHat, projection).normalized;
-    }
+    // make sure all bisectors are pointing in the same half-space (dot product >= 0)
+    if (bisectorHat.z < 0)
+      bisectorHat = -bisectorHat;
+
+    if (segmentHat == Vector3.zero)
+      segmentHat = prevSegmentHat;
     if (prevSegmentHat == Vector3.zero)
-      prevSegmentHat = segmentHat;//(nextNode.transform.position - transform.position).normalized;
+      prevSegmentHat = segmentHat;
   }
 
   // returns a unit vector which is the angle-bisector of the (zero or equal-length) inputs

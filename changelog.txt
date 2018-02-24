@@ -9,8 +9,12 @@ Name 1 & Name 2 & ...
 
 ### 2/24/2018 ###
 Luca Frez-Albrecht
-1. RightOfWayWalls traverse the segments properly now, and follow the players' projection onto the WorldNode segments, though they misbehave past the endpoints
+1. RightOfWayWalls traverse the segments properly now, and follow the players' projection onto the WorldNode segments, though they still misbehave past the endpoints
 2. more debug options for WorldNodes, including the ability to edit multiple nodes' debug settings at once by selecting them all in the inspector at runtime
+3. new scene, Linear, implementing a zigzagging map
+4. created a NodeTraversal class which is inherited by CameraController and RightOfWayWall, to host common functions
+5. walls rotate to align themselves with equi-t lines
+6. walls now behave when /they/ are beyond the endpoints, as long as the average /player/ position doesn't venture beyond the world nodes
 
 
 

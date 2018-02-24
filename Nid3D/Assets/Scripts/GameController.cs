@@ -21,6 +21,9 @@ public class GameController : MonoBehaviour {
   private RightOfWayWall leftWall;
   private RightOfWayWall rightWall;
 
+  private WorldNodeScript playerStartNode;
+  private WorldNodeScript playerEndNode;
+
 	void Awake () {
     pauseUI.enabled = false;
     gameIsPaused = false;

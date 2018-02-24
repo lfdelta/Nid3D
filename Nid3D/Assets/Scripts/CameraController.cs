@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using TeamUtility.IO;
 
-public class CameraController : MonoBehaviour {
+//public class CameraController : MonoBehaviour {
+public class CameraController : NodeTraversal {
   public bool debug = false;
   public float trackDistanceXZ = 10;
   public float height = 5;
@@ -18,51 +19,10 @@ public class CameraController : MonoBehaviour {
   private WorldNodeScript startNode;
   private WorldNodeScript endNode;
 
-  /*void Start() {
-    startNode = firstNode;
-    endNode = startNode.nextNode;
-  }*/
-
   // to be called by the GameController
   public void Initialize (WorldNodeScript fnode) {
     startNode = fnode;
     endNode = startNode.nextNode;
-  }
-
-  // converts a world position to a t value (typically in [0,1]) along the current node segment
-  float WorldtoLine(Vector3 loc) {
-    Vector3 projection = new Vector3 (1, 0, 1);
-    Vector3 r0 = Vector3.Scale (loc - startNode.transform.position, projection);
-    Vector3 r1 = Vector3.Scale (loc - endNode.transform.position, projection);
-
-    // calculate r vectors in terms of the non-orthonormal bisector-segment basis; t is the segment-vector component
-    // this formula is derived using [e1, e2]<a,b> = <x,z> for oblique basis vectors e1, e2; r = <x,z>
-    // for e1 = segmentHat, we are interested in t' = a
-    Vector3 l0 = startNode.segmentHat;
-    Vector3 b0 = startNode.bisectorHat;
-    float t0 = (r0.x * b0.z - r0.z * b0.x) / (l0.x * b0.z - l0.z * b0.x);
-
-    Vector3 l1 = -startNode.segmentHat;
-    Vector3 b1 = endNode.bisectorHat;
-    float t1 = (r1.x * b1.z - r1.z * b1.x) / (l1.x * b1.z - l1.z * b1.x);
-
-    float t = t0 / (t0 + t1);
-
-    // if the player is beyond the last node, project their position onto segmentHat
-    if (t0 < 0 && startNode.prevNode == null)
-      t = Vector3.Dot(loc - startNode.transform.position, startNode.segmentHat);
-    if (t1 < 0 && endNode.nextNode == null)
-      t = Vector3.Dot(loc - endNode.transform.position, endNode.segmentHat);
-    
-    if (debug)
-      Debug.Log (startNode.name + " t: " + t);
-
-    return t;
-  }
-
-  // converts a t value to the linear interpolation between start and end node positions
-  Vector3 LinetoWorld(float t) {
-    return startNode.transform.position + t*(endNode.transform.position - startNode.transform.position);
   }
 
   // find the camera angle from right of way
@@ -82,16 +42,16 @@ public class CameraController : MonoBehaviour {
 
   // if players have exceeded the bounds of this segment, move to the adjacent segment
   void CheckNodeTransition () {
-    float t = WorldtoLine (avgPlayerPos);
+    float t = WorldtoLine (avgPlayerPos, startNode, endNode);
+    if (debug)
+      Debug.Log (t);
 
     if (t >= 1 && endNode.nextNode != null) {
       startNode = endNode;
-      endNode = startNode.nextNode;
-      t = WorldtoLine (avgPlayerPos);
+      endNode = startNode.nextNode;    
     } else if (t < 0 && startNode.prevNode != null) {
       endNode = startNode;
       startNode = startNode.prevNode;
-      t = WorldtoLine (avgPlayerPos);
     }
   }
 

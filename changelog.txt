@@ -7,6 +7,13 @@ Name 1 & Name 2 & ...
 
 
 
+### 2/24/2018 ###
+Luca Frez-Albrecht
+1. RightOfWayWalls traverse the segments properly now, and follow the players' projection onto the WorldNode segments, though they misbehave past the endpoints
+2. more debug options for WorldNodes, including the ability to edit multiple nodes' debug settings at once by selecting them all in the inspector at runtime
+
+
+
 ### 2/23/2018 ###
 Luca Frez-Albrecht
 1. NodeDrawBisector script to assist visualization and debugging

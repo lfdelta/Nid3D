@@ -2014,6 +2014,11 @@ Prefab:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114097684165905526, guid: dceca418ef3ca417ab75d27d4ee5491a,
+        type: 2}
+      propertyPath: bisectors
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: dceca418ef3ca417ab75d27d4ee5491a, type: 2}
   m_IsPrefabParent: 0

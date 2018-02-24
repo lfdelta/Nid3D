@@ -11,20 +11,31 @@ public class WorldNodeScript : MonoBehaviour {
   // below are all unit vectors, projected into the XZ plane
   [HideInInspector] public Vector3 prevSegmentHat; // pointing FROM previous node
   [HideInInspector] public Vector3 segmentHat; // pointing toward next node
-  [HideInInspector] public Vector3 bisectorHat; // bisecting the line segments extending from this node
+  [HideInInspector] public Vector3 bisectorHat; // bisecting the line segments extending from this node\
+
+  private Vector3 projection = new Vector3 (1, 0, 1);
 	
   //* initialization assumes that there are at least two WorldNodeScripts in the linked list
+  // calculate vector to next node and doubly-link the list
 	void Awake () {
-    Vector3 projection = new Vector3 (1, 0, 1);
     segmentHat = (nextNode != null) ? (nextNode.transform.position - transform.position) : Vector3.zero;
     segmentHat = Vector3.Scale(segmentHat, projection).normalized;
     if (nextNode != null)
       nextNode.prevNode = this;
   }
 
+  // now that the list is doubly-linked, calculate vector to previous node and angle bisector of segments
+  // if this is the end of the list, fill in the appropriate segment vector based upon adjacent node's position
   void Start () {
     prevSegmentHat = (prevNode != null) ? prevNode.segmentHat : Vector3.zero;
     bisectorHat = VectorBisector (prevSegmentHat, segmentHat);
+
+    if (segmentHat == Vector3.zero) {
+      segmentHat = prevSegmentHat;//transform.position - prevNode.transform.position;
+      //segmentHat = Vector3.Scale(segmentHat, projection).normalized;
+    }
+    if (prevSegmentHat == Vector3.zero)
+      prevSegmentHat = segmentHat;//(nextNode.transform.position - transform.position).normalized;
   }
 
   // returns a unit vector which is the angle-bisector of the (zero or equal-length) inputs

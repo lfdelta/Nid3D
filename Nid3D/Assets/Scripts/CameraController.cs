@@ -46,10 +46,18 @@ public class CameraController : MonoBehaviour {
     Vector3 b1 = endNode.bisectorHat;
     float t1 = (r1.x * b1.z - r1.z * b1.x) / (l1.x * b1.z - l1.z * b1.x);
 
-    if (debug)
-      Debug.Log (startNode.name + " t: " + t0 / (t0 + t1));
+    float t = t0 / (t0 + t1);
 
-    return t0 / (t0 + t1);
+    // if the player is beyond the last node, project their position onto segmentHat
+    if (t0 < 0 && startNode.prevNode == null)
+      t = Vector3.Dot(loc - startNode.transform.position, startNode.segmentHat);
+    if (t1 < 0 && endNode.nextNode == null)
+      t = Vector3.Dot(loc - endNode.transform.position, endNode.segmentHat);
+    
+    if (debug)
+      Debug.Log (startNode.name + " t: " + t);
+
+    return t;
   }
 
   // converts a t value to the linear interpolation between start and end node positions

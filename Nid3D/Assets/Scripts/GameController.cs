@@ -20,6 +20,7 @@ public class GameController : MonoBehaviour {
 
   private RightOfWayWall leftWall;
   private RightOfWayWall rightWall;
+  private bool initializedWalls = false;
 
   private WorldNodeScript playerStartNode;
   private WorldNodeScript playerEndNode;
@@ -28,6 +29,9 @@ public class GameController : MonoBehaviour {
     pauseUI.enabled = false;
     gameIsPaused = false;
     rightOfWay = null;
+
+    cam = FindObjectOfType<CameraController> ();
+    cam.Initialize (startingNode);
 
     leftWall = ((GameObject)Instantiate (wallPrefab)).GetComponent<RightOfWayWall> ();
     rightWall = ((GameObject)Instantiate (wallPrefab)).GetComponent<RightOfWayWall> ();
@@ -41,9 +45,7 @@ public class GameController : MonoBehaviour {
     for (int i = 0; i < players.Length; i++)
       livePlayers [i] = players [i].transform;
 
-    cam = FindObjectOfType<CameraController> ();
-    cam.Initialize (startingNode);
-    cam.UpdateROW(rightOfWay);
+    SendRightOfWay ();
   }
 
   void Update() {
@@ -57,10 +59,18 @@ public class GameController : MonoBehaviour {
     }
 
     GetAvgPlayerPosition ();
-    cam.avgPlayerPos = avgPlayerPos;
 
+    cam.avgPlayerPos = avgPlayerPos;
     leftWall.avgPlayerPos = avgPlayerPos;
     rightWall.avgPlayerPos = avgPlayerPos;
+
+    // heavy-handed solution to walls freezing in default position on scene load
+    // we can't do this in Start() because the node bisectors are still uninitialized
+    if (!initializedWalls) {
+      leftWall.SendMessage ("PlaceSelfAndRotate", false);
+      rightWall.SendMessage ("PlaceSelfAndRotate", false);
+      initializedWalls = true;
+    }
   }
 
 
@@ -113,9 +123,15 @@ public class GameController : MonoBehaviour {
       }
     }
 
-    cam.UpdateROW (rightOfWay);
+    SendRightOfWay ();
 
     Debug.Log ("ROW: " + rightOfWay.ToString());
+  }
+
+  void SendRightOfWay() {
+    cam.UpdateROW (rightOfWay);
+    leftWall.UpdateROW (rightOfWay);
+    rightWall.UpdateROW (rightOfWay);
   }
 
 

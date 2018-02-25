@@ -5,6 +5,8 @@ using TeamUtility.IO;
 
 public class RightOfWayWall : NodeTraversal {
   public float distance;
+  public float translationSpeed;
+  public float rotationSpeed;
   [HideInInspector] public PlayerID player;
   [HideInInspector] public Vector3 avgPlayerPos;
 
@@ -12,6 +14,17 @@ public class RightOfWayWall : NodeTraversal {
   private WorldNodeScript playerEndNode;
   private WorldNodeScript startNode;
   private WorldNodeScript endNode;
+
+  private bool standStill;
+  private MeshRenderer meshRender;
+  private BoxCollider boxCol;
+  private float height;
+
+  void Awake () {
+    meshRender = GetComponent<MeshRenderer> ();
+    boxCol = GetComponent<BoxCollider> ();
+    height = boxCol.bounds.extents.y;
+  }
 
   // to be called by the GameController
   public void Initialize (PlayerID pid, WorldNodeScript fnode) {
@@ -22,10 +35,26 @@ public class RightOfWayWall : NodeTraversal {
     startNode = playerStartNode;
     endNode = playerEndNode;
   }
+
+  // activate or deactivate movement and collisions based on right of way
+  public void UpdateROW (System.Nullable<PlayerID> rightOfWay) {
+    if (rightOfWay == null) {
+      standStill = true;
+      ActivateSelf (true);
+    } else {
+      standStill = false;
+      ActivateSelf (rightOfWay == player);
+    }
+  }
+
+  void ActivateSelf(bool active) {
+    meshRender.enabled = active;
+    boxCol.enabled = active;
+  }
 	
   // places the wall the assigned distance from the players
   // aligns its rotation with the equi-t line defined by node bisectors
-  void PlaceSelfAndRotate () {
+  void PlaceSelfAndRotate (bool smooth=true) {
     float dist = distance;
     Vector3 pos = transform.position;
     WorldNodeScript node = (player == PlayerID.One) ? playerStartNode : playerEndNode;
@@ -48,13 +77,20 @@ public class RightOfWayWall : NodeTraversal {
 
     // update position
     Vector3 wallDir = (player == PlayerID.One) ? -node.nextNode.prevSegmentHat : node.prevNode.segmentHat;
-    transform.position = playerT + dist*wallDir;
+    Vector3 newPos = playerT + dist*wallDir + height*Vector3.up;
 
     // update rotation
     float twall = WorldtoLine (transform.position, startNode, endNode);
-    Debug.Log (twall);
     Vector3 equiT = Vector3.Slerp(startNode.bisectorHat, endNode.bisectorHat, twall);
-    transform.rotation = Quaternion.LookRotation (equiT);
+    Quaternion newRot = Quaternion.LookRotation (equiT);
+
+    if (smooth) {
+      transform.position = Vector3.Lerp (transform.position, newPos, translationSpeed * Time.deltaTime);
+      transform.rotation = Quaternion.Slerp (transform.rotation, newRot, rotationSpeed * Time.deltaTime);
+    } else {
+      transform.position = newPos;
+      transform.rotation = newRot;
+    }
   }
 
   // if you have exceeded the bounds of this segment, move to the adjacent segment
@@ -82,6 +118,7 @@ public class RightOfWayWall : NodeTraversal {
 
 	void Update () {
     CheckNodeTransition ();
-    PlaceSelfAndRotate ();
+    if (!standStill)
+      PlaceSelfAndRotate ();
 	}
 }

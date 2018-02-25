@@ -15,7 +15,9 @@ Luca Frez-Albrecht
 4. created a NodeTraversal class which is inherited by CameraController and RightOfWayWall, to host common functions
 5. walls rotate to align themselves with equi-t lines
 6. walls now behave when /they/ are beyond the endpoints, as long as the average /player/ position doesn't venture beyond the world nodes
-6. walls remain stationary when nobody has the right of way, and the appropriate wall is disabled when a player does have the right of way
+7. walls remain stationary when nobody has the right of way, and the appropriate wall is disabled when a player does have the right of way
+8. moved Fencer prefab's mesh renderer into a prefab component rather than a child object
+9. players disappear from view while they are dead
 
 
 

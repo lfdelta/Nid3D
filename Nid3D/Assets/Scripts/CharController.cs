@@ -49,9 +49,8 @@ public class CharController : MonoBehaviour {
   private Vector3 vXZ;
 	private Rigidbody rbody;
   private Animator animator;
+  private SkinnedMeshRenderer meshRender;
 	private CapsuleCollider capsule;
- 	private Vector3 capsuleCenter;
-	private float capsuleHeight;
   private Vector3 originToFeet = 0.05f * Vector3.down; // vector for player mesh
 	private Height height;
   private FSM playerState;
@@ -73,9 +72,8 @@ public class CharController : MonoBehaviour {
 		rbody = GetComponent<Rigidbody> ();
     rbody.constraints = RigidbodyConstraints.FreezeRotation;
 
+    meshRender = GetComponent<SkinnedMeshRenderer> ();
 		capsule = GetComponent<CapsuleCollider> ();
-		capsuleCenter = capsule.center;
-		capsuleHeight = capsule.height;
 
 		height = Height.Mid;
     if (stateText) stateText.text = "";
@@ -130,7 +128,6 @@ public class CharController : MonoBehaviour {
     case FSM.Fence:
       animator.SetInteger ("State", 0);
       //animator.Play ("FenceIdle");
-      //Debug.Log("Fence: " + vXZ.magnitude.ToString());
       break;
     case FSM.Stab:
       stabTime = Time.time;
@@ -138,7 +135,6 @@ public class CharController : MonoBehaviour {
     case FSM.Run:
       animator.SetInteger ("State", 1);
       //animator.Play ("Run");
-      //Debug.Log("Run: " + vXZ.magnitude.ToString());
       break;
     case FSM.Jump:
       rbody.AddForce (jumpForce * Vector3.up);
@@ -147,6 +143,8 @@ public class CharController : MonoBehaviour {
       isDead = true;
       rbody.velocity = Vector3.zero;
       deathTime = Time.time;
+      //capsule.enabled = false;
+      meshRender.enabled = false;
       gameController.SendMessage ("PlayerIsAlive", new PlayerAlive(playerid, false));
       break;
     default:
@@ -169,6 +167,8 @@ public class CharController : MonoBehaviour {
     isDead = false;
     transform.position = spawnLoc;
     rbody.velocity = Vector3.zero;
+    capsule.enabled = true;
+    meshRender.enabled = true;
     attachedSword.transform.localPosition = swordInitPos;
     gameController.SendMessage ("PlayerIsAlive", new PlayerAlive(playerid, true));
     ChangeState (FSM.Fence);

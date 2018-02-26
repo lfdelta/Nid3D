@@ -7,6 +7,16 @@ Name 1 & Name 2 & ...
 
 
 
+### 2/25/2018 ###
+Luca Frez-Albrecht
+1. rewrote NodeTraversal functions and scripts inheriting it to only track the leftmost node (startNode -> leftNode; endNode removed)
+2. using the above, rewrote CheckNodeTransition so that it could be implemented in the NodeTraversal class rather than copied and pasted in each place a small variation was needed
+3. implemented the "place" part of ROWWalls' PlaceSelfAndRotate inside of NodeTraversal
+4. GameController now does all tracking of player position/corresponding node and calls update functions inside of the camera and wall scripts. the code structure is getting a lot cleaner overall
+5. players now coordinate with the GameController to choose an appropriate respawn location--almost trivial after constructing and refactoring the node system
+
+
+
 ### 2/24/2018 ###
 Luca Frez-Albrecht
 1. RightOfWayWalls traverse the segments properly now, and follow the players' projection onto the WorldNode segments, though they still misbehave past the endpoints

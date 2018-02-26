@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TeamUtility.IO;
 
-public class GameController : MonoBehaviour {
+public class GameController : NodeTraversal {
   public WorldNodeScript startingNode;
   public Canvas pauseUI;
   public GameObject startPanel;
@@ -18,20 +18,19 @@ public class GameController : MonoBehaviour {
   private CameraController cam;
   private Vector3 avgPlayerPos;
 
+  private WorldNodeScript playerNode;
   private RightOfWayWall leftWall;
   private RightOfWayWall rightWall;
   private bool initializedWalls = false;
 
-  private WorldNodeScript playerStartNode;
-  private WorldNodeScript playerEndNode;
-
-	void Awake () {
+  void Awake () {
     pauseUI.enabled = false;
     gameIsPaused = false;
     rightOfWay = null;
+    playerNode = startingNode;
 
     cam = FindObjectOfType<CameraController> ();
-    cam.Initialize (startingNode);
+    //cam.UpdatePlayerInfo (startingNode);
 
     leftWall = ((GameObject)Instantiate (wallPrefab)).GetComponent<RightOfWayWall> ();
     rightWall = ((GameObject)Instantiate (wallPrefab)).GetComponent<RightOfWayWall> ();
@@ -45,6 +44,8 @@ public class GameController : MonoBehaviour {
     for (int i = 0; i < players.Length; i++)
       livePlayers [i] = players [i].transform;
 
+    GetAvgPlayerPositionAndNode ();
+    SendAvgPlayerPositionAndNode ();
     SendRightOfWay ();
   }
 
@@ -58,11 +59,8 @@ public class GameController : MonoBehaviour {
         PauseGame ();
     }
 
-    GetAvgPlayerPosition ();
-
-    cam.avgPlayerPos = avgPlayerPos;
-    leftWall.avgPlayerPos = avgPlayerPos;
-    rightWall.avgPlayerPos = avgPlayerPos;
+    GetAvgPlayerPositionAndNode ();
+    SendAvgPlayerPositionAndNode ();
 
     // heavy-handed solution to walls freezing in default position on scene load
     // we can't do this in Start() because the node bisectors are still uninitialized
@@ -99,7 +97,7 @@ public class GameController : MonoBehaviour {
     }
   }
 
-  Vector3 GetAvgPlayerPosition() {
+  void GetAvgPlayerPositionAndNode() {
     if (livePlayers.Length > 0) {
       avgPlayerPos = Vector3.zero;
       for (int i = 0; i < livePlayers.Length; i++)
@@ -107,7 +105,13 @@ public class GameController : MonoBehaviour {
       avgPlayerPos /= livePlayers.Length;
     }
 
-    return avgPlayerPos;
+    playerNode = CheckNodeTransition (avgPlayerPos, playerNode);
+  }
+
+  void SendAvgPlayerPositionAndNode() {
+    cam.UpdatePlayerInfo (avgPlayerPos, playerNode);
+    leftWall.UpdatePlayerInfo (avgPlayerPos, playerNode);
+    rightWall.UpdatePlayerInfo (avgPlayerPos, playerNode);
   }
 
   // *** CURRENTLY ONLY WORKS FOR TWO PLAYERS (not designed to handle more)
@@ -132,6 +136,11 @@ public class GameController : MonoBehaviour {
     cam.UpdateROW (rightOfWay);
     leftWall.UpdateROW (rightOfWay);
     rightWall.UpdateROW (rightOfWay);
+  }
+
+  // meant to be called from inside of CharController
+  public Vector3 PlayerRespawnLoc(PlayerID player, float dist) {
+    return PositionAlongSegments (dist, avgPlayerPos, playerNode, (player == PlayerID.Two));
   }
 
 

@@ -42,6 +42,7 @@ public class CharController : MonoBehaviour {
   public float frictionCoefficient = 1;
   public float dragSlope = 1;
   public float respawnTime = 1;
+  public float respawnDistance = 1;
   public Object swordPrefab;
 
   [HideInInspector] public bool isDead;
@@ -143,8 +144,9 @@ public class CharController : MonoBehaviour {
       isDead = true;
       rbody.velocity = Vector3.zero;
       deathTime = Time.time;
-      //capsule.enabled = false;
+      capsule.enabled = false;
       meshRender.enabled = false;
+      //** drop sword
       gameController.SendMessage ("PlayerIsAlive", new PlayerAlive(playerid, false));
       break;
     default:
@@ -169,7 +171,7 @@ public class CharController : MonoBehaviour {
     rbody.velocity = Vector3.zero;
     capsule.enabled = true;
     meshRender.enabled = true;
-    attachedSword.transform.localPosition = swordInitPos;
+    attachedSword.transform.localPosition = swordInitPos; //** later on, create a new sword
     gameController.SendMessage ("PlayerIsAlive", new PlayerAlive(playerid, true));
     ChangeState (FSM.Fence);
   }
@@ -224,12 +226,12 @@ public class CharController : MonoBehaviour {
     s.transform.localPosition = swordInitPos;
     s.transform.localRotation = Quaternion.Euler (new Vector3 (90, 0, 0));
     s.transform.localScale = new Vector3 (1, 5, 1);
-    s.thisPlayer = playerid;
+    s.ChangeOwnership(playerid);
   }
 
   void DropSword() {
     //** set sword's angular and translational velocity
-    attachedSword.thisPlayer = null;
+    attachedSword.ChangeOwnership(null);
     attachedSword.transform.parent = null;
 
     attachedSword = null;
@@ -328,10 +330,11 @@ public class CharController : MonoBehaviour {
         ChangeState (FSM.Fence);
     }
   }
-
+    
   void DoDead() {
+    // coordinate with the game controller to choose a respawn location
     if (Time.time - deathTime >= respawnTime)
-      Respawn (transform.position); //** in the future, coordinate with the camera/game controller to choose a location
+      Respawn (gameController.PlayerRespawnLoc(playerid, respawnDistance));
   }
 
 

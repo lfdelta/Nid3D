@@ -10,10 +10,8 @@ public class RightOfWayWall : NodeTraversal {
   [HideInInspector] public PlayerID player;
   [HideInInspector] public Vector3 avgPlayerPos;
 
-  [HideInInspector] public WorldNodeScript playerStartNode;
-  private WorldNodeScript playerEndNode;
-  private WorldNodeScript startNode;
-  private WorldNodeScript endNode;
+  [HideInInspector] public WorldNodeScript playerLeftNode;
+  private WorldNodeScript leftNode;
 
   private bool standStill;
   private MeshRenderer meshRender;
@@ -29,11 +27,15 @@ public class RightOfWayWall : NodeTraversal {
   // to be called by the GameController
   public void Initialize (PlayerID pid, WorldNodeScript fnode) {
     player = pid;
-    playerStartNode = fnode;
-    playerEndNode = playerStartNode.nextNode;
+    playerLeftNode = fnode;
 
-    startNode = playerStartNode;
-    endNode = playerEndNode;
+    leftNode = playerLeftNode;
+  }
+
+  // to be called by the GameController
+  public void UpdatePlayerInfo (Vector3 loc, WorldNodeScript node) {
+    avgPlayerPos = loc;
+    playerLeftNode = node;
   }
 
   // activate or deactivate movement and collisions based on right of way
@@ -55,33 +57,13 @@ public class RightOfWayWall : NodeTraversal {
   // places the wall the assigned distance from the players
   // aligns its rotation with the equi-t line defined by node bisectors
   void PlaceSelfAndRotate (bool smooth=true) {
-    float dist = distance;
-    Vector3 pos = transform.position;
-    WorldNodeScript node = (player == PlayerID.One) ? playerStartNode : playerEndNode;
-    WorldNodeScript newnode = (player == PlayerID.One) ? node.prevNode : node.nextNode;
-
-    float t = WorldtoLine (avgPlayerPos, playerStartNode, playerEndNode);
-    Vector3 playerT = LinetoWorld(t, playerStartNode, playerEndNode);
-    Vector3 playerTtoNode = node.transform.position - playerT;
-
-    // traverse down player nodes until sufficiently far from players
-    while (playerTtoNode.sqrMagnitude < dist * dist) {
-      dist -= playerTtoNode.magnitude;
-      playerT = node.transform.position;
-      newnode = (player == PlayerID.One) ? node.prevNode : node.nextNode;
-      if (newnode == null) // can't traverse any further
-        break;
-      node = newnode;
-      playerTtoNode = node.transform.position - playerT;
-    }
-
     // update position
-    Vector3 wallDir = (player == PlayerID.One) ? -node.nextNode.prevSegmentHat : node.prevNode.segmentHat;
-    Vector3 newPos = playerT + dist*wallDir + height*Vector3.up;
+    Vector3 newPos = PositionAlongSegments(distance, avgPlayerPos, playerLeftNode, (player == PlayerID.Two));
+    newPos += new Vector3 (0, height, 0);
 
     // update rotation
-    float twall = WorldtoLine (transform.position, startNode, endNode);
-    Vector3 equiT = Vector3.Slerp(startNode.bisectorHat, endNode.bisectorHat, twall);
+    float twall = WorldtoLine (transform.position, leftNode);
+    Vector3 equiT = Vector3.Slerp(leftNode.bisectorHat, leftNode.nextNode.bisectorHat, twall);
     Quaternion newRot = Quaternion.LookRotation (equiT);
 
     if (smooth) {
@@ -93,31 +75,9 @@ public class RightOfWayWall : NodeTraversal {
     }
   }
 
-  // if you have exceeded the bounds of this segment, move to the adjacent segment
-  void CheckNodeTransition () {
-    float t = WorldtoLine (avgPlayerPos, playerStartNode, playerEndNode);
-
-    if (t >= 1 && playerEndNode.nextNode != null) {
-      playerStartNode = playerEndNode;
-      playerEndNode = playerStartNode.nextNode;
-    } else if (t < 0 && playerStartNode.prevNode != null) {
-      playerEndNode = playerStartNode;
-      playerStartNode = playerStartNode.prevNode;
-    }
-
-    float twall = WorldtoLine (transform.position, startNode, endNode);
-
-    if (twall >= 1 && endNode.nextNode != null) {
-      startNode = endNode;
-      endNode = startNode.nextNode;
-    } else if (twall < 0 && startNode.prevNode != null) {
-      endNode = startNode;
-      startNode = startNode.prevNode;
-    }
-  }
-
 	void Update () {
-    CheckNodeTransition ();
+    leftNode = CheckNodeTransition (transform.position, leftNode);
+
     if (!standStill)
       PlaceSelfAndRotate ();
 	}

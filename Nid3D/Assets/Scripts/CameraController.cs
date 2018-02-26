@@ -12,17 +12,17 @@ public class CameraController : NodeTraversal {
   public float rightOfWayTilt = 10;
   public float translationSpeed = 1;
   public float rotationSpeed = 1;
-  //public WorldNodeScript firstNode;
-  [HideInInspector] public Vector3 avgPlayerPos;
+  //[HideInInspector] public Vector3 avgPlayerPos;
 
   private float tilt;
-  private WorldNodeScript startNode;
-  private WorldNodeScript endNode;
+  private Vector3 avgPlayerPos;
+  private WorldNodeScript leftNode;
+  //[HideInInspector] public WorldNodeScript leftNode;
 
   // to be called by the GameController
-  public void Initialize (WorldNodeScript fnode) {
-    startNode = fnode;
-    endNode = startNode.nextNode;
+  public void UpdatePlayerInfo (Vector3 loc, WorldNodeScript node) {
+    avgPlayerPos = loc;
+    leftNode = node;
   }
 
   // find the camera angle from right of way
@@ -40,24 +40,9 @@ public class CameraController : NodeTraversal {
     }
   }
 
-  // if players have exceeded the bounds of this segment, move to the adjacent segment
-  void CheckNodeTransition () {
-    float t = WorldtoLine (avgPlayerPos, startNode, endNode);
-    if (debug)
-      Debug.Log (t);
 
-    if (t >= 1 && endNode.nextNode != null) {
-      startNode = endNode;
-      endNode = startNode.nextNode;    
-    } else if (t < 0 && startNode.prevNode != null) {
-      endNode = startNode;
-      startNode = startNode.prevNode;
-    }
-  }
 
   void Update () {
-    CheckNodeTransition ();
-
     Vector3 cameraLoc = avgPlayerPos; //LinetoWorld (t);
 
     // smoothly follow and point at avgPlayerPos

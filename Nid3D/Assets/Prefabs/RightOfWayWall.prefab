@@ -9,46 +9,46 @@ Prefab:
     m_Modifications: []
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
-  m_RootGameObject: {fileID: 1573693930489546}
+  m_RootGameObject: {fileID: 1394828055398724}
   m_IsPrefabParent: 1
---- !u!1 &1573693930489546
+--- !u!1 &1394828055398724
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 5
   m_Component:
-  - component: {fileID: 4164522975753972}
-  - component: {fileID: 33286835369523002}
-  - component: {fileID: 23045255853438790}
-  - component: {fileID: 114698873341034272}
-  - component: {fileID: 114097684165905526}
-  m_Layer: 0
-  m_Name: WorldNode
+  - component: {fileID: 4890210541421844}
+  - component: {fileID: 33014919717627742}
+  - component: {fileID: 65434539503579648}
+  - component: {fileID: 23563584114174616}
+  - component: {fileID: 114044850114499262}
+  m_Layer: 10
+  m_Name: RightOfWayWall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4164522975753972
+--- !u!4 &4890210541421844
 Transform:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1573693930489546}
+  m_GameObject: {fileID: 1394828055398724}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 8.25, y: 5, z: 0}
+  m_LocalScale: {x: 0.1, y: 8, z: 20}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!23 &23045255853438790
+--- !u!23 &23563584114174616
 MeshRenderer:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1573693930489546}
+  m_GameObject: {fileID: 1394828055398724}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -56,7 +56,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: d1fe36a296d164b389d444b22d459e5c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -75,48 +75,39 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!33 &33286835369523002
+--- !u!33 &33014919717627742
 MeshFilter:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1573693930489546}
-  m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &114097684165905526
+  m_GameObject: {fileID: 1394828055398724}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!65 &65434539503579648
+BoxCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1394828055398724}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &114044850114499262
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1573693930489546}
+  m_GameObject: {fileID: 1394828055398724}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 154c19fbeeda549c9852cde1eefb8da6, type: 3}
+  m_Script: {fileID: 11500000, guid: c96d06bf11b0e44e08be8850f9ece017, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  height: 1
-  bisectors: 1
-  bisRadius: 100
-  Rbis: 0
-  Gbis: 1
-  Bbis: 1
-  segments: 1
-  segRadius: 10
-  Rseg: 1
-  Gseg: 0
-  Bseg: 0
---- !u!114 &114698873341034272
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1573693930489546}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0eb84320315054f21b0ec87293db6b51, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  prevNode: {fileID: 0}
-  nextNode: {fileID: 0}
-  prevSegmentHat: {x: 0, y: 0, z: 0}
-  segmentHat: {x: 0, y: 0, z: 0}
-  bisectorHat: {x: 0, y: 0, z: 0}
+  distance: 10
+  translationSpeed: 8
+  rotationSpeed: 50
+  player: 0
+  avgPlayerPos: {x: 0, y: 0, z: 0}
+  playerLeftNode: {fileID: 0}

@@ -41,8 +41,8 @@ public class CharController : MonoBehaviour {
   public float vMaxSlope = 1;
   public float frictionCoefficient = 1;
   public float dragSlope = 1;
-  public Vector3 originToFeet = 1f * Vector3.down; // vector for player mesh
   public float respawnTime = 1;
+  public float respawnDistance = 1;
   public Object swordPrefab;
 
   [HideInInspector] public bool isDead;
@@ -50,9 +50,9 @@ public class CharController : MonoBehaviour {
   private Vector3 vXZ;
 	private Rigidbody rbody;
   private Animator animator;
+  private SkinnedMeshRenderer meshRender;
 	private CapsuleCollider capsule;
- 	private Vector3 capsuleCenter;
-	private float capsuleHeight;
+  private Vector3 originToFeet = 0.05f * Vector3.down; // vector for player mesh
 	private Height height;
   private FSM playerState;
 	private Vector3 groundNormal;
@@ -73,9 +73,8 @@ public class CharController : MonoBehaviour {
 		rbody = GetComponent<Rigidbody> ();
     rbody.constraints = RigidbodyConstraints.FreezeRotation;
 
+    meshRender = GetComponent<SkinnedMeshRenderer> ();
 		capsule = GetComponent<CapsuleCollider> ();
-		capsuleCenter = capsule.center;
-		capsuleHeight = capsule.height;
 
 		height = Height.Mid;
     if (stateText) stateText.text = "";
@@ -130,7 +129,6 @@ public class CharController : MonoBehaviour {
     case FSM.Fence:
       animator.SetInteger ("State", 0);
       //animator.Play ("FenceIdle");
-      //Debug.Log("Fence: " + vXZ.magnitude.ToString());
       break;
     case FSM.Stab:
       stabTime = Time.time;
@@ -138,7 +136,6 @@ public class CharController : MonoBehaviour {
     case FSM.Run:
       animator.SetInteger ("State", 1);
       //animator.Play ("Run");
-      //Debug.Log("Run: " + vXZ.magnitude.ToString());
       break;
     case FSM.Jump:
       rbody.AddForce (jumpForce * Vector3.up);
@@ -147,6 +144,9 @@ public class CharController : MonoBehaviour {
       isDead = true;
       rbody.velocity = Vector3.zero;
       deathTime = Time.time;
+      capsule.enabled = false;
+      meshRender.enabled = false;
+      //** drop sword
       gameController.SendMessage ("PlayerIsAlive", new PlayerAlive(playerid, false));
       break;
     default:
@@ -169,7 +169,9 @@ public class CharController : MonoBehaviour {
     isDead = false;
     transform.position = spawnLoc;
     rbody.velocity = Vector3.zero;
-    attachedSword.transform.localPosition = swordInitPos;
+    capsule.enabled = true;
+    meshRender.enabled = true;
+    attachedSword.transform.localPosition = swordInitPos; //** later on, create a new sword
     gameController.SendMessage ("PlayerIsAlive", new PlayerAlive(playerid, true));
     ChangeState (FSM.Fence);
   }
@@ -224,12 +226,12 @@ public class CharController : MonoBehaviour {
     s.transform.localPosition = swordInitPos;
     s.transform.localRotation = Quaternion.Euler (new Vector3 (90, 0, 0));
     s.transform.localScale = new Vector3 (1, 5, 1);
-    s.thisPlayer = playerid;
+    s.ChangeOwnership(playerid);
   }
 
   void DropSword() {
     //** set sword's angular and translational velocity
-    attachedSword.thisPlayer = null;
+    attachedSword.ChangeOwnership(null);
     attachedSword.transform.parent = null;
 
     attachedSword = null;
@@ -328,10 +330,11 @@ public class CharController : MonoBehaviour {
         ChangeState (FSM.Fence);
     }
   }
-
+    
   void DoDead() {
+    // coordinate with the game controller to choose a respawn location
     if (Time.time - deathTime >= respawnTime)
-      Respawn (transform.position); //** in the future, coordinate with the camera/game controller to choose a location
+      Respawn (gameController.PlayerRespawnLoc(playerid, respawnDistance));
   }
 
 
@@ -349,7 +352,7 @@ public class CharController : MonoBehaviour {
   }
 
   void LookAtNearestPlayer() {
-    float mindistance = 9999999999;
+    float mindistance = Mathf.Infinity;
     float newdistance = 0;
     int minindex = -1;
     for (int i = 0; i < otherplayers.Length; i++) {

@@ -5,16 +5,15 @@ using TeamUtility.IO;
 
 public class Sword : MonoBehaviour {
 
-  public System.Nullable<PlayerID> thisPlayer;
+  private System.Nullable<PlayerID> thisPlayer;
 
-  void ChangeOwnership(System.Nullable<PlayerID> id) {
+  public void ChangeOwnership(System.Nullable<PlayerID> id) {
     thisPlayer = id;
   }
 
   void OnTriggerEnter(Collider other) {
     CharController otherChar = other.GetComponent<CharController> ();
-    if (otherChar != null && otherChar.playerid != thisPlayer) {
+    if (otherChar != null && otherChar.playerid != thisPlayer)
       otherChar.SendMessage("Die");
-    }
   }
 }

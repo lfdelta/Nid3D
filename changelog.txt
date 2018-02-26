@@ -7,6 +7,67 @@ Name 1 & Name 2 & ...
 
 
 
+### 2/26/2018 ###
+Luca Frez-Albrecht
+1. EndZone prefab, which sends a message to the GameController when the corresponding players enters its trigger
+2. when a player enters their end zone, GameController waits a few seconds while displaying the victory message, then reloads the current scene
+3. new physics/collider layers for Players and PlayerInteractibles, ie so that the WorldBoundary doesn't check collisions with every single object in the scene for each frame, only for the players
+
+
+
+### 2/25/2018 ###
+Luca Frez-Albrecht
+1. rewrote NodeTraversal functions and scripts inheriting it to only track the leftmost node (startNode -> leftNode; endNode removed)
+2. using the above, rewrote CheckNodeTransition so that it could be implemented in the NodeTraversal class rather than copied and pasted in each place a small variation was needed
+3. implemented the "place" part of ROWWalls' PlaceSelfAndRotate inside of NodeTraversal
+4. GameController now does all tracking of player position/corresponding node and calls update functions inside of the camera and wall scripts. the code structure is getting a lot cleaner overall
+5. players now coordinate with the GameController to choose an appropriate respawn location--almost trivial after constructing and refactoring the node system
+6. WorldBoundary prefab: when a player exits this box, they will die; use this as a safeguard in addition to (or a convenience in place of) kill planes
+7. when one player has right of way and the other player touches the remaining ROW wall, the player without right of way dies--so that they can respawn in front of the ROW player
+8. created a KillPlane prefab with a slight modification of the WorldBoundary script (now called KillPlayer)
+
+
+
+### 2/24/2018 ###
+Luca Frez-Albrecht
+1. RightOfWayWalls traverse the segments properly now, and follow the players' projection onto the WorldNode segments, though they still misbehave past the endpoints
+2. more debug options for WorldNodes, including the ability to edit multiple nodes' debug settings at once by selecting them all in the inspector at runtime
+3. new scene, Linear, implementing a zigzagging map
+4. created a NodeTraversal class which is inherited by CameraController and RightOfWayWall, to host common functions
+5. walls rotate to align themselves with equi-t lines
+6. walls now behave when /they/ are beyond the endpoints, as long as the average /player/ position doesn't venture beyond the world nodes
+7. walls remain stationary when nobody has the right of way, and the appropriate wall is disabled when a player does have the right of way
+8. moved Fencer prefab's mesh renderer into a prefab component rather than a child object
+9. players disappear from view while they are dead
+
+
+
+### 2/23/2018 ###
+Luca Frez-Albrecht
+1. NodeDrawBisector script to assist visualization and debugging
+2. first WorldNode is now set in the GameController, which passes it along the CameraController on initialization
+3. RightOfWayWalls are technically in place, but their positioning algorithm is seriously busted, probably due to a misnavigation of the segments
+
+
+### 2/20/2018 ###
+Luca Frez-Albrecht
+1. new initialization code for WorldNodeScript to calculate the "segment" unit vectors connecting each node, as well as to compute the angle-bisector of the segments connecting each node to its predecessor and follower
+2. implemented relatively efficient (mostly float multiplication) parametrization of any world-space position onto the XZ-projected world nodes' connecting line segments inside of CameraController WorldToLine(), using the angle-bisectors
+3. smooth camera translation and rotation controlled by public parameters
+4. WorldNodeScript shows only nextNode in inspector; prevNode is automatically initialized. if appropriate, this can be easily reversed (manual initialization) by removing the [HideInInspector] tag and the "nextNode.prevNode = this" segment in Awake()
+5. deleted CameraNode prefab and script, now that its functionality has been (mostly) rewritten elsewhere. again, we can use git history to reacquire these files if appropriate
+
+
+
+### 2/19/2018 ###
+Luca Frez-Albrecht
+1. establishing code in WorldNodeScript
+2. placed more of the player-tracking workload (average position) inside of the GameController instead of the CameraController, so that the information can be calculated once and used by various objects in every frame
+3. removed the unused code in CameraNodeScript
+4. UpdateTilt() function in CameraController allows the update to occur only when the right-of-way changes rather than with every update
+
+
+
 ### 2/17/2018 ###
 Luca Frez-Albrecht w/ Molly O'Donnell, Ashley Li
 1. replaced Fencer.blend with Molly's new version, including an en garde animation in place of the default T pose

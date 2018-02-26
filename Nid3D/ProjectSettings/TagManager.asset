@@ -14,8 +14,8 @@ TagManager:
   - 
   - 
   - SwordCollider
-  - 
-  - 
+  - Players
+  - PlayerInteractibles
   - 
   - 
   - 

@@ -7,6 +7,14 @@ Name 1 & Name 2 & ...
 
 
 
+### 2/26/2018 ###
+Luca Frez-Albrecht
+1. EndZone prefab, which sends a message to the GameController when the corresponding players enters its trigger
+2. when a player enters their end zone, GameController waits a few seconds while displaying the victory message, then reloads the current scene
+3. new physics/collider layers for Players and PlayerInteractibles, ie so that the WorldBoundary doesn't check collisions with every single object in the scene for each frame, only for the players
+
+
+
 ### 2/25/2018 ###
 Luca Frez-Albrecht
 1. rewrote NodeTraversal functions and scripts inheriting it to only track the leftmost node (startNode -> leftNode; endNode removed)

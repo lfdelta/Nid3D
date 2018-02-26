@@ -2,16 +2,23 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using TeamUtility.IO;
 
 public class GameController : NodeTraversal {
   public WorldNodeScript startingNode;
+  public float victoryMessageTime = 2;
   public Canvas pauseUI;
   public GameObject startPanel;
   public GameObject[] otherPanels;
   public Object wallPrefab;
 
   private System.Nullable<PlayerID> rightOfWay;
+  private System.Nullable<PlayerID> victor;
+  private float winTime;
+  private string winText;
+  private GUIStyle winFormat;
+  private Rect winRect;
   private bool gameIsPaused;
   private CharController[] players;
   private Transform[] livePlayers;
@@ -27,10 +34,10 @@ public class GameController : NodeTraversal {
     pauseUI.enabled = false;
     gameIsPaused = false;
     rightOfWay = null;
+    victor = null;
     playerNode = startingNode;
 
     cam = FindObjectOfType<CameraController> ();
-    //cam.UpdatePlayerInfo (startingNode);
 
     leftWall = ((GameObject)Instantiate (wallPrefab)).GetComponent<RightOfWayWall> ();
     rightWall = ((GameObject)Instantiate (wallPrefab)).GetComponent<RightOfWayWall> ();
@@ -50,6 +57,10 @@ public class GameController : NodeTraversal {
   }
 
   void Update() {
+    // if a player wins, wait while a message displays, then reload the scene (later, load a menu scene)
+    if (victor != null && Time.time - winTime > victoryMessageTime)
+      SceneManager.LoadScene (SceneManager.GetActiveScene ().buildIndex);
+
     bool pauseButton = Tools.CheckButtonBothPlayers(InputManager.GetButtonDown, "Pause");
 
     if (pauseButton) {
@@ -69,6 +80,11 @@ public class GameController : NodeTraversal {
       rightWall.SendMessage ("PlaceSelfAndRotate", false);
       initializedWalls = true;
     }
+  }
+
+  void OnGUI() {
+    if (victor != null)
+      GUI.Label (winRect, winText, winFormat);
   }
 
 
@@ -144,6 +160,18 @@ public class GameController : NodeTraversal {
   }
 
 
+
+  // meant to be called by EndZone script
+  void PlayerWonGame(PlayerID pid) {
+    victor = pid;
+    winTime = Time.time;
+    winText = "<color=red>Player " + victor.ToString() + " Wins!</color>";
+    float w = Screen.width, h = Screen.height;
+    winRect = new Rect (w/4, h/4, w/2, h/2);
+    winFormat = new GUIStyle ();
+    winFormat.fontSize = 100;
+    winFormat.richText = true;
+  }
 
   void PauseGame() {
     Time.timeScale = 0;

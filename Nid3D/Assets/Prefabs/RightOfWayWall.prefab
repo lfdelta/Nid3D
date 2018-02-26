@@ -23,7 +23,7 @@ GameObject:
   - component: {fileID: 65434539503579648}
   - component: {fileID: 23563584114174616}
   - component: {fileID: 114044850114499262}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: RightOfWayWall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -110,4 +110,4 @@ MonoBehaviour:
   rotationSpeed: 50
   player: 0
   avgPlayerPos: {x: 0, y: 0, z: 0}
-  playerStartNode: {fileID: 0}
+  playerLeftNode: {fileID: 0}

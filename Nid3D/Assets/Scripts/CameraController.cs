@@ -12,17 +12,15 @@ public class CameraController : NodeTraversal {
   public float rightOfWayTilt = 10;
   public float translationSpeed = 1;
   public float rotationSpeed = 1;
-  //[HideInInspector] public Vector3 avgPlayerPos;
 
   private float tilt;
   private Vector3 avgPlayerPos;
-  private WorldNodeScript leftNode;
-  //[HideInInspector] public WorldNodeScript leftNode;
+  //private WorldNodeScript leftNode;
 
   // to be called by the GameController
   public void UpdatePlayerInfo (Vector3 loc, WorldNodeScript node) {
     avgPlayerPos = loc;
-    leftNode = node;
+    //leftNode = node;
   }
 
   // find the camera angle from right of way

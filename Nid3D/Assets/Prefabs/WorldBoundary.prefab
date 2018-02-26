@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: 4006019258921610}
   - component: {fileID: 65341045827914630}
   - component: {fileID: 114480397518978668}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: WorldBoundary
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -64,3 +64,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a00b63079efb4ba5b0c360240196e31, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  killOnEnter: 0

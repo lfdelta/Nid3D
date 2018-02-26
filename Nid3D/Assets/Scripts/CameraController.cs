@@ -44,6 +44,8 @@ public class CameraController : NodeTraversal {
 
   void Update () {
     Vector3 cameraLoc = avgPlayerPos; //LinetoWorld (t);
+    if (cameraLoc.y < 0)
+      cameraLoc = new Vector3 (cameraLoc.x, 0, cameraLoc.z);
 
     // smoothly follow and point at avgPlayerPos
     Vector3 separation = new Vector3(Mathf.Sin(Mathf.Deg2Rad * tilt), 0, Mathf.Cos(Mathf.Deg2Rad * tilt)); // unit length

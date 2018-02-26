@@ -13,8 +13,7 @@ public class Sword : MonoBehaviour {
 
   void OnTriggerEnter(Collider other) {
     CharController otherChar = other.GetComponent<CharController> ();
-    if (otherChar != null && otherChar.playerid != thisPlayer) {
+    if (otherChar != null && otherChar.playerid != thisPlayer)
       otherChar.SendMessage("Die");
-    }
   }
 }

@@ -866,6 +866,7 @@ MonoBehaviour:
   frictionCoefficient: 10
   dragSlope: 20
   respawnTime: 1
+  respawnDistance: 10
   swordPrefab: {fileID: 1480079597263848, guid: 95d8afc1e8923412b92336e8835617c1,
     type: 2}
   isDead: 0

@@ -74,6 +74,15 @@ public class RightOfWayWall : NodeTraversal {
       transform.rotation = newRot;
     }
   }
+    
+  // if the player that doesn't have right of way touches this plane, and this plane is moving, kill them
+  // (so that they respawn in front of the player who has right of way)
+  void OnCollisionEnter(Collision col) {
+    CharController otherChar = col.collider.GetComponent<CharController> ();
+    if (!standStill && otherChar != null && otherChar.playerid != player) {
+      otherChar.SendMessage("Die");
+    }
+  }
 
 	void Update () {
     leftNode = CheckNodeTransition (transform.position, leftNode);

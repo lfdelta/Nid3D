@@ -14,6 +14,9 @@ Luca Frez-Albrecht
 3. implemented the "place" part of ROWWalls' PlaceSelfAndRotate inside of NodeTraversal
 4. GameController now does all tracking of player position/corresponding node and calls update functions inside of the camera and wall scripts. the code structure is getting a lot cleaner overall
 5. players now coordinate with the GameController to choose an appropriate respawn location--almost trivial after constructing and refactoring the node system
+6. WorldBoundary prefab: when a player exits this box, they will die; use this as a safeguard in addition to (or a convenience in place of) kill planes
+7. when one player has right of way and the other player touches the remaining ROW wall, the player without right of way dies--so that they can respawn in front of the ROW player
+8. created a KillPlane prefab with a slight modification of the WorldBoundary script (now called KillPlayer)
 
 
 

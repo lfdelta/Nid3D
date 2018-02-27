@@ -155,8 +155,10 @@ public class GameController : NodeTraversal {
   }
 
   // meant to be called from inside of CharController
+  // respawns the given player in front of the other; if both are dead, they respawn centered between the ROW walls
   public Vector3 PlayerRespawnLoc(PlayerID player, float dist) {
-    return PositionAlongSegments (dist, avgPlayerPos, playerNode, (player == PlayerID.Two));
+    Vector3 startLoc = (rightOfWay != null) ? avgPlayerPos : (rightWall.transform.position + leftWall.transform.position) / 2;
+    return PositionAlongSegments (dist, startLoc, playerNode, (player == PlayerID.Two));
   }
 
 

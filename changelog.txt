@@ -14,6 +14,7 @@ Luca Frez-Albrecht
 3. new physics/collider layers for Players and PlayerInteractibles, ie so that the WorldBoundary doesn't check collisions with every single object in the scene for each frame, only for the players
 4. if both players are dead, their respawn positions are centered between the ROW walls, rather than centered at their previous average position, preventing one from spawning inside the walls while the other spawns outside
 5. end zones (in Linear scene) resized, and colored to match their player
+6. sword position changes continuously (but rapidly) when a player adjusts their height
 
 
 

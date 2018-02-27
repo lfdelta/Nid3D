@@ -265,11 +265,15 @@ public class CharController : MonoBehaviour {
       ChangeState (FSM.Jump);
 
     // handle sword height, if a sword is attached
-    if (controlState.heightChange != 0 && attachedSword) {
-      height += controlState.heightChange;
-      height = (Height)Tools.Clamp ((int)height, (int)Height.Low, (int)Height.Throw);
+    if (attachedSword) {
+      if (controlState.heightChange != 0) {
+        height += controlState.heightChange;
+        height = (Height)Tools.Clamp ((int)height, (int)Height.Low, (int)Height.Throw);
+      }
       Vector3 pos = attachedSword.transform.localPosition;
-      attachedSword.transform.localPosition = new Vector3(pos.x, SwordHeightPos (), pos.z);
+      Vector3 newpos = new Vector3(pos.x, SwordHeightPos (), pos.z);
+      //** there are probably more natural-looking interpolation curves for this than a linear
+      attachedSword.transform.localPosition = Vector3.Lerp (pos, newpos, 30 * Time.deltaTime);
     }
 
     if (controlState.attack && isGrounded && attachedSword)

@@ -15,6 +15,9 @@ Luca Frez-Albrecht
 4. if both players are dead, their respawn positions are centered between the ROW walls, rather than centered at their previous average position, preventing one from spawning inside the walls while the other spawns outside
 5. end zones (in Linear scene) resized, and colored to match their player
 6. sword position changes continuously (but rapidly) when a player adjusts their height
+7. fixed a small bug where the victor could exit/enter the trigger to keep the message showing indefinitely
+8. NodeDebug no longer compiled for builds (it crashes the build if it tries)
+9. increased right-of-way wall size so that players can't just jump around them
 
 
 

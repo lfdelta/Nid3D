@@ -156,8 +156,9 @@ public class GameController : NodeTraversal {
 
   // meant to be called from inside of CharController
   // respawns the given player in front of the other; if both are dead, they respawn centered between the ROW walls
-  public Vector3 PlayerRespawnLoc(PlayerID player, float dist) {
+  public Vector3 PlayerRespawnLoc(PlayerID player, float distance) {
     Vector3 startLoc = (rightOfWay != null) ? avgPlayerPos : (rightWall.transform.position + leftWall.transform.position) / 2;
+    float dist = (rightOfWay != null) ? distance : distance / 2;
     return PositionAlongSegments (dist, startLoc, playerNode, (player == PlayerID.Two));
   }
 
@@ -165,6 +166,9 @@ public class GameController : NodeTraversal {
 
   // meant to be called by EndZone script
   void PlayerWonGame(PlayerID pid) {
+    if (victor != null) // ignore the message if somebody already won
+      return;
+    
     victor = pid;
     winTime = Time.time;
     winText = "<color=red>Player " + victor.ToString() + " Wins!</color>";

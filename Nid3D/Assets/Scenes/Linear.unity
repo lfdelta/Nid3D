@@ -887,17 +887,17 @@ Prefab:
     - target: {fileID: 114097684165905526, guid: dceca418ef3ca417ab75d27d4ee5491a,
         type: 2}
       propertyPath: bisectors
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114097684165905526, guid: dceca418ef3ca417ab75d27d4ee5491a,
         type: 2}
       propertyPath: segments
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 23045255853438790, guid: dceca418ef3ca417ab75d27d4ee5491a,
         type: 2}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: dceca418ef3ca417ab75d27d4ee5491a, type: 2}
@@ -1910,17 +1910,17 @@ Prefab:
     - target: {fileID: 114097684165905526, guid: dceca418ef3ca417ab75d27d4ee5491a,
         type: 2}
       propertyPath: bisectors
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114097684165905526, guid: dceca418ef3ca417ab75d27d4ee5491a,
         type: 2}
       propertyPath: segments
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 23045255853438790, guid: dceca418ef3ca417ab75d27d4ee5491a,
         type: 2}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: dceca418ef3ca417ab75d27d4ee5491a, type: 2}
@@ -2784,7 +2784,7 @@ MonoBehaviour:
       joystick: 1
     isExpanded: 1
   _playerOneDefault: P1Keyboard
-  _playerTwoDefault: P1Gamepad
+  _playerTwoDefault: P2Keyboard
   _playerThreeDefault: 
   _playerFourDefault: 
   _dontDestroyOnLoad: 1
@@ -3234,17 +3234,17 @@ Prefab:
     - target: {fileID: 114097684165905526, guid: dceca418ef3ca417ab75d27d4ee5491a,
         type: 2}
       propertyPath: bisectors
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114097684165905526, guid: dceca418ef3ca417ab75d27d4ee5491a,
         type: 2}
       propertyPath: segments
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 23045255853438790, guid: dceca418ef3ca417ab75d27d4ee5491a,
         type: 2}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: dceca418ef3ca417ab75d27d4ee5491a, type: 2}
@@ -3716,17 +3716,17 @@ Prefab:
     - target: {fileID: 114097684165905526, guid: dceca418ef3ca417ab75d27d4ee5491a,
         type: 2}
       propertyPath: bisectors
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114097684165905526, guid: dceca418ef3ca417ab75d27d4ee5491a,
         type: 2}
       propertyPath: segments
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 23045255853438790, guid: dceca418ef3ca417ab75d27d4ee5491a,
         type: 2}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: dceca418ef3ca417ab75d27d4ee5491a, type: 2}
@@ -3950,17 +3950,17 @@ Prefab:
     - target: {fileID: 114097684165905526, guid: dceca418ef3ca417ab75d27d4ee5491a,
         type: 2}
       propertyPath: bisectors
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114097684165905526, guid: dceca418ef3ca417ab75d27d4ee5491a,
         type: 2}
       propertyPath: segments
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 23045255853438790, guid: dceca418ef3ca417ab75d27d4ee5491a,
         type: 2}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: dceca418ef3ca417ab75d27d4ee5491a, type: 2}
@@ -4026,17 +4026,17 @@ Prefab:
     - target: {fileID: 114097684165905526, guid: dceca418ef3ca417ab75d27d4ee5491a,
         type: 2}
       propertyPath: bisectors
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114097684165905526, guid: dceca418ef3ca417ab75d27d4ee5491a,
         type: 2}
       propertyPath: segments
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 23045255853438790, guid: dceca418ef3ca417ab75d27d4ee5491a,
         type: 2}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: dceca418ef3ca417ab75d27d4ee5491a, type: 2}

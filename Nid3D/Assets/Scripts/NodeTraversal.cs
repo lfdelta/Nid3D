@@ -2,21 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// it might be possible/useful to rewrite these functions without an "end" parameter and compute it automatically
-
 public class NodeTraversal : MonoBehaviour {
-  
+
   // converts a world position to a t value (typically in [0,1]) along the current node segment
-  //protected float WorldtoLine(Vector3 loc, WorldNodeScript start, WorldNodeScript end) {
   protected static float WorldtoLine(Vector3 loc, WorldNodeScript start) {
     WorldNodeScript end = start.nextNode;
-    Vector3 projection = new Vector3 (1, 0, 1);
-    Vector3 r0 = Vector3.Scale (loc - start.transform.position, projection);
-    Vector3 r1 = Vector3.Scale (loc - end.transform.position, projection);
+    Vector3 r0 = loc - start.transform.position;
+    Vector3 r1 = loc - end.transform.position;
 
-    // calculate r vectors in terms of the non-orthonormal bisector-segment basis; t is the segment-vector component
-    // this formula is derived using [e1, e2]<a,b> = <x,z> for oblique basis vectors e1, e2; r = <x,z>
-    // for e1 = segmentHat, we are interested in t' = a
+    // calculate r vectors in terms of the oblique bisector-segment basis; t is the component along segmentHat
+    // this formula is derived using [e1, e2]<a,b> = <x,z> for oblique basis vectors e1, e2; cartesian vector r = <x,z>
+    // for e1 = segmentHat, we are interested in t'
     Vector3 l0 = start.segmentHat;
     Vector3 b0 = start.bisectorHat;
     float t0 = (r0.x * b0.z - r0.z * b0.x) / (l0.x * b0.z - l0.z * b0.x);
@@ -37,7 +33,6 @@ public class NodeTraversal : MonoBehaviour {
   }
 
   // converts a t value to the linear interpolation between start and end node positions
-  //protected Vector3 LinetoWorld(float t, WorldNodeScript start, WorldNodeScript end) {
   protected static Vector3 LinetoWorld(float t, WorldNodeScript start) {
     WorldNodeScript end = start.nextNode;
     return start.transform.position + t*(end.transform.position - start.transform.position);
@@ -60,9 +55,8 @@ public class NodeTraversal : MonoBehaviour {
   // this position is a given distance, traveling along the world node segments,
   // from startLoc's projection onto its current line segment (defined by "start")
   // moveForward == true will traverse forward/rightward along the world nodes; false traverses in reverse
-  protected Vector3 PositionAlongSegments(float distance, Vector3 startLoc, WorldNodeScript start, bool moveForward) {
+  protected static Vector3 PositionAlongSegments(float distance, Vector3 startLoc, WorldNodeScript start, bool moveForward) {
     float dist = distance;
-    Vector3 pos = transform.position;
     WorldNodeScript node = moveForward ? start.nextNode : start;
     WorldNodeScript destNode = moveForward ? node.nextNode: node.prevNode;
 

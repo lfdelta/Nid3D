@@ -18,8 +18,8 @@ public class WorldNodeScript : MonoBehaviour {
   //* initialization assumes that there are at least two WorldNodeScripts in the linked list
   // calculate vector to next node and doubly-link the list
 	void Awake () {
-    segmentHat = (nextNode != null) ? (nextNode.transform.position - transform.position) : Vector3.zero;
-    segmentHat = Vector3.Scale(segmentHat, projection).normalized;
+    segmentHat = (nextNode != null) ? (nextNode.transform.position - transform.position).normalized : Vector3.zero;
+    //segmentHat = Vector3.Scale(segmentHat, projection).normalized;
     if (nextNode != null)
       nextNode.prevNode = this;
   }
@@ -28,7 +28,7 @@ public class WorldNodeScript : MonoBehaviour {
   // if this is the end of the list, copy in the connected segment vector
   void Start () {
     prevSegmentHat = (prevNode != null) ? prevNode.segmentHat : Vector3.zero;
-    bisectorHat = VectorBisector (prevSegmentHat, segmentHat);
+    bisectorHat = VectorBisectorinXZ (prevSegmentHat, segmentHat);
 
     // make sure all bisectors are pointing in the same half-space (dot product >= 0)
     if (bisectorHat.z < 0)
@@ -41,12 +41,15 @@ public class WorldNodeScript : MonoBehaviour {
   }
 
   // returns a unit vector which is the angle-bisector of the (zero or equal-length) inputs
-  Vector3 VectorBisector(Vector3 prev, Vector3 seg) {
-    if (prev == Vector3.zero)
+  Vector3 VectorBisectorinXZ(Vector3 prev, Vector3 seg) {
+    prev = Vector3.Scale (prev, projection).normalized;
+    seg = Vector3.Scale (seg, projection).normalized;
+
+    if (prev == Vector3.zero || prev == seg)
       return PerpendicularVector (seg);
     if (seg == Vector3.zero)
       return PerpendicularVector (prev);
-
+   
     return (seg - prev).normalized;
   }
 

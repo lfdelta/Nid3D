@@ -7,6 +7,13 @@ Name 1 & Name 2 & ...
 
 
 
+### 3/5/2018 ###
+Luca Frez-Albrecht
+1. Spiral scene to test 3D maps
+2. slight modifications to WorldNodeScript and NodeTraversal to allow for node traversal in three dimensions, as opposed to only in the XZ plane
+
+
+
 ### 2/26/2018 ###
 Luca Frez-Albrecht
 1. EndZone prefab, which sends a message to the GameController when the corresponding players enters its trigger

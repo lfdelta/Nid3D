@@ -10,6 +10,9 @@ Name 1 & Name 2 & ...
 ### 3/7/2018 ###
 Luca Frez-Albrecht
 1. implemented an algorithm, based upon tracking each segment's normal vector, to ensure all WorldNodeScript bisectors are pointing in the same half-space defined by the line segments (ie inside of a spiral or outside), to prevent over-rotation of the RightOfWayWalls when interpolating between nodes
+2. sword height (the Height enum) is reset upon player respawning
+3. players can adjust their sword height while in any player state; we could alternately create a function to selective adjust the height only in certain states, but it should be allowed in more than just the FSM.Fence state
+4. EndZones are now deactivated unless their associated player has the right of way, and offer visual feedback by swapping to a neutral material while inactive
 
 
 

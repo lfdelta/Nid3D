@@ -98,6 +98,18 @@ public class CharController : MonoBehaviour {
     CheckGround ();
     vXZ = Vector3.ProjectOnPlane(rbody.velocity, groundNormal);
 
+    // handle sword height, if a sword is attached (tentatively moved from DoFence)
+    if (attachedSword) {
+      if (controlState.heightChange != 0) {
+        height += controlState.heightChange;
+        height = (Height)Tools.Clamp ((int)height, (int)Height.Low, (int)Height.Throw);
+      }
+      Vector3 pos = attachedSword.transform.localPosition;
+      Vector3 newpos = new Vector3(pos.x, SwordHeightPos (), pos.z);
+      //** there are probably more natural-looking interpolation curves for this than a linear
+      attachedSword.transform.localPosition = Vector3.Lerp (pos, newpos, 30 * Time.deltaTime);
+    }
+
     switch (playerState) {
     case FSM.Fence:
       LookAtNearestPlayer();
@@ -172,6 +184,7 @@ public class CharController : MonoBehaviour {
     capsule.enabled = true;
     meshRender.enabled = true;
     attachedSword.transform.localPosition = swordInitPos; //** later on, create a new sword
+    height = Height.Mid;
     gameController.SendMessage ("PlayerIsAlive", new PlayerAlive(playerid, true));
     ChangeState (FSM.Fence);
   }
@@ -263,18 +276,6 @@ public class CharController : MonoBehaviour {
       ChangeState (FSM.Run);
     if (isGrounded && controlState.jump)
       ChangeState (FSM.Jump);
-
-    // handle sword height, if a sword is attached
-    if (attachedSword) {
-      if (controlState.heightChange != 0) {
-        height += controlState.heightChange;
-        height = (Height)Tools.Clamp ((int)height, (int)Height.Low, (int)Height.Throw);
-      }
-      Vector3 pos = attachedSword.transform.localPosition;
-      Vector3 newpos = new Vector3(pos.x, SwordHeightPos (), pos.z);
-      //** there are probably more natural-looking interpolation curves for this than a linear
-      attachedSword.transform.localPosition = Vector3.Lerp (pos, newpos, 30 * Time.deltaTime);
-    }
 
     if (controlState.attack && isGrounded && attachedSword)
       ChangeState (FSM.Stab);

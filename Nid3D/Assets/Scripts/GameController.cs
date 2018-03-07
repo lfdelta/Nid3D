@@ -28,6 +28,7 @@ public class GameController : NodeTraversal {
   private WorldNodeScript playerNode;
   private RightOfWayWall leftWall;
   private RightOfWayWall rightWall;
+  private EndZone[] endZones;
   private bool initializedGame = false;
 
   void Awake () {
@@ -38,6 +39,7 @@ public class GameController : NodeTraversal {
     playerNode = startingNode;
 
     cam = FindObjectOfType<CameraController> ();
+    endZones = FindObjectsOfType<EndZone> ();
 
     leftWall = ((GameObject)Instantiate (wallPrefab)).GetComponent<RightOfWayWall> ();
     rightWall = ((GameObject)Instantiate (wallPrefab)).GetComponent<RightOfWayWall> ();
@@ -153,6 +155,8 @@ public class GameController : NodeTraversal {
     cam.UpdateROW (rightOfWay);
     leftWall.UpdateROW (rightOfWay);
     rightWall.UpdateROW (rightOfWay);
+    for (int i = 0; i < endZones.Length; i++)
+      endZones [i].UpdateROW (rightOfWay);
   }
 
   // meant to be called from inside of CharController

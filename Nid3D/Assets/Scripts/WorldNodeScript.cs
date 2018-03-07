@@ -13,13 +13,12 @@ public class WorldNodeScript : MonoBehaviour {
   [HideInInspector] public Vector3 segmentHat; // pointing toward next node
   [HideInInspector] public Vector3 bisectorHat; // bisecting the line segments extending from this node\
 
-  private Vector3 projection = new Vector3 (1, 0, 1);
+  private static Vector3 projection = new Vector3 (1, 0, 1);
 	
   //* initialization assumes that there are at least two WorldNodeScripts in the linked list
   // calculate vector to next node and doubly-link the list
 	void Awake () {
     segmentHat = (nextNode != null) ? (nextNode.transform.position - transform.position).normalized : Vector3.zero;
-    //segmentHat = Vector3.Scale(segmentHat, projection).normalized;
     if (nextNode != null)
       nextNode.prevNode = this;
   }
@@ -30,10 +29,6 @@ public class WorldNodeScript : MonoBehaviour {
     prevSegmentHat = (prevNode != null) ? prevNode.segmentHat : Vector3.zero;
     bisectorHat = VectorBisectorinXZ (prevSegmentHat, segmentHat);
 
-    // make sure all bisectors are pointing in the same half-space (dot product >= 0)
-    if (bisectorHat.z < 0)
-      bisectorHat = -bisectorHat;
-
     if (segmentHat == Vector3.zero)
       segmentHat = prevSegmentHat;
     if (prevSegmentHat == Vector3.zero)
@@ -41,7 +36,7 @@ public class WorldNodeScript : MonoBehaviour {
   }
 
   // returns a unit vector which is the angle-bisector of the (zero or equal-length) inputs
-  Vector3 VectorBisectorinXZ(Vector3 prev, Vector3 seg) {
+  public static Vector3 VectorBisectorinXZ(Vector3 prev, Vector3 seg) {
     prev = Vector3.Scale (prev, projection).normalized;
     seg = Vector3.Scale (seg, projection).normalized;
 
@@ -54,7 +49,7 @@ public class WorldNodeScript : MonoBehaviour {
   }
 
   // returns the perpendicular unit vector, assuming v.y == 0
-  Vector3 PerpendicularVector(Vector3 v) {
+  public static Vector3 PerpendicularVector(Vector3 v) {
     if (v.z == 0)
       return new Vector3 (0, 0, 1);
 

@@ -11,6 +11,7 @@ public class NodeDebug : MonoBehaviour {
   public float height = 1;
 
   public bool bisectors = true;
+  public bool bisBoth = false;
   public float bisRadius = 100;
   public float Rbis=1, Gbis=1, Bbis=1;
 
@@ -61,7 +62,7 @@ public class NodeDebug : MonoBehaviour {
 
     if (bisectors) {
       GL.Color (new Color (Rbis, Gbis, Bbis, 1));
-      GL.Vertex (-bisRadius * node.bisectorHat + hvector);
+      GL.Vertex (bisBoth ? (-bisRadius * node.bisectorHat + hvector) : Vector3.zero);
       GL.Vertex (bisRadius * node.bisectorHat + hvector);
     }
     if (segments) {
@@ -84,12 +85,13 @@ public class NodeDebug : MonoBehaviour {
 [CanEditMultipleObjects]
 public class NodeDebugInspector : Editor {
   SerializedProperty height;
-  SerializedProperty bisectors, bisRadius, Rbis, Gbis, Bbis;
+  SerializedProperty bisectors, bisBoth, bisRadius, Rbis, Gbis, Bbis;
   SerializedProperty segments, segRadius, Rseg, Gseg, Bseg;
 
   void OnEnable () {
     height = serializedObject.FindProperty ("height");
     bisectors = serializedObject.FindProperty ("bisectors");
+    bisBoth = serializedObject.FindProperty ("bisBoth");
     bisRadius = serializedObject.FindProperty ("bisRadius");
     Rbis = serializedObject.FindProperty ("Rbis");
     Gbis = serializedObject.FindProperty ("Gbis");
@@ -107,6 +109,7 @@ public class NodeDebugInspector : Editor {
 
     EditorGUILayout.PropertyField(height, new GUIContent("Draw Height"));
     EditorGUILayout.PropertyField(bisectors, new GUIContent("Bisectors"));
+    EditorGUILayout.PropertyField(bisBoth, new GUIContent("Both Directions"));
     EditorGUILayout.PropertyField(bisRadius, new GUIContent("Radius"));
     EditorGUILayout.PropertyField(Rbis, new GUIContent("R"));
     EditorGUILayout.PropertyField(Gbis, new GUIContent("G"));

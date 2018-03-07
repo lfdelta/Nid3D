@@ -28,7 +28,7 @@ public class GameController : NodeTraversal {
   private WorldNodeScript playerNode;
   private RightOfWayWall leftWall;
   private RightOfWayWall rightWall;
-  private bool initializedWalls = false;
+  private bool initializedGame = false;
 
   void Awake () {
     pauseUI.enabled = false;
@@ -75,10 +75,11 @@ public class GameController : NodeTraversal {
 
     // heavy-handed solution to walls freezing in default position on scene load
     // we can't do this in Start() because the node bisectors are still uninitialized
-    if (!initializedWalls) {
+    if (!initializedGame) {
+      SetUpNodeBisectors ();
       leftWall.SendMessage ("PlaceSelfAndRotate", false);
       rightWall.SendMessage ("PlaceSelfAndRotate", false);
-      initializedWalls = true;
+      initializedGame = true;
     }
   }
 
@@ -213,5 +214,29 @@ public class GameController : NodeTraversal {
       players [i] = (CharController)allChars [i];
 
     return players;
+  }
+
+  // make sure the WorldNode bisectors are all pointing in the same "half-space" defined by the line segments
+  // ie on a spiral section all of them will be pointing "inward" or all of them will pointing "outward"
+  // this ensures that the ROW walls don't over-rotate when interpolating between adjacent nodes
+  void SetUpNodeBisectors() {
+    // walk to the beginning of the list; its bisector is the following segment's normal vector
+    WorldNodeScript tmp = startingNode;
+      while (tmp.prevNode != null)
+      tmp = tmp.prevNode;
+    Vector3 nhat = tmp.bisectorHat;
+    tmp = tmp.nextNode;
+
+    // make sure each bisector is facing the right direction, based upon the previous segment's normal vector
+    while (tmp != null) {
+      if (Vector3.Dot (tmp.bisectorHat, nhat) < 0)
+        tmp.bisectorHat = -tmp.bisectorHat;
+      
+      nhat = WorldNodeScript.PerpendicularVector (tmp.segmentHat);
+      if (Vector3.Dot (tmp.bisectorHat, nhat) < 0)
+        nhat = -nhat;
+      
+      tmp = tmp.nextNode;
+    }
   }
 }

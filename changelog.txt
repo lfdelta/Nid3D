@@ -7,6 +7,12 @@ Name 1 & Name 2 & ...
 
 
 
+### 3/10/2018 ###
+Luca Frez-Albrecht
+1. Shadow prefab and CastShadow script to see player shadows (soon to be an ellipse texture) projected onto the ground beneath them. circumvents the directional lighting/shadow system because players' shadows would be drowned out when standing below planes which also cast shadows onto the floor
+
+
+
 ### 3/7/2018 ###
 Luca Frez-Albrecht
 1. implemented an algorithm, based upon tracking each segment's normal vector, to ensure all WorldNodeScript bisectors are pointing in the same half-space defined by the line segments (ie inside of a spiral or outside), to prevent over-rotation of the RightOfWayWalls when interpolating between nodes

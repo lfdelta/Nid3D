@@ -44,6 +44,7 @@ public class CharController : MonoBehaviour {
   public float respawnTime = 1;
   public float respawnDistance = 1;
   public Object swordPrefab;
+  public Object shadowPrefab;
 
   [HideInInspector] public bool isDead;
 
@@ -65,7 +66,7 @@ public class CharController : MonoBehaviour {
 
 
 
-	void Start () {
+	void Awake () {
     sqrWalkingSpeed = walkingSpeed * walkingSpeed;
     sqrRunningSpeed = runningSpeed * runningSpeed;
 
@@ -88,6 +89,10 @@ public class CharController : MonoBehaviour {
 
     Object s = Instantiate (swordPrefab);
     AttachSword (((GameObject)s).GetComponent<Sword>());
+
+    Object sh = Instantiate (shadowPrefab);
+    CastShadow csh = ((GameObject)sh).GetComponent<CastShadow> ();
+    csh.casterPos = transform;
 	}
 
 

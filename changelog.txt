@@ -10,6 +10,8 @@ Name 1 & Name 2 & ...
 ### 3/10/2018 ###
 Luca Frez-Albrecht
 1. Shadow prefab and CastShadow script to see player shadows (soon to be an ellipse texture) projected onto the ground beneath them. circumvents the directional lighting/shadow system because players' shadows would be drowned out when standing below planes which also cast shadows onto the floor
+2. shadow texture (and material) implemented and added to the prefab
+3. disabled constructed shadows because I discovered how to prevent certain objects from casting shadows. however, the shadows drawn by the engine are still not ideal, because the player models are so narrow
 
 
 

@@ -90,9 +90,9 @@ public class CharController : MonoBehaviour {
     Object s = Instantiate (swordPrefab);
     AttachSword (((GameObject)s).GetComponent<Sword>());
 
-    Object sh = Instantiate (shadowPrefab);
+    /*Object sh = Instantiate (shadowPrefab);
     CastShadow csh = ((GameObject)sh).GetComponent<CastShadow> ();
-    csh.casterPos = transform;
+    csh.casterPos = transform;*/
 	}
 
 

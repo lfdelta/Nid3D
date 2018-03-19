@@ -890,8 +890,7 @@ MonoBehaviour:
   runningSpeed: 10
   rotationSpeed: 30
   moveForce: 100
-  jumpForce: 700
-  groundCheckDist: 0.1
+  jumpForce: 900
   vMaxSlope: 10
   frictionCoefficient: 10
   dragSlope: 20

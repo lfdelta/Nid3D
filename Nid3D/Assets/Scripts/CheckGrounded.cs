@@ -5,7 +5,7 @@ using UnityEngine;
 public class CheckGrounded : MonoBehaviour {
   private CharController controller;
   private List<Collider> activeColliders;
-  private Vector3 groundNormal; // normal vector of object most recently entered
+  //private Vector3 groundNormal; // normal vector of object most recently entered
 
   void Awake () {
     controller = GetComponentInParent<CharController> ();
@@ -26,6 +26,6 @@ public class CheckGrounded : MonoBehaviour {
     bool isGrounded = (activeColliders.Count > 0);
     controller.SendMessage ("SetGrounded", isGrounded);
 
-    Debug.Log (controller.playerid + " " + isGrounded);
+    //Debug.Log (controller.playerid + " " + isGrounded);
   }
 }

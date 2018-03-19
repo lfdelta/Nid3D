@@ -14,6 +14,8 @@ Luca Frez-Albrecht
 3. automatically initialize CharInput component rather than redundantly assigning its player number in the editor
 4. further increased gravity (and jump force, to maintain jump height)
 5. players are only affected by gravity when they are not grounded, so they no longer slide while standing on sloped surfaces
+6. Sword objects disable their trigger collider and SwordBox colliders when dropped, and re-enable them when picked up
+7. players now DropSword upon death and create a new sword when respawning, but there are bugs associated with the Sword hierarchy and the relative transforms
 
 
 

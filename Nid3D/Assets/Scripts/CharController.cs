@@ -36,7 +36,7 @@ public class CharController : MonoBehaviour {
   float sqrWalkingSpeed, sqrRunningSpeed;
   public float moveForce = 50;
 	public float jumpForce = 500;
-	public float groundCheckDist = 0.1f;
+	//public float groundCheckDist = 0.1f;
   public float vMaxSlope = 1;
   public float frictionCoefficient = 1;
   public float dragSlope = 1;
@@ -53,7 +53,7 @@ public class CharController : MonoBehaviour {
   private Animator animator;
   private SkinnedMeshRenderer meshRender;
 	private CapsuleCollider capsule;
-  private Vector3 originToFeet = 0.05f * Vector3.down; // vector for player mesh
+  //private Vector3 originToFeet = 0.05f * Vector3.down; // vector for player mesh
 	private Height height;
   private FSM playerState;
 	private Vector3 groundNormal;
@@ -87,8 +87,7 @@ public class CharController : MonoBehaviour {
 
     gameController = FindObjectOfType<GameController>();
 
-    Object s = Instantiate (swordPrefab);
-    AttachSword (((GameObject)s).GetComponent<Sword>());
+    AttachNewSword ();
 
     /*Object sh = Instantiate (shadowPrefab);
     CastShadow csh = ((GameObject)sh).GetComponent<CastShadow> ();
@@ -164,7 +163,7 @@ public class CharController : MonoBehaviour {
       deathTime = Time.time;
       capsule.enabled = false;
       meshRender.enabled = false;
-      //** drop sword
+      DropSword ();
       gameController.SendMessage ("PlayerIsAlive", new PlayerAlive(playerid, false));
       break;
     default:
@@ -189,7 +188,8 @@ public class CharController : MonoBehaviour {
     rbody.velocity = Vector3.zero;
     capsule.enabled = true;
     meshRender.enabled = true;
-    attachedSword.transform.localPosition = swordInitPos; //** later on, create a new sword
+    //attachedSword.transform.localPosition = swordInitPos; //** later on, create a new sword
+    AttachNewSword();
     height = Height.Mid;
     gameController.SendMessage ("PlayerIsAlive", new PlayerAlive(playerid, true));
     ChangeState (FSM.Fence);
@@ -248,12 +248,19 @@ public class CharController : MonoBehaviour {
     s.ChangeOwnership(playerid);
   }
 
-  void DropSword() {
-    //** set sword's angular and translational velocity
-    attachedSword.ChangeOwnership(null);
-    attachedSword.transform.parent = null;
+  void AttachNewSword() {
+    Object s = Instantiate (swordPrefab);
+    AttachSword (((GameObject)s).GetComponent<Sword>());
+  }
 
-    attachedSword = null;
+  void DropSword() {
+    if (attachedSword != null) {
+      //** set sword's angular and translational velocity
+      attachedSword.ChangeOwnership (null);
+      attachedSword.transform.parent = null;
+
+      attachedSword = null;
+    }
   }
 
   float SwordHeightPos () {

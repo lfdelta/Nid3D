@@ -7,6 +7,16 @@ Name 1 & Name 2 & ...
 
 
 
+### 3/19/2018 ###
+Luca Frez-Albrecht
+1. Sword objects no longer receive shadows
+2. added a capsule trigger collider to the players' feet in order to check collisions with the ground even on slopes, using the new GroundColliders layer and CheckGrounded script
+3. automatically initialize CharInput component rather than redundantly assigning its player number in the editor
+4. further increased gravity (and jump force, to maintain jump height)
+5. players are only affected by gravity when they are not grounded, so they no longer slide while standing on sloped surfaces
+
+
+
 ### 3/10/2018 ###
 Luca Frez-Albrecht
 1. Shadow prefab and CastShadow script to see player shadows (soon to be an ellipse texture) projected onto the ground beneath them. circumvents the directional lighting/shadow system because players' shadows would be drowned out when standing below planes which also cast shadows onto the floor

@@ -11,12 +11,13 @@ public class CharInput : MonoBehaviour {
   private Vector3 camInXZ;
   private Vector3 move;
   private GameController gameController;
-  public PlayerID playerID;
-  public PlayerControlState controlState;
+  private PlayerID playerID;
+  [HideInInspector] public PlayerControlState controlState;
 
-  void Start () {
+  void Awake () {
     gameController = FindObjectOfType<GameController> ();
     character = GetComponent<CharController>();
+    playerID = character.playerid;
     cam = Camera.main.transform;
     controlState = new PlayerControlState ();
   }

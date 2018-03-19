@@ -25,7 +25,6 @@ public class CharController : MonoBehaviour {
   public Text stateText;
 
   // concerning the state of the character
-  private bool isGrounded;
 	private enum Height {Low, Mid, High, Throw};
   private enum FSM {Fence, Stab, Run, Jump, BunnyHop,
                    Roll, LedgeGrab, Stunned, Dead};
@@ -48,6 +47,7 @@ public class CharController : MonoBehaviour {
 
   [HideInInspector] public bool isDead;
 
+  private bool isGrounded;
   private Vector3 vXZ;
 	private Rigidbody rbody;
   private Animator animator;
@@ -100,8 +100,9 @@ public class CharController : MonoBehaviour {
 	public void UpdateCharacter (PlayerControlState newControlState) {
     controlState = newControlState;
     
-    CheckGround ();
-    vXZ = Vector3.ProjectOnPlane(rbody.velocity, groundNormal);
+    //CheckGround ();
+    //vXZ = Vector3.ProjectOnPlane(rbody.velocity, groundNormal);
+    vXZ = Vector3.ProjectOnPlane(rbody.velocity, Vector3.up);
 
     // handle sword height, if a sword is attached (tentatively moved from DoFence)
     if (attachedSword) {
@@ -384,7 +385,7 @@ public class CharController : MonoBehaviour {
 
 
 
-	void CheckGround() {
+	/*void CheckGround() {
 		RaycastHit info;
 		// send raycast from just above the feet
 		if (Physics.Raycast (transform.position + originToFeet + 0.1f*Vector3.up,
@@ -395,7 +396,13 @@ public class CharController : MonoBehaviour {
 			isGrounded = false;
 			groundNormal = Vector3.up;
 		}
-	}
+	}*/
+
+  // called by CheckGrounded child object
+  void SetGrounded(bool grounded) {
+    isGrounded = grounded;
+    rbody.useGravity = !grounded;
+  }
 
 
 

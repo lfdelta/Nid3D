@@ -62,7 +62,9 @@ public class CharController : MonoBehaviour {
   private float deathTime, stabTime;
   private GameController gameController;
   private Sword attachedSword;
-  private Vector3 swordInitPos = new Vector3(0, 16.8f, -9.9f);
+  private Vector3 swordInitPos = new Vector3 (0, 16.8f, -9.9f);
+  private Quaternion swordLocalRot = Quaternion.Euler (new Vector3 (90, 0, 0));
+  private Vector3 swordLocalScale = new Vector3 (1, 5, 1);
 
 
 
@@ -243,8 +245,8 @@ public class CharController : MonoBehaviour {
     attachedSword = s;
     s.transform.parent = transform;
     s.transform.localPosition = swordInitPos;
-    s.transform.localRotation = Quaternion.Euler (new Vector3 (90, 0, 0));
-    s.transform.localScale = new Vector3 (1, 5, 1);
+    s.transform.localRotation = swordLocalRot;
+    s.transform.localScale = swordLocalScale;
     s.ChangeOwnership(playerid);
   }
 

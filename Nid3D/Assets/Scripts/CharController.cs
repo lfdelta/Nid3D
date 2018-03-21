@@ -190,7 +190,6 @@ public class CharController : MonoBehaviour {
     rbody.velocity = Vector3.zero;
     capsule.enabled = true;
     meshRender.enabled = true;
-    //attachedSword.transform.localPosition = swordInitPos; //** later on, create a new sword
     AttachNewSword();
     height = Height.Mid;
     gameController.SendMessage ("PlayerIsAlive", new PlayerAlive(playerid, true));

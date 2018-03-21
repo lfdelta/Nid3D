@@ -65,3 +65,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   killOnEnter: 0
+  killAllPlayers: 1
+  playerToKill: 0

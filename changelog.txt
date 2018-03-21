@@ -7,6 +7,14 @@ Name 1 & Name 2 & ...
 
 
 
+### 3/21/2018 ###
+Luca Frez-Albrecht
+1. restructured Sword prefab's hierarchy, thereby fixing the problem of the parent/child colliders and rigidbodies (all on different collision layers) separating upon deactivation
+2. KillPlayer script modified to allow the option to kill all players or only a particular one
+3. sword-player hitbox is now a KillPlayer script, separate from (but childed to) the main Sword script
+
+
+
 ### 3/19/2018 ###
 Luca Frez-Albrecht
 1. Sword objects no longer receive shadows

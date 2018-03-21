@@ -6,15 +6,21 @@ using TeamUtility.IO;
 public class Sword : MonoBehaviour {
 
   private System.Nullable<PlayerID> thisPlayer;
-  private CapsuleCollider capsule;
+  private Rigidbody rbody;
   private GameObject swordBox;
-  private GameObject groundCollider;
+  private GameObject playerCollider;
+  private KillPlayer hitbox;
 
   void Awake() {
-    capsule = GetComponent<CapsuleCollider> ();
+    rbody = GetComponent<Rigidbody> ();
     swordBox = transform.GetChild(0).gameObject;
-    groundCollider = transform.GetChild (1).gameObject;
-    Activate (true);
+    playerCollider = transform.GetChild (1).gameObject;
+
+    hitbox = playerCollider.GetComponent<KillPlayer> ();
+    hitbox.killOnEnter = true;
+    hitbox.killAllPlayers = false;
+
+    ChangeOwnership (null);
   }
 
   public void ChangeOwnership(System.Nullable<PlayerID> id) {
@@ -22,15 +28,24 @@ public class Sword : MonoBehaviour {
     Activate (id != null);
   }
 
-  void OnTriggerEnter(Collider other) {
-    CharController otherChar = other.GetComponent<CharController> ();
-    if (otherChar != null && otherChar.playerid != thisPlayer)
-      otherChar.SendMessage("Die");
+  void Activate(bool isActive) {
+    if (isActive) {
+      rbody.constraints = RigidbodyConstraints.FreezeAll;
+      hitbox.playerToKill = OtherPlayer();
+    } else {
+      rbody.constraints = RigidbodyConstraints.None;
+    }
+
+    swordBox.SetActive(isActive);
+    playerCollider.SetActive (isActive);
   }
 
-  void Activate(bool isActive) {
-    capsule.enabled = isActive;
-    swordBox.SetActive(isActive);
-    groundCollider.SetActive (!isActive);
+  PlayerID OtherPlayer() {
+    switch (thisPlayer) {
+    case PlayerID.One:
+      return PlayerID.Two;
+    default:
+      return PlayerID.One;
+    }
   }
 }

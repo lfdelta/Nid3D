@@ -337,7 +337,7 @@ GameObject:
   - component: {fileID: 136782335346765458}
   - component: {fileID: 114855255010812014}
   m_Layer: 11
-  m_Name: Capsule
+  m_Name: GroundCollider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

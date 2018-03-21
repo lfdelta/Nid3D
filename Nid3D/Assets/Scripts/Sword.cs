@@ -17,7 +17,6 @@ public class Sword : MonoBehaviour {
     playerCollider = transform.GetChild (1).gameObject;
 
     hitbox = playerCollider.GetComponent<KillPlayer> ();
-    hitbox.killOnEnter = true;
     hitbox.killAllPlayers = false;
 
     ChangeOwnership (null);

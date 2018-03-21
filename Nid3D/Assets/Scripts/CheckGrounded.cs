@@ -22,6 +22,7 @@ public class CheckGrounded : MonoBehaviour {
     SendGroundedMessage ();
   }
 
+  // if this object is colliding with anything, the player is grounded
   void SendGroundedMessage() {
     bool isGrounded = (activeColliders.Count > 0);
     controller.SendMessage ("SetGrounded", isGrounded);

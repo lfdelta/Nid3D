@@ -37,4 +37,9 @@ public class EndZone : MonoBehaviour {
         gameController.SendMessage ("PlayerWonGame", player);
     }
   }
+
+  // in case the player is already standing inside the endzone when it is activated
+  void OnTriggerStay(Collider other) {
+    OnTriggerEnter (other);
+  }
 }

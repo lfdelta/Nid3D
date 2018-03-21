@@ -12,7 +12,10 @@ Luca Frez-Albrecht
 1. restructured Sword prefab's hierarchy, thereby fixing the problem of the parent/child colliders and rigidbodies (all on different collision layers) separating upon deactivation
 2. KillPlayer script modified to allow the option to kill all players or only a particular one
 3. sword-player hitbox is now a KillPlayer script, separate from (but childed to) the main Sword script
-
+4. fixed a minor bug where players who were standing inside of an EndZone before it was activated would not win until they left and re-entered the trigger
+5. new WorldBoundary script which not only kills players but also destroys other game objects which leave its trigger
+6. two new physics layers, WorldBounds and (for the swords) CollideGround_DestroyOnExit, in order to jump through hoops with respect to checking player ground-collision
+7. simplified KillPlayer script, removing the functionality which was ported to WorldBoundary
 
 
 ### 3/19/2018 ###

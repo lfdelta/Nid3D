@@ -115,6 +115,11 @@ public class CharController : MonoBehaviour {
       Vector3 newpos = new Vector3(pos.x, SwordHeightPos (), pos.z);
       //** there are probably more natural-looking interpolation curves for this than a linear
       attachedSword.transform.localPosition = Vector3.Lerp (pos, newpos, 30 * Time.deltaTime);
+
+      bool isMoving = Mathf.Abs (pos.y - newpos.y) > 0.01 * 4;
+      attachedSword.SetDisarmStatus(isMoving);
+
+      attachedSword.meshRender.material = isMoving ? attachedSword.disarmMaterial : attachedSword.defaultMaterial;
     }
 
     switch (playerState) {
@@ -165,7 +170,7 @@ public class CharController : MonoBehaviour {
       deathTime = Time.time;
       capsule.enabled = false;
       meshRender.enabled = false;
-      DropSword ();
+      DropSword (false);
       gameController.SendMessage ("PlayerIsAlive", new PlayerAlive(playerid, false));
       break;
     default:
@@ -254,7 +259,7 @@ public class CharController : MonoBehaviour {
     AttachSword (((GameObject)s).GetComponent<Sword>());
   }
 
-  void DropSword() {
+  void DropSword(bool disarmed) {
     if (attachedSword != null) {
       //** set sword's angular and translational velocity
       attachedSword.ChangeOwnership (null);

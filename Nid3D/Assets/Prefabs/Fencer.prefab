@@ -896,7 +896,7 @@ MonoBehaviour:
   dragSlope: 20
   respawnTime: 1
   respawnDistance: 10
-  swordPrefab: {fileID: 1097362156647174, guid: eac2f60cfa9f84f8aa2e591697dfe851,
+  swordPrefab: {fileID: 1755684750533756, guid: f14c7a2092d854a3aaed21dfeea67a5e,
     type: 2}
   shadowPrefab: {fileID: 1948002704431614, guid: 9768a174fc9ad474fa07e5f445adaf89,
     type: 2}

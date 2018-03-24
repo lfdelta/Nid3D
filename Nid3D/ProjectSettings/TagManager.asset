@@ -18,7 +18,7 @@ TagManager:
   - PlayerInteractibles
   - GroundColliders
   - WorldBounds
-  - 
+  - CollideGround_DestroyOnExit
   - 
   - 
   - 

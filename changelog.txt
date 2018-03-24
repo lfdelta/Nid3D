@@ -7,6 +7,14 @@ Name 1 & Name 2 & ...
 
 
 
+### 3/24/2018 ###
+1. gave CharController's DropSword() a boolean parameter, which will later be used to determine the sword's motion based upon whether the player was killed or disarmed
+2. Sword script has (likely temporary) debug functionality which changes the renderer material while the sword is in its "can disarm other swords" state
+3. Sword prefab contains two new child objects, each one containing a SwordDisarm script which disarms any player if it collides with their sword while in the active "can disarm" state
+4. ported PlayerID OtherPlayer(PlayerID) from Sword to the Tools script
+
+
+
 ### 3/21/2018 ###
 Luca Frez-Albrecht
 1. restructured Sword prefab's hierarchy, thereby fixing the problem of the parent/child colliders and rigidbodies (all on different collision layers) separating upon deactivation

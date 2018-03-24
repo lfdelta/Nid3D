@@ -36,7 +36,6 @@ public class CharController : MonoBehaviour {
   float sqrWalkingSpeed, sqrRunningSpeed;
   public float moveForce = 50;
 	public float jumpForce = 500;
-	//public float groundCheckDist = 0.1f;
   public float vMaxSlope = 1;
   public float frictionCoefficient = 1;
   public float dragSlope = 1;
@@ -53,7 +52,6 @@ public class CharController : MonoBehaviour {
   private Animator animator;
   private SkinnedMeshRenderer meshRender;
 	private CapsuleCollider capsule;
-  //private Vector3 originToFeet = 0.05f * Vector3.down; // vector for player mesh
 	private Height height;
   private FSM playerState;
 	private Vector3 groundNormal;
@@ -61,7 +59,9 @@ public class CharController : MonoBehaviour {
   private GameObject[] otherplayers;
   private float deathTime, stabTime;
   private GameController gameController;
+
   private Sword attachedSword;
+  private float swordHeightIncrement = 4;
   private Vector3 swordInitPos = new Vector3 (0, 16.8f, -9.9f);
   private Quaternion swordLocalRot = Quaternion.Euler (new Vector3 (90, 0, 0));
   private Vector3 swordLocalScale = new Vector3 (1, 5, 1);
@@ -100,12 +100,11 @@ public class CharController : MonoBehaviour {
 
 	public void UpdateCharacter (PlayerControlState newControlState) {
     controlState = newControlState;
-    
-    //CheckGround ();
+
     //vXZ = Vector3.ProjectOnPlane(rbody.velocity, groundNormal);
     vXZ = Vector3.ProjectOnPlane(rbody.velocity, Vector3.up);
 
-    // handle sword height, if a sword is attached (tentatively moved from DoFence)
+    // handle sword height, if a sword is attached
     if (attachedSword) {
       if (controlState.heightChange != 0) {
         height += controlState.heightChange;
@@ -113,10 +112,10 @@ public class CharController : MonoBehaviour {
       }
       Vector3 pos = attachedSword.transform.localPosition;
       Vector3 newpos = new Vector3(pos.x, SwordHeightPos (), pos.z);
-      //** there are probably more natural-looking interpolation curves for this than a linear
+      //** there are probably more natural-looking interpolation curves for this than asymptotic-exponential
       attachedSword.transform.localPosition = Vector3.Lerp (pos, newpos, 30 * Time.deltaTime);
 
-      bool isMoving = Mathf.Abs (pos.y - newpos.y) > 0.01 * 4;
+      bool isMoving = Mathf.Abs (pos.y - newpos.y) > 0.01 * swordHeightIncrement;
       attachedSword.SetDisarmStatus(isMoving);
 
       attachedSword.meshRender.material = isMoving ? attachedSword.disarmMaterial : attachedSword.defaultMaterial;
@@ -259,9 +258,16 @@ public class CharController : MonoBehaviour {
     AttachSword (((GameObject)s).GetComponent<Sword>());
   }
 
+  // parameter tells whether the player was disarmed or killed, determining the sword's resulting motion
   void DropSword(bool disarmed) {
     if (attachedSword != null) {
-      //** set sword's angular and translational velocity
+      // set the sword's angular and translational velocity
+      if (disarmed) {
+        attachedSword.rbody.AddForce (20 * Vector3.up + 7 * transform.forward, ForceMode.VelocityChange);
+        attachedSword.rbody.AddTorque (200 * attachedSword.transform.right, ForceMode.VelocityChange);
+      }
+
+      // uncouple the sword from this player
       attachedSword.ChangeOwnership (null);
       attachedSword.transform.parent = null;
 
@@ -273,14 +279,14 @@ public class CharController : MonoBehaviour {
     float init = swordInitPos.y;
     switch (height) {
     case Height.Low:
-      return init - 4;
+      return init - swordHeightIncrement;
     default:
     case Height.Mid:
       return init;
     case Height.High:
-      return init + 4;
+      return init + swordHeightIncrement;
     case Height.Throw:
-      return init + 8;
+      return init + swordHeightIncrement + swordHeightIncrement;
     }
   }
 
@@ -395,21 +401,8 @@ public class CharController : MonoBehaviour {
     if (vXZ.sqrMagnitude > 0.01)
       PointCharacter (vXZ);
   }
+    
 
-
-
-	/*void CheckGround() {
-		RaycastHit info;
-		// send raycast from just above the feet
-		if (Physics.Raycast (transform.position + originToFeet + 0.1f*Vector3.up,
-                         Vector3.down, out info, groundCheckDist)) {
-			isGrounded = true;
-			groundNormal = info.normal;
-		} else {
-			isGrounded = false;
-			groundNormal = Vector3.up;
-		}
-	}*/
 
   // called by CheckGrounded child object
   void SetGrounded(bool grounded) {

@@ -12,6 +12,8 @@ Name 1 & Name 2 & ...
 2. Sword script has (likely temporary) debug functionality which changes the renderer material while the sword is in its "can disarm other swords" state
 3. Sword prefab contains two new child objects, each one containing a SwordDisarm script which disarms any player if it collides with their sword while in the active "can disarm" state
 4. ported PlayerID OtherPlayer(PlayerID) from Sword to the Tools script
+5. created a swordHeightIncrement variable inside CharController, to define the value in only one location rather than hard-coding it throughout the script
+6. when a player is disarmed, their sword is flung behind them while rotating; values can be tweaked in side of CharController.DropSword()
 
 
 

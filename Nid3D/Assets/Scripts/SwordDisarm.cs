@@ -5,7 +5,7 @@ using TeamUtility.IO;
 
 public class SwordDisarm : MonoBehaviour {
 
-  [HideInInspector] public bool canDisarm = false; // updated via CharController
+  [HideInInspector] public bool canDisarm = false; // updated via Sword, in turn via CharController
 
   // if this collides with another sword, then tell the player holding it to drop the sword
   void OnTriggerEnter (Collider other) {

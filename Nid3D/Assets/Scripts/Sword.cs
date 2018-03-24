@@ -10,7 +10,7 @@ public class Sword : MonoBehaviour {
   [HideInInspector] public Material defaultMaterial;
 
   [HideInInspector] public System.Nullable<PlayerID> thisPlayer;
-  private Rigidbody rbody;
+  [HideInInspector] public Rigidbody rbody;
   private GameObject swordBox;
   private GameObject playerCollider;
   private GameObject topDisarm;

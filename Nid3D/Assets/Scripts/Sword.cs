@@ -5,9 +5,9 @@ using TeamUtility.IO;
 
 public class Sword : MonoBehaviour {
 
-  public Material disarmMaterial;
-  [HideInInspector] public MeshRenderer meshRender;
-  [HideInInspector] public Material defaultMaterial;
+  //public Material disarmMaterial;
+  //[HideInInspector] public MeshRenderer meshRender;
+  //[HideInInspector] public Material defaultMaterial;
 
   [HideInInspector] public System.Nullable<PlayerID> thisPlayer;
   [HideInInspector] public Rigidbody rbody;
@@ -32,8 +32,8 @@ public class Sword : MonoBehaviour {
     hitbox = playerCollider.GetComponent<KillPlayer> ();
     hitbox.killAllPlayers = false;
 
-    meshRender = GetComponent<MeshRenderer> ();
-    defaultMaterial = meshRender.material;
+    //meshRender = GetComponent<MeshRenderer> ();
+    //defaultMaterial = meshRender.material;
 
     ChangeOwnership (null);
   }

@@ -118,7 +118,7 @@ public class CharController : MonoBehaviour {
       bool isMoving = Mathf.Abs (pos.y - newpos.y) > 0.01 * swordHeightIncrement;
       attachedSword.SetDisarmStatus(isMoving);
 
-      attachedSword.meshRender.material = isMoving ? attachedSword.disarmMaterial : attachedSword.defaultMaterial;
+      //attachedSword.meshRender.material = isMoving ? attachedSword.disarmMaterial : attachedSword.defaultMaterial;
     }
 
     switch (playerState) {

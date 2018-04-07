@@ -40,7 +40,15 @@ public class Sword : MonoBehaviour {
 
   public void ChangeOwnership(System.Nullable<PlayerID> id) {
     thisPlayer = id;
+
     Activate (id != null);
+
+    if (id != null) {
+      rbody.constraints = RigidbodyConstraints.FreezeAll;
+      hitbox.playerToKill = Tools.OtherPlayer((PlayerID)thisPlayer);
+    } else {
+      rbody.constraints = RigidbodyConstraints.None;
+    }
   }
 
   public void SetDisarmStatus(bool canDisarm) {
@@ -49,13 +57,6 @@ public class Sword : MonoBehaviour {
   }
 
   void Activate(bool isActive) {
-    if (isActive) {
-      rbody.constraints = RigidbodyConstraints.FreezeAll;
-      hitbox.playerToKill = Tools.OtherPlayer((PlayerID)thisPlayer);
-    } else {
-      rbody.constraints = RigidbodyConstraints.None;
-    }
-
     swordBox.SetActive(isActive);
     playerCollider.SetActive (isActive);
     topDisarm.SetActive (isActive);

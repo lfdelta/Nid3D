@@ -75,15 +75,14 @@ public class CharInput : MonoBehaviour {
         - (InputManager.GetButtonDown ("HeightDown", playerID) ? 1 : 0);
         if (controlState.heightChange != 0) { // you started pressing the button this frame
           controlState.heightHoldStartTime = Time.time;
-          controlState.heightHold = controlState.heightChange; // set the hold
+          controlState.heightHold = controlState.heightChange;
         }
       }
-      if (controlState.heightHold != controlState.heightChange) // you changed directions or stopped between frames
-          controlState.heightHold = 0;
-      controlState.heightHold = controlState.heightChange;
-      ///*** get heightChange (buttonDown) -> if Change then set holdTime
-      /// get currentHold (button) -> if (Hold != 0 && hold == currentHold) then check time, else Hold = 0
-      /// use heightHeldLongEnough to transmit signal from heightHeld
+      int currentHold = (InputManager.GetButton ("HeightUp", playerID) ? 1 : 0) - (InputManager.GetButton ("HeightDown", playerID) ? 1 : 0);
+      if (currentHold != controlState.heightHold) // you changed directions or stopped between frames
+        controlState.heightHeldLongEnough = false;
+      else if (currentHold != 0) // you've been holding the same direction for multiple frames
+        controlState.heightHeldLongEnough = (Time.time - controlState.heightHoldStartTime) > heightHoldDuration;
 
       if (!controlState.jump)
         controlState.jump = InputManager.GetButtonDown ("Jump", playerID);

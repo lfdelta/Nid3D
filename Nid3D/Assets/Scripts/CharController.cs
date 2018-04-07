@@ -22,10 +22,8 @@ public class PlayerAlive {
 [RequireComponent(typeof(CapsuleCollider))]
 public class CharController : MonoBehaviour {
 
-  public Text stateText;
-
   // concerning the state of the character
-	private enum Height {Low, Mid, High, Throw};
+	private enum Height {Low, Mid, High};
   private enum FSM {Fence, Stab, Run, Jump, BunnyHop,
                    Roll, LedgeGrab, Stunned, Dead};
 
@@ -54,16 +52,21 @@ public class CharController : MonoBehaviour {
 	private CapsuleCollider capsule;
 	private Height height;
   private FSM playerState;
-	private Vector3 groundNormal;
+	//private Vector3 groundNormal;
   private PlayerControlState controlState;
   private GameObject[] otherplayers;
   private float deathTime, stabTime;
   private GameController gameController;
 
+  private bool tryToThrowSword;
+  private bool tryToCrouch;
+
   private Sword attachedSword;
   private float swordHeightIncrement = 4;
   private Vector3 swordInitPos = new Vector3 (0, 16.8f, -9.9f);
   private Quaternion swordLocalRot = Quaternion.Euler (new Vector3 (90, 0, 0));
+  private Vector3 tryThrowSwordPos;
+  private Quaternion tryThrowSwordRot = Quaternion.identity;
   private Vector3 swordLocalScale = new Vector3 (1, 5, 1);
 
 
@@ -80,7 +83,6 @@ public class CharController : MonoBehaviour {
 		capsule = GetComponent<CapsuleCollider> ();
 
 		height = Height.Mid;
-    if (stateText) stateText.text = "";
     playerState = FSM.Fence;
     isDead = false;
     controlState = new PlayerControlState ();
@@ -90,6 +92,9 @@ public class CharController : MonoBehaviour {
     gameController = FindObjectOfType<GameController>();
 
     AttachNewSword ();
+    tryToThrowSword = false;
+    tryToCrouch = false;
+    tryThrowSwordPos = swordInitPos + 2 * swordHeightIncrement * Vector3.up;
 
     /*Object sh = Instantiate (shadowPrefab);
     CastShadow csh = ((GameObject)sh).GetComponent<CastShadow> ();
@@ -104,19 +109,31 @@ public class CharController : MonoBehaviour {
     //vXZ = Vector3.ProjectOnPlane(rbody.velocity, groundNormal);
     vXZ = Vector3.ProjectOnPlane(rbody.velocity, Vector3.up);
 
+    tryToThrowSword = (controlState.heightHeldLongEnough && controlState.heightHold == 1);
+    tryToCrouch = (controlState.heightHeldLongEnough && controlState.heightHold == -1);
+
     // handle sword height, if a sword is attached
     if (attachedSword) {
       if (controlState.heightChange != 0) {
         height += controlState.heightChange;
-        height = (Height)Tools.Clamp ((int)height, (int)Height.Low, (int)Height.Throw);
+        height = (Height)Tools.Clamp ((int)height, (int)Height.Low, (int)Height.High);
       }
-      Vector3 pos = attachedSword.transform.localPosition;
-      Vector3 newpos = new Vector3(pos.x, SwordHeightPos (), pos.z);
-      //** there are probably more natural-looking interpolation curves for this than asymptotic-exponential
-      attachedSword.transform.localPosition = Vector3.Lerp (pos, newpos, 30 * Time.deltaTime);
 
-      bool isMoving = Mathf.Abs (pos.y - newpos.y) > 0.01 * swordHeightIncrement;
-      attachedSword.SetDisarmStatus(isMoving);
+      attachedSword.SendMessage ("Activate", (playerState == FSM.Fence && !tryToThrowSword) || playerState == FSM.Stab); // this might be very slow
+
+      if (tryToThrowSword) {
+        attachedSword.transform.localPosition = tryThrowSwordPos;
+        attachedSword.transform.localRotation = tryThrowSwordRot;
+      } else {
+        Vector3 pos = attachedSword.transform.localPosition;
+        Vector3 newpos = new Vector3 (pos.x, SwordHeightPos (), pos.z);
+        //** there are probably more natural-looking interpolation curves for this than asymptotic-exponential
+        attachedSword.transform.localPosition = Vector3.Lerp (pos, newpos, 30 * Time.deltaTime);
+        attachedSword.transform.localRotation = swordLocalRot;
+
+        bool isMoving = Mathf.Abs (pos.y - newpos.y) > 0.01 * swordHeightIncrement;
+        attachedSword.SetDisarmStatus (isMoving);
+      }
 
       //attachedSword.meshRender.material = isMoving ? attachedSword.disarmMaterial : attachedSword.defaultMaterial;
     }
@@ -143,8 +160,6 @@ public class CharController : MonoBehaviour {
       DoDead ();
       break;
     }
-
-    if (stateText) stateText.text = playerState.ToString ();
   }
 
   void ChangeState(FSM state) {
@@ -261,16 +276,16 @@ public class CharController : MonoBehaviour {
   // parameter tells whether the player was disarmed or killed, determining the sword's resulting motion
   void DropSword(bool disarmed) {
     if (attachedSword != null) {
+      // uncouple the sword from this player
+      attachedSword.ChangeOwnership (null);
+      attachedSword.transform.parent = null;
+
       // set the sword's angular and translational velocity
       if (disarmed) {
         attachedSword.rbody.AddForce (20 * Vector3.up + 7 * transform.forward, ForceMode.VelocityChange);
         attachedSword.rbody.AddTorque (200 * attachedSword.transform.right, ForceMode.VelocityChange);
       }
-
-      // uncouple the sword from this player
-      attachedSword.ChangeOwnership (null);
-      attachedSword.transform.parent = null;
-
+        
       attachedSword = null;
     }
   }
@@ -285,8 +300,6 @@ public class CharController : MonoBehaviour {
       return init;
     case Height.High:
       return init + swordHeightIncrement;
-    case Height.Throw:
-      return init + swordHeightIncrement + swordHeightIncrement;
     }
   }
 
@@ -302,10 +315,18 @@ public class CharController : MonoBehaviour {
     if (isGrounded && controlState.jump)
       ChangeState (FSM.Jump);
 
-    if (controlState.attack && isGrounded && attachedSword)
-      ChangeState (FSM.Stab);
+    if (controlState.attack && attachedSword) {
+      if (tryToThrowSword)
+        ThrowSword ();
+      else if (isGrounded)
+        ChangeState (FSM.Stab);
+    }
   }
     
+  void ThrowSword() {
+
+  }
+
   // initiate a sequence of nested helper functions
   void DoStab() {
     MoveXZ (Vector3.zero); // ignore player inputs while stabbing
@@ -346,8 +367,13 @@ public class CharController : MonoBehaviour {
       ChangeState (FSM.Jump);
     if (vXZ.sqrMagnitude < sqrWalkingSpeed)
       ChangeState (FSM.Fence);
-    if (controlState.attack && attachedSword)
-      ChangeState (FSM.Stab);
+    
+    if (controlState.attack && attachedSword) {
+      if (tryToThrowSword)
+        ThrowSword ();
+      else if (isGrounded)
+        ChangeState (FSM.Stab);
+    }
   }
 
   void DoJump () {
@@ -359,6 +385,9 @@ public class CharController : MonoBehaviour {
       else
         ChangeState (FSM.Fence);
     }
+
+    if (controlState.attack && tryToThrowSword && attachedSword)
+      ThrowSword ();
   }
     
   void DoDead() {

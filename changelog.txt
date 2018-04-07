@@ -7,6 +7,22 @@ Name 1 & Name 2 & ...
 
 
 
+### 4/6/2018 ###
+Luca Frez-Albrecht
+1. removed Height.Throw from enum, replacing its behavior using the bool tryToThrowSword
+2. implemented the sword-throwing position, and inserted the ThrowSword() function into the FSM states where the player is allowed to do that
+3. set the sword to not be Active unless the player is fencing (and not trying to throw the sword) or the player is actively stabbing; in all other states their swords should not cause damage to other players
+4. moved the Sword.Activate code related to rigidbody constraints and player ineractions to Sword.ChangeOwnership so that we can deactivate the sword without allowing it to be affected by gravity, etc
+
+
+
+### 4/4/2018 ###
+Luca Frez-Albrecht
+1. finished CharInput code to track sword-height buttons being held down
+2. bools in CharController based on player holding height buttons: tryToCrouch and tryToThrowSword
+
+
+
 ### 4/3/2018 ###
 Luca Frez-Albrecht
 1. commented out Sword debug code

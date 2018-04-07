@@ -68,6 +68,7 @@ public class CharController : MonoBehaviour {
   private Vector3 tryThrowSwordPos;
   private Quaternion tryThrowSwordRot = Quaternion.identity;
   private Vector3 swordLocalScale = new Vector3 (1, 5, 1);
+  private CheckForSwords swordChecker;
 
 
 
@@ -91,6 +92,7 @@ public class CharController : MonoBehaviour {
 
     gameController = FindObjectOfType<GameController>();
 
+    swordChecker = GetComponentInChildren<CheckForSwords> ();
     AttachNewSword ();
     tryToThrowSword = false;
     tryToCrouch = false;
@@ -134,8 +136,10 @@ public class CharController : MonoBehaviour {
         bool isMoving = Mathf.Abs (pos.y - newpos.y) > 0.01 * swordHeightIncrement;
         attachedSword.SetDisarmStatus (isMoving);
       }
-
-      //attachedSword.meshRender.material = isMoving ? attachedSword.disarmMaterial : attachedSword.defaultMaterial;
+    } else if (controlState.heightChange == -1) { // try to pick up a sword if you aren't holding one
+      Sword s = swordChecker.FirstElement();
+      if (s != null)
+        AttachSword (s);
     }
 
     switch (playerState) {
@@ -266,6 +270,8 @@ public class CharController : MonoBehaviour {
     s.transform.localRotation = swordLocalRot;
     s.transform.localScale = swordLocalScale;
     s.ChangeOwnership(playerid);
+
+    swordChecker.enabled = false;
   }
 
   void AttachNewSword() {
@@ -287,6 +293,7 @@ public class CharController : MonoBehaviour {
       }
         
       attachedSword = null;
+      swordChecker.enabled = true;
     }
   }
 

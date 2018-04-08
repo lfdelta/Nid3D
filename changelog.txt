@@ -11,6 +11,8 @@ Name 1 & Name 2 & ...
 Luca Frez-Albrecht
 1. player transitions to/from FSM.Run based upon the magnitude of their input, rather than on the player object's current velocity
 2. fixed a bug where CharInput would not detect when a player stopped holding the input above the "running" threshold
+3. players have a greater maximum velocity while running than while in other states; players who are not holding swords have their running velocity further increased
+4. CharController's sword isMoving bool is now only true if the distance between current position and target position is less than swordHeightIncrement, in addition to the original condition, which seems to fully prevent players from disarming one another when their swords both begin at the same height
 
 
 

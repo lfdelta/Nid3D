@@ -28,17 +28,16 @@ public class CharController : MonoBehaviour {
                    Roll, LedgeGrab, Stunned, Dead};
 
   public PlayerID playerid;
-  public float walkingSpeed = 0.01f;
-  public float runningSpeed = 2; // speed at which player isRunning
-  public float rotationSpeed = 12;
-  float sqrWalkingSpeed, sqrRunningSpeed;
-  public float moveForce = 50;
-	public float jumpForce = 500;
-  public float vMaxSlope = 1;
-  public float frictionCoefficient = 1;
-  public float dragSlope = 1;
+  public float rotationSpeed = 30;
+  public float moveForce = 100;
+	public float jumpForce = 900;
+  public float vMaxSlope = 10;
+  public float runSpeedScale = 1.2f;
+  public float swordlessSpeedScale = 1.2f;
+  public float frictionCoefficient = 10;
+  public float dragSlope = 20;
   public float respawnTime = 1;
-  public float respawnDistance = 1;
+  public float respawnDistance = 10;
   public Object swordPrefab;
   public Object shadowPrefab;
 
@@ -73,9 +72,6 @@ public class CharController : MonoBehaviour {
 
 
 	void Awake () {
-    sqrWalkingSpeed = walkingSpeed * walkingSpeed;
-    sqrRunningSpeed = runningSpeed * runningSpeed;
-
     animator = GetComponent<Animator> ();
 		rbody = GetComponent<Rigidbody> ();
     rbody.constraints = RigidbodyConstraints.FreezeRotation;
@@ -133,7 +129,8 @@ public class CharController : MonoBehaviour {
         attachedSword.transform.localPosition = Vector3.Lerp (pos, newpos, 30 * Time.deltaTime);
         attachedSword.transform.localRotation = swordLocalRot;
 
-        bool isMoving = Mathf.Abs (pos.y - newpos.y) > 0.01 * swordHeightIncrement;
+        float distRemoved = Mathf.Abs (pos.y - newpos.y);
+        bool isMoving = distRemoved > 0.01 * swordHeightIncrement && distRemoved < swordHeightIncrement;
         attachedSword.SetDisarmStatus (isMoving);
       }
     } else if (controlState.heightChange == -1) { // try to pick up a sword if you aren't holding one
@@ -188,7 +185,7 @@ public class CharController : MonoBehaviour {
       deathTime = Time.time;
       capsule.enabled = false;
       meshRender.enabled = false;
-      DropSword (false);
+      StartCoroutine(DelayBoolFunction(1, DropSword, false));
       gameController.SendMessage ("PlayerIsAlive", new PlayerAlive(playerid, false));
       break;
     default:
@@ -221,13 +218,25 @@ public class CharController : MonoBehaviour {
 
 
 
-  // maximum velocity is based on the magnitude of player input
+  // if running, maximum velocity is a constant, and is faster if the player does not have a sword
+  // otherwise, max velocity is based on the magnitude of player input
   float VMax () {
-    return vMaxSlope * controlState.moveInXZ.magnitude;
+    switch (playerState) {
+    case FSM.Run:
+      return vMaxSlope * runSpeedScale * (attachedSword ? 1 : swordlessSpeedScale);
+    default:
+      return vMaxSlope * controlState.moveInXZ.magnitude;
+    }
   }
 
+  //** once these values no longer need to be tweaked in-editor, bake squared values in Awake to save computation
   float SqrVMax () {
-    return vMaxSlope * vMaxSlope * controlState.moveInXZ.sqrMagnitude;
+    switch (playerState) {
+    case FSM.Run:
+      return vMaxSlope * vMaxSlope * runSpeedScale * runSpeedScale * (attachedSword ? 1 : swordlessSpeedScale * swordlessSpeedScale);
+    default:
+      return vMaxSlope * vMaxSlope * controlState.moveInXZ.sqrMagnitude;
+    }
   }
 
   float Friction (float v) {
@@ -278,9 +287,19 @@ public class CharController : MonoBehaviour {
     Object s = Instantiate (swordPrefab);
     AttachSword (((GameObject)s).GetComponent<Sword>());
   }
+    
+  // waits the given number of frames before calling func(arg)
+  delegate void BoolFunc(bool b);
+  IEnumerator DelayBoolFunction(int frames, BoolFunc func, bool arg) {
+    int numSkipped = 0;
+    while (numSkipped++ < frames)
+      yield return null;
+
+    func (arg);
+  }
 
   // parameter tells whether the player was disarmed or killed, determining the sword's resulting motion
-  void DropSword(bool disarmed) {
+  void DropSword(bool disarmed = false) {
     if (attachedSword != null) {
       // uncouple the sword from this player
       attachedSword.ChangeOwnership (null);

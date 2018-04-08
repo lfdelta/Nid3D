@@ -39,7 +39,7 @@ public class CharInput : MonoBehaviour {
   [HideInInspector] public PlayerControlState controlState;
 
   private const float runInputMagnitude = 0.9f*0.9f;
-  private const float runInputDuration = 0.5f;
+  private const float runInputDuration = 0.3f;
   private const float heightHoldDuration = 0.2f;
 
   void Awake () {
@@ -63,10 +63,13 @@ public class CharInput : MonoBehaviour {
       // if you were not above the running input threshold, but you are now, store the start time
       // if you've been holding it for sufficiently long, set "running" to true
       bool holdingRunNow = move.sqrMagnitude > runInputMagnitude;
-      if (!controlState.runHold && holdingRunNow)
-        controlState.runHoldStartTime = Time.time;
-      else if (holdingRunNow)
+      if (holdingRunNow) {
+        if (!controlState.runHold)
+          controlState.runHoldStartTime = Time.time;
         controlState.running = (Time.time - controlState.runHoldStartTime) > runInputDuration;
+      } else {
+        controlState.running = false;
+      }
       controlState.runHold = holdingRunNow;
 
       // handle inputs affecting sword height; if one direction has been held continuously, track that as well

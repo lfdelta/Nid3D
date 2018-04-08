@@ -316,8 +316,7 @@ public class CharController : MonoBehaviour {
     // handle movement (do first)
     MoveXZ(controlState.moveInXZ);
 
-    // if v > runspeed, FSM->run
-    if (vXZ.sqrMagnitude > sqrRunningSpeed && Vector3.Dot(vXZ, controlState.moveInXZ) > 0)
+    if (controlState.running)
       ChangeState (FSM.Run);
     if (isGrounded && controlState.jump)
       ChangeState (FSM.Jump);
@@ -367,13 +366,13 @@ public class CharController : MonoBehaviour {
   }
 
   void DoRun () {
-    // apply force (do first)
     MoveXZ (controlState.moveInXZ);
+
+    if (!controlState.running)
+      ChangeState (FSM.Fence);
 
     if (isGrounded && controlState.jump)
       ChangeState (FSM.Jump);
-    if (vXZ.sqrMagnitude < sqrWalkingSpeed)
-      ChangeState (FSM.Fence);
     
     if (controlState.attack && attachedSword) {
       if (tryToThrowSword)
@@ -385,13 +384,9 @@ public class CharController : MonoBehaviour {
 
   void DoJump () {
     MoveXZ (controlState.moveInXZ);
-    // called every update during jump state
-    if (isGrounded) {
-      if (vXZ.sqrMagnitude > sqrRunningSpeed)
-        ChangeState (FSM.Run);
-      else
-        ChangeState (FSM.Fence);
-    }
+
+    if (isGrounded)
+      ChangeState (controlState.running ? FSM.Run : FSM.Fence);
 
     if (controlState.attack && tryToThrowSword && attachedSword)
       ThrowSword ();

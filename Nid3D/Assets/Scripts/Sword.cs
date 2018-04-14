@@ -51,9 +51,11 @@ public class Sword : MonoBehaviour {
     }
   }
 
-  public void SetDisarmStatus(bool canDisarm) {
+  public void SetDisarmStatus(bool canDisarm, int startingHeight) {
     topDisarmScript.canDisarm = canDisarm;
     bottomDisarmScript.canDisarm = canDisarm;
+    topDisarmScript.startingHeight = startingHeight;
+    bottomDisarmScript.startingHeight = startingHeight;
   }
 
   void Activate(bool isActive) {

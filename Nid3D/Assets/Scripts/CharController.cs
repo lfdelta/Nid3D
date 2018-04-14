@@ -50,6 +50,7 @@ public class CharController : MonoBehaviour {
   private SkinnedMeshRenderer meshRender;
 	private CapsuleCollider capsule;
 	private Height height;
+  private Height startingHeight; // used for disarming
   private FSM playerState;
 	//private Vector3 groundNormal;
   private PlayerControlState controlState;
@@ -80,6 +81,7 @@ public class CharController : MonoBehaviour {
 		capsule = GetComponent<CapsuleCollider> ();
 
 		height = Height.Mid;
+    startingHeight = Height.Mid;
     playerState = FSM.Fence;
     isDead = false;
     controlState = new PlayerControlState ();
@@ -129,9 +131,10 @@ public class CharController : MonoBehaviour {
         attachedSword.transform.localPosition = Vector3.Lerp (pos, newpos, 30 * Time.deltaTime);
         attachedSword.transform.localRotation = swordLocalRot;
 
-        float distRemoved = Mathf.Abs (pos.y - newpos.y);
-        bool isMoving = distRemoved > 0.01 * swordHeightIncrement && distRemoved < swordHeightIncrement;
-        attachedSword.SetDisarmStatus (isMoving);
+        bool isMoving = Mathf.Abs (pos.y - newpos.y) > 0.01 * swordHeightIncrement;
+        attachedSword.SetDisarmStatus (isMoving, (int)startingHeight);
+        if (!isMoving) // if you've finished moving, your starting height is the current height
+          startingHeight = height;
       }
     } else if (controlState.heightChange == -1) { // try to pick up a sword if you aren't holding one
       Sword s = swordChecker.FirstElement();

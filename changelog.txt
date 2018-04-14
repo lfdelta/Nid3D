@@ -7,6 +7,12 @@ Name 1 & Name 2 & ...
 
 
 
+### 4/13/2018 ###
+Luca Frez-Albrecht
+1. fixed the bug where players could disarm each other while starting at the same sword height by adding another check condition
+
+
+
 ### 4/8/2018 ###
 Luca Frez-Albrecht
 1. player transitions to/from FSM.Run based upon the magnitude of their input, rather than on the player object's current velocity

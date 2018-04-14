@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
+//using UnityEngine.SceneManagement;
 using TeamUtility.IO;
 
 public class GameController : NodeTraversal {
@@ -31,9 +31,10 @@ public class GameController : NodeTraversal {
   private EndZone[] endZones;
   private bool initializedGame = false;
 
+  private SceneController sceneControl;
+
   void Awake () {
-    pauseUI.enabled = false;
-    gameIsPaused = false;
+    UnpauseGame(); // this allows new scenes to start fresh even when loaded from the pause menu
     rightOfWay = null;
     victor = null;
     playerNode = startingNode;
@@ -45,6 +46,8 @@ public class GameController : NodeTraversal {
     rightWall = ((GameObject)Instantiate (wallPrefab)).GetComponent<RightOfWayWall> ();
     leftWall.Initialize (PlayerID.One, startingNode);
     rightWall.Initialize (PlayerID.Two, startingNode);
+
+    sceneControl = FindObjectOfType<SceneController> ();
 	}
 
   void Start () {
@@ -56,20 +59,25 @@ public class GameController : NodeTraversal {
     GetAvgPlayerPositionAndNode ();
     SendAvgPlayerPositionAndNode ();
     SendRightOfWay ();
+
+    sceneControl.LoadInputs ();
   }
 
   void Update() {
     // if a player wins, wait while a message displays, then reload the scene (later, load a menu scene)
     if (victor != null && Time.time - winTime > victoryMessageTime)
-      SceneManager.LoadScene (SceneManager.GetActiveScene ().buildIndex);
+      //SceneManager.LoadScene (SceneManager.GetActiveScene ().buildIndex); //********** make this a call to SceneController
+      sceneControl.AsyncReloadScene();
 
     bool pauseButton = Tools.CheckButtonBothPlayers(InputManager.GetButtonDown, "Pause");
 
     if (pauseButton) {
-      if (gameIsPaused)
-        UnpauseGame();
-      else
+      if (gameIsPaused) {
+        UnpauseGame ();
+        sceneControl.SaveInputs ();
+      } else {
         PauseGame ();
+      }
     }
 
     GetAvgPlayerPositionAndNode ();
@@ -184,6 +192,8 @@ public class GameController : NodeTraversal {
     winFormat.richText = true;
   }
 
+
+
   void PauseGame() {
     Time.timeScale = 0;
     gameIsPaused = true;
@@ -194,7 +204,7 @@ public class GameController : NodeTraversal {
       otherPanels [i].SetActive(false);
   }
 
-  void UnpauseGame() {
+  public void UnpauseGame() {
     Time.timeScale = 1;
     gameIsPaused = false;
 

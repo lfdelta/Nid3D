@@ -26,6 +26,11 @@ public class WorldNodeScript : MonoBehaviour {
   // now that the list is doubly-linked, calculate vector to previous node and angle bisector of segments
   // if this is the end of the list, copy in the connected segment vector
   void Start () {
+    #if !UNITY_EDITOR
+    MeshRenderer m = GetComponent<MeshRenderer>();
+    m.enabled = false;
+    #endif
+
     prevSegmentHat = (prevNode != null) ? prevNode.segmentHat : Vector3.zero;
     bisectorHat = VectorBisectorinXZ (prevSegmentHat, segmentHat);
 

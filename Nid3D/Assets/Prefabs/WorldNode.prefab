@@ -95,6 +95,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   height: 1
   bisectors: 1
+  bisBoth: 0
   bisRadius: 100
   Rbis: 0
   Gbis: 1

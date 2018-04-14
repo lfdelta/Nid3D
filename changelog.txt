@@ -7,6 +7,17 @@ Name 1 & Name 2 & ...
 
 
 
+### 4/14/2018 ###
+Luca Frez-Albrecht
+1. GameController script now has a public AsyncLoadSceneByName function, presumably to be called from the menu--maybe this could be ported to a separate script for organizational purposes (note: this only works consistently in the built executable, where the relevant scenes are all present in memory)
+2. Behind The Scenes is now a prefab, so that it can be automatically updated in all game levels at once
+3. modified input configurations (inside the Controls menu) are now saved before opening a new scene and loaded upon entering the new scene, and are even persistent after closing and reopening the app!
+4. WorldNodeScript disables its MeshRenderer component if not in editor mode
+5. SceneController script created to handle scene transitions and to save/load input configurations; inputs are loaded at the start of each level and are saved when i) the controls menu is closed and ii) if the game is unpaused
+6. default configuration is written only the first time the game is run, and stores the InputManager's editor values for player input configurations
+
+
+
 ### 4/13/2018 ###
 Luca Frez-Albrecht
 1. fixed the bug where players could disarm each other while starting at the same sword height by adding another check condition

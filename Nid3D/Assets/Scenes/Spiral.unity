@@ -1291,6 +1291,11 @@ Prefab:
       propertyPath: startingNode
       value: 
       objectReference: {fileID: 1898357742}
+    - target: {fileID: 114971258068101754, guid: fa1c227bd1e9e4de6a6da42648568189,
+        type: 2}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_StringArgument
+      value: Linear
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: fa1c227bd1e9e4de6a6da42648568189, type: 2}
   m_IsPrefabParent: 0

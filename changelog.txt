@@ -7,6 +7,12 @@ Name 1 & Name 2 & ...
 
 
 
+### 4/19/2018 ###
+Luca Frez-Albrecht
+1. created ToggleInputType script and a UIToggle object, allowing the player (currently just P1) to switch at runtime between the keyboard and gamepad configurations, and also hides/exposes the appropriate rebind menu buttons
+
+
+
 ### 4/14/2018 ###
 Luca Frez-Albrecht
 1. GameController script now has a public AsyncLoadSceneByName function, presumably to be called from the menu--maybe this could be ported to a separate script for organizational purposes (note: this only works consistently in the built executable, where the relevant scenes are all present in memory)

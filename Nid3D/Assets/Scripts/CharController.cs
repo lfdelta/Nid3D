@@ -188,6 +188,7 @@ public class CharController : MonoBehaviour {
       deathTime = Time.time;
       capsule.enabled = false;
       meshRender.enabled = false;
+      swordChecker.active = false;
       StartCoroutine(DelayBoolFunction(1, DropSword, false));
       gameController.SendMessage ("PlayerIsAlive", new PlayerAlive(playerid, false));
       break;
@@ -283,7 +284,7 @@ public class CharController : MonoBehaviour {
     s.transform.localScale = swordLocalScale;
     s.ChangeOwnership(playerid);
 
-    swordChecker.enabled = false;
+    swordChecker.active = false;
   }
 
   void AttachNewSword() {
@@ -315,7 +316,10 @@ public class CharController : MonoBehaviour {
       }
         
       attachedSword = null;
-      swordChecker.enabled = true;
+      if (playerState != FSM.Dead)
+        swordChecker.active = true;
+      if (playerState == FSM.Stab) // stop the player from getting stuck in Stab
+        ChangeState (FSM.Fence);
     }
   }
 

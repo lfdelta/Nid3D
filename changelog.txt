@@ -11,6 +11,8 @@ Name 1 & Name 2 & ...
 Luca Frez-Albrecht
 1. the Unity built-in horizontal/vertical layout groups don't play nice when nested, so the menu is ugly as heck, but now all controls are remappable for both players at runtime, and they can switch between keyboard and gamepad controls at will from the controls menu
 2. "default" button implemented to load default input configuration; without modifying TeamUtility's InputManager class, there is no way to restore one player's defaults without doing so for the other as well
+3. created and manipulated an "active" boolean in CheckForSwords, rather than using MonoBehaviour.enabled, so that characters can no longer pick up swords while they're dead (but the script will still accurately track swords in its collider, hopefully)
+4. if DropSword is called while a player is in FSM.Stab, they will transition to FSM.Fence to prevent them from being trapped in the Stab state, waiting for their sword animation to finish
 
 
 

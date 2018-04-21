@@ -4,8 +4,10 @@ using UnityEngine;
 
 public class CheckForSwords : MonoBehaviour {
   private List<Collider> activeColliders;
+  [HideInInspector] public bool active;
 
   void Awake () {
+    active = true;
     activeColliders = new List<Collider>();
   }
 
@@ -21,7 +23,7 @@ public class CheckForSwords : MonoBehaviour {
   }
     
   public Sword FirstElement() {
-    if (activeColliders.Count > 0)
+    if (active && activeColliders.Count > 0)
       return activeColliders [0].gameObject.GetComponent<Sword>();
     else
       return null;

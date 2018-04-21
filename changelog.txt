@@ -7,6 +7,13 @@ Name 1 & Name 2 & ...
 
 
 
+### 4/20/2018 ###
+Luca Frez-Albrecht
+1. the Unity built-in horizontal/vertical layout groups don't play nice when nested, so the menu is ugly as heck, but now all controls are remappable for both players at runtime, and they can switch between keyboard and gamepad controls at will from the controls menu
+2. "default" button implemented to load default input configuration; without modifying TeamUtility's InputManager class, there is no way to restore one player's defaults without doing so for the other as well
+
+
+
 ### 4/19/2018 ###
 Luca Frez-Albrecht
 1. created ToggleInputType script and a UIToggle object, allowing the player (currently just P1) to switch at runtime between the keyboard and gamepad configurations, and also hides/exposes the appropriate rebind menu buttons

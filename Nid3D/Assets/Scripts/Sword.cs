@@ -11,6 +11,7 @@ public class Sword : MonoBehaviour {
 
   [HideInInspector] public System.Nullable<PlayerID> thisPlayer;
   [HideInInspector] public Rigidbody rbody;
+  private bool beingThrown;
   private GameObject swordBox;
   private GameObject playerCollider;
   private GameObject topDisarm;
@@ -21,6 +22,8 @@ public class Sword : MonoBehaviour {
 
   void Awake() {
     rbody = GetComponent<Rigidbody> ();
+    rbody.maxAngularVelocity = 100; // default is 7
+
     swordBox = transform.GetChild(1).gameObject;
     playerCollider = transform.GetChild (2).gameObject;
     topDisarm = transform.GetChild (0).gameObject;
@@ -58,10 +61,29 @@ public class Sword : MonoBehaviour {
     bottomDisarmScript.startingHeight = startingHeight;
   }
 
+  public void Throw() {
+    beingThrown = true;
+    rbody.constraints = RigidbodyConstraints.None;
+    rbody.useGravity = false;
+
+    swordBox.SetActive (false);
+    playerCollider.SetActive (true);
+    topDisarm.SetActive (false);
+    bottomDisarm.SetActive (false);
+  }
+
   void Activate(bool isActive) {
     swordBox.SetActive(isActive);
     playerCollider.SetActive (isActive);
     topDisarm.SetActive (isActive);
     bottomDisarm.SetActive (isActive);
+  }
+    
+  void OnCollisionEnter() {
+    if (beingThrown) {
+      beingThrown = false;
+      rbody.useGravity = true;
+      ChangeOwnership (null);
+    }
   }
 }

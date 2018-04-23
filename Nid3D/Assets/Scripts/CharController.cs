@@ -41,6 +41,8 @@ public class CharController : MonoBehaviour {
   public Object swordPrefab;
   public Object shadowPrefab;
 
+  //public float swordThrowSpin;
+
   [HideInInspector] public bool isDead;
 
   private bool isGrounded;
@@ -66,7 +68,7 @@ public class CharController : MonoBehaviour {
   private Vector3 swordInitPos = new Vector3 (0, 16.8f, -9.9f);
   private Quaternion swordLocalRot = Quaternion.Euler (new Vector3 (90, 0, 0));
   private Vector3 tryThrowSwordPos;
-  private Quaternion tryThrowSwordRot = Quaternion.identity;
+  private Quaternion tryThrowSwordRot = Quaternion.Euler (new Vector3 (0, 0, 45));//Quaternion.identity;
   private Vector3 swordLocalScale = new Vector3 (1, 5, 1);
   private CheckForSwords swordChecker;
 
@@ -94,7 +96,7 @@ public class CharController : MonoBehaviour {
     AttachNewSword ();
     tryToThrowSword = false;
     tryToCrouch = false;
-    tryThrowSwordPos = swordInitPos + 2 * swordHeightIncrement * Vector3.up;
+    tryThrowSwordPos = swordInitPos + (swordHeightIncrement * Vector3.up) + (-5 * Vector3.right);
 
     /*Object sh = Instantiate (shadowPrefab);
     CastShadow csh = ((GameObject)sh).GetComponent<CastShadow> ();
@@ -120,6 +122,7 @@ public class CharController : MonoBehaviour {
       }
 
       attachedSword.SendMessage ("Activate", (playerState == FSM.Fence && !tryToThrowSword) || playerState == FSM.Stab); // this might be very slow
+      //attachedSword.SendMessage ("Activate", playerState == FSM.Fence || playerState == FSM.Stab); // this might be very slow
 
       if (tryToThrowSword) {
         attachedSword.transform.localPosition = tryThrowSwordPos;
@@ -157,7 +160,10 @@ public class CharController : MonoBehaviour {
       DoRun ();
       break;
     case FSM.Jump:
-      LookAtLastVelocity();
+      if (tryToThrowSword)
+        LookAtNearestPlayer ();
+      else
+        LookAtLastVelocity ();
       DoJump ();
       break;
     case FSM.Dead:
@@ -189,7 +195,7 @@ public class CharController : MonoBehaviour {
       capsule.enabled = false;
       meshRender.enabled = false;
       swordChecker.active = false;
-      StartCoroutine(DelayBoolFunction(1, DropSword, false));
+      StartCoroutine(DelayVoidFunction(1, DropSword));
       gameController.SendMessage ("PlayerIsAlive", new PlayerAlive(playerid, false));
       break;
     default:
@@ -293,6 +299,15 @@ public class CharController : MonoBehaviour {
   }
     
   // waits the given number of frames before calling func(arg)
+  delegate void VoidFunc();
+  IEnumerator DelayVoidFunction(int frames, VoidFunc func) {
+    int numSkipped = 0;
+    while (numSkipped++ < frames)
+      yield return null;
+
+    func ();
+  }
+
   delegate void BoolFunc(bool b);
   IEnumerator DelayBoolFunction(int frames, BoolFunc func, bool arg) {
     int numSkipped = 0;
@@ -302,25 +317,38 @@ public class CharController : MonoBehaviour {
     func (arg);
   }
 
-  // parameter tells whether the player was disarmed or killed, determining the sword's resulting motion
-  void DropSword(bool disarmed = false) {
+  // uncouple the attached sword, if one exists
+  void DropSword() {
     if (attachedSword != null) {
       // uncouple the sword from this player
       attachedSword.ChangeOwnership (null);
       attachedSword.transform.parent = null;
-
-      // set the sword's angular and translational velocity
-      if (disarmed) {
-        attachedSword.rbody.AddForce (20 * Vector3.up + 7 * transform.forward, ForceMode.VelocityChange);
-        attachedSword.rbody.AddTorque (200 * attachedSword.transform.right, ForceMode.VelocityChange);
-      }
-        
       attachedSword = null;
+
       if (playerState != FSM.Dead)
         swordChecker.active = true;
       if (playerState == FSM.Stab) // stop the player from getting stuck in Stab
         ChangeState (FSM.Fence);
     }
+  }
+
+  // called from opponent's SwordDisarm script
+  void Disarm() {
+    attachedSword.rbody.AddForce (20 * Vector3.up + 7 * transform.forward, ForceMode.VelocityChange);
+    attachedSword.rbody.AddTorque (7 * attachedSword.transform.right, ForceMode.VelocityChange);
+
+    DropSword ();
+  }
+
+  // this should only ever be called if we know that a sword is attached
+  void ThrowSword() {
+    attachedSword.transform.parent = null;
+    attachedSword.Throw ();
+    attachedSword.rbody.AddForce (-20 * transform.forward, ForceMode.VelocityChange);
+    attachedSword.rbody.AddTorque (-20 * attachedSword.transform.right, ForceMode.VelocityChange);
+
+    attachedSword = null;
+    swordChecker.active = true;
   }
 
   float SwordHeightPos () {
@@ -353,10 +381,6 @@ public class CharController : MonoBehaviour {
       else if (isGrounded)
         ChangeState (FSM.Stab);
     }
-  }
-    
-  void ThrowSword() {
-
   }
 
   // initiate a sequence of nested helper functions

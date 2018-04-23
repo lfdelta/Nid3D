@@ -14,7 +14,7 @@ public class SwordDisarm : MonoBehaviour {
       System.Nullable<PlayerID> otherPlayer = (other.transform.parent.GetComponent<Sword> ()).thisPlayer;
       if (otherPlayer != null) {
         CharController otherChar = other.transform.parent.parent.GetComponent<CharController> ();
-        otherChar.SendMessage ("DropSword", true);
+        otherChar.SendMessage ("Disarm");
       }
     }
   }

@@ -473,7 +473,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4002146043157502}
   - component: {fileID: 114435150127553624}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Input Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -563,7 +563,7 @@ GameObject:
   - component: {fileID: 4628470218381488}
   - component: {fileID: 114092428594882790}
   - component: {fileID: 114311164935651342}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: EventSystem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1018,7 +1018,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4677740027029988}
   - component: {fileID: 114732476197857084}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: SceneController
   m_TagString: Untagged
   m_Icon: {fileID: 0}

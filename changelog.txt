@@ -7,6 +7,16 @@ Name 1 & Name 2 & ...
 
 
 
+### 4/22/2018 ###
+Luca Frez-Albrecht
+1. created Disarm() function in CharController to be called from SwordDisarm, as an alternative to the (less general) method of setting the sword velocity inside of DropSword()
+2. implemented ThrowSword() in CharController, in conjunction to a new OnCollisionEnter function in the Sword script which deactivates the sword once it collides with the environment
+3. shifted some of the sword-state setting into a public void Throw() in the Sword script
+4. thrown swords ignore gravity while in the air
+5. players who tryToThrowSword while in the FSM.Jump state will face their opponent
+
+
+
 ### 4/20/2018 ###
 Luca Frez-Albrecht
 1. the Unity built-in horizontal/vertical layout groups don't play nice when nested, so the menu is ugly as heck, but now all controls are remappable for both players at runtime, and they can switch between keyboard and gamepad controls at will from the controls menu

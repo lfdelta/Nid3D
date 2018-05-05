@@ -8,6 +8,7 @@ using TeamUtility.IO;
 public class GameController : NodeTraversal {
   public WorldNodeScript startingNode;
   public float victoryMessageTime = 2;
+  public Canvas HUD;
   public Canvas pauseUI;
   public GameObject startPanel;
   public GameObject[] otherPanels;
@@ -20,6 +21,8 @@ public class GameController : NodeTraversal {
   private GUIStyle winFormat;
   private Rect winRect;
   private bool gameIsPaused;
+  private GameObject ROWp1, ROWp2;
+
   private CharController[] players;
   private Transform[] livePlayers;
   private CameraController cam;
@@ -48,6 +51,9 @@ public class GameController : NodeTraversal {
     rightWall.Initialize (PlayerID.Two, startingNode);
 
     sceneControl = FindObjectOfType<SceneController> ();
+
+    ROWp1 = HUD.transform.GetChild (0).gameObject;
+    ROWp2 = HUD.transform.GetChild (1).gameObject;
 	}
 
   void Start () {
@@ -139,9 +145,9 @@ public class GameController : NodeTraversal {
     leftWall.UpdatePlayerInfo (avgPlayerPos, playerNode);
     rightWall.UpdatePlayerInfo (avgPlayerPos, playerNode);
   }
-
-  // *** CURRENTLY ONLY WORKS FOR TWO PLAYERS (not designed to handle more)
+    
   // evaluate rightOfWay based upon given player's death
+  // CURRENTLY ONLY WORKS FOR TWO PLAYERS (not designed to handle more)
   void UpdateRightOfWay(PlayerID deadPlayer) {
     for (int i = 0; i < players.Length; i++) {
       CharController p = players [i];
@@ -153,9 +159,10 @@ public class GameController : NodeTraversal {
       }
     }
 
-    SendRightOfWay ();
+    ROWp1.SetActive (rightOfWay == PlayerID.One);
+    ROWp2.SetActive (rightOfWay == PlayerID.Two);  
 
-    Debug.Log ("ROW: " + rightOfWay.ToString());
+    SendRightOfWay ();
   }
 
   void SendRightOfWay() {

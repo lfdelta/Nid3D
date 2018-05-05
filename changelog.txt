@@ -11,6 +11,8 @@ Name 1 & Name 2 & ...
 Luca Frez-Albrecht
 1. created Main Menu scene, with level select, settings, and a quit button
 2. upon player victory, the Main Menu is loaded
+3. level select has thumbnails
+4. HUD layer with player-colored "GO!" arrows, but they only point left or right, even if the forward direction changes e.g. in Spiral
 
 
 

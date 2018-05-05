@@ -7,6 +7,13 @@ Name 1 & Name 2 & ...
 
 
 
+### 5/5/2018 ###
+Luca Frez-Albrecht
+1. created Main Menu scene, with level select, settings, and a quit button
+2. upon player victory, the Main Menu is loaded
+
+
+
 ### 5/2/2018 ###
 Luca Frez-Albrecht
 1. implemented (and tested) the ability to choose a gamepad number at runtime, allowing both players to use different gamepads simultaneously

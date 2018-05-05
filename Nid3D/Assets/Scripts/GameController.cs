@@ -64,10 +64,9 @@ public class GameController : NodeTraversal {
   }
 
   void Update() {
-    // if a player wins, wait while a message displays, then reload the scene (later, load a menu scene)
+    // if a player wins, wait while a message displays, then load the menu scene
     if (victor != null && Time.time - winTime > victoryMessageTime)
-      //SceneManager.LoadScene (SceneManager.GetActiveScene ().buildIndex); //********** make this a call to SceneController
-      sceneControl.AsyncReloadScene();
+      sceneControl.AsyncLoadSceneByName("Main Menu");
 
     bool pauseButton = Tools.CheckButtonBothPlayers(InputManager.GetButtonDown, "Pause");
 

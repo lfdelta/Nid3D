@@ -46,4 +46,8 @@ public class SceneController : MonoBehaviour {
     while (!loadScene.isDone)
       yield return null;
   }
+
+  public void QuitApp() {
+    Application.Quit ();
+  }
 }

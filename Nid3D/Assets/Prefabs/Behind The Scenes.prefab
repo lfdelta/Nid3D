@@ -1446,6 +1446,7 @@ GameObject:
   m_Component:
   - component: {fileID: 224353427735900140}
   - component: {fileID: 114252102409531110}
+  - component: {fileID: 114887748677954262}
   m_Layer: 5
   m_Name: VolumeSlider
   m_TagString: Untagged
@@ -4870,6 +4871,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   padControlsPanel: {fileID: 1268967897633478}
   text: {fileID: 114885444616479898}
+  playerID: 1
 --- !u!114 &114256908166519686
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -8299,6 +8301,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23860bec921a4477c8058706bede9276, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  volume: 0
+  P1usePad: 0
+  P2usePad: 0
+  P1padNum: 0
+  P2padNum: 0
 --- !u!114 &114734092649669198
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -9732,6 +9739,17 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: '...'
+--- !u!114 &114887748677954262
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1494936685415960}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68f865d32de5c4f4985e491afa86cb29, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114888413278567178
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -10260,6 +10278,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   padControlsPanel: {fileID: 1776461389090076}
   text: {fileID: 114454492873359908}
+  playerID: 0
 --- !u!114 &114953156488682204
 MonoBehaviour:
   m_ObjectHideFlags: 1

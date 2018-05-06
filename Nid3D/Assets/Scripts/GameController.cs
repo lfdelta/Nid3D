@@ -67,6 +67,13 @@ public class GameController : NodeTraversal {
     SendRightOfWay ();
 
     sceneControl.LoadInputs ();
+    SetVolume(sceneControl.volume);
+
+    // wake up the menus, so that Start is called and they load the preferences
+    // disable them again in the first Update
+    for (int i = 0; i < otherPanels.Length; i++) {
+      otherPanels [i].SetActive (true);
+    }
   }
 
   void Update() {
@@ -95,6 +102,10 @@ public class GameController : NodeTraversal {
       leftWall.SendMessage ("PlaceSelfAndRotate", false);
       rightWall.SendMessage ("PlaceSelfAndRotate", false);
       initializedGame = true;
+
+      for (int i = 0; i < otherPanels.Length; i++) {
+        otherPanels [i].SetActive (false);
+      }
     }
   }
 
@@ -222,7 +233,9 @@ public class GameController : NodeTraversal {
   }
 
   public void SetVolume(float vol) {
-    AudioListener.volume = Mathf.Clamp01 (vol);
+    vol = Mathf.Clamp01 (vol);
+    AudioListener.volume = vol;
+    sceneControl.SetVol (vol);
   }
 
   // return an array of all CharControllers in the scene

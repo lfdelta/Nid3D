@@ -14,20 +14,35 @@ public class ToggleInputType : MonoBehaviour {
   private string padConfig;
   private bool changeToKeyboard;
 
+  private SceneController sceneControl;
+
 	void Awake () {
     string pstr = (playerID == PlayerID.One) ? "P1" : "P2";
     keyConfig = pstr + "Keyboard";
     padConfig = pstr + "Gamepad";
 
-    Toggle t = GetComponent<Toggle> ();
-    changeToKeyboard = t.isOn; // if it starts on, gamepad is active; switch to keyboard if toggled off
-
-    RebindKeyboard (!changeToKeyboard);
+    sceneControl = FindObjectOfType<SceneController> ();
 	}
+
+  void Start () {
+    Init ();
+  }
+
+  public void Init () {
+    bool usePad = (playerID == PlayerID.One) ? sceneControl.P1usePad : sceneControl.P2usePad;
+
+    // if the gamepad is set to be active, then the toggle and the gamepad panel should be on
+    Toggle t = GetComponent<Toggle> ();
+    t.isOn = usePad;
+    RebindKeyboard (!usePad);
+
+    changeToKeyboard = usePad; // if the gamepad is active, then switch to keyboard on next toggle
+  }
 
   public void ToggleKeyboardGamepad() {
     RebindKeyboard (changeToKeyboard);
     changeToKeyboard = !changeToKeyboard;
+    sceneControl.SetUsePad (playerID, changeToKeyboard);
   }
 	
   void RebindKeyboard(bool useKeyConfig) {

@@ -56,15 +56,17 @@ public class CharController : MonoBehaviour {
   private FSM playerState;
 	//private Vector3 groundNormal;
   private PlayerControlState controlState;
-  private GameObject[] otherplayers;
+  //private GameObject[] otherplayers;
+  private CharController[] otherplayers;
   private float deathTime, stabTime;
   private GameController gameController;
 
   private bool tryToThrowSword;
+  private bool lastFrameThrowSword;
   private bool tryToCrouch;
 
   private Sword attachedSword;
-  private float swordHeightIncrement = 4;
+  private float swordHeightIncrement = 5;//4;
   private Vector3 swordInitPos = new Vector3 (0, 16.8f, -9.9f);
   private Quaternion swordLocalRot = Quaternion.Euler (new Vector3 (90, 0, 0));
   private Vector3 tryThrowSwordPos;
@@ -111,6 +113,7 @@ public class CharController : MonoBehaviour {
     //vXZ = Vector3.ProjectOnPlane(rbody.velocity, groundNormal);
     vXZ = Vector3.ProjectOnPlane(rbody.velocity, Vector3.up);
 
+    lastFrameThrowSword = tryToThrowSword;
     tryToThrowSword = (controlState.heightHeldLongEnough && controlState.heightHold == 1);
     tryToCrouch = (controlState.heightHeldLongEnough && controlState.heightHold == -1);
 
@@ -121,13 +124,17 @@ public class CharController : MonoBehaviour {
         height = (Height)Tools.Clamp ((int)height, (int)Height.Low, (int)Height.High);
       }
 
-      attachedSword.SendMessage ("Activate", (playerState == FSM.Fence && !tryToThrowSword) || playerState == FSM.Stab); // this might be very slow
+      attachedSword.SendMessage ("Activate", playerState == FSM.Stab || (playerState == FSM.Fence && !tryToThrowSword)); // this might be very slow
       //attachedSword.SendMessage ("Activate", playerState == FSM.Fence || playerState == FSM.Stab); // this might be very slow
 
       if (tryToThrowSword) {
         attachedSword.transform.localPosition = tryThrowSwordPos;
         attachedSword.transform.localRotation = tryThrowSwordRot;
       } else {
+        if (lastFrameThrowSword) {
+          attachedSword.transform.localPosition = new Vector3(swordInitPos.x, SwordHeightPos(), swordInitPos.z);
+          attachedSword.transform.localRotation = swordLocalRot;
+        }
         Vector3 pos = attachedSword.transform.localPosition;
         Vector3 newpos = new Vector3 (pos.x, SwordHeightPos (), pos.z);
         //** there are probably more natural-looking interpolation curves for this than asymptotic-exponential
@@ -151,7 +158,6 @@ public class CharController : MonoBehaviour {
       DoFence ();
       break;
     case FSM.Stab:
-      //LookAtLastVelocity ();
       LookAtNearestPlayer();
       DoStab ();
       break;
@@ -475,7 +481,10 @@ public class CharController : MonoBehaviour {
         minindex = i;
       }
     }
-    PointCharacter (otherplayers[minindex].transform.position - transform.position);
+    if (!otherplayers [minindex].isDead)
+      PointCharacter (otherplayers [minindex].transform.position - transform.position);
+    else
+      LookAtLastVelocity ();
   }
 
   void LookAtLastVelocity() {
@@ -494,7 +503,18 @@ public class CharController : MonoBehaviour {
 
 
   // return an array of all other CharControllers in the scene
-  GameObject[] GetOtherPlayers() {
+  CharController[] GetOtherPlayers() {
+    Object[] allChars = Object.FindObjectsOfType(typeof(CharController));
+    CharController[] others = new CharController[allChars.Length - 1];
+
+    int j = 0;
+    for (int i = 0; i < allChars.Length; i++) {
+      if (allChars [i] != this)
+        others [j++] = (CharController)allChars [i];
+    }
+    return others;
+  }
+  /*GameObject[] GetOtherPlayers() {
     Object[] allChars = Object.FindObjectsOfType(typeof(CharController));
     GameObject[] others = new GameObject[allChars.Length - 1];
 
@@ -504,5 +524,5 @@ public class CharController : MonoBehaviour {
         others [j++] = ((CharController)allChars [i]).gameObject;
     }
     return others;
-  }
+  }*/
 }

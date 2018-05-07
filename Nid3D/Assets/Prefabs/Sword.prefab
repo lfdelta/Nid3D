@@ -44,6 +44,7 @@ GameObject:
   - component: {fileID: 65437889364095700}
   - component: {fileID: 54773507200353578}
   - component: {fileID: 114354410184851088}
+  - component: {fileID: 114678843773907962}
   m_Layer: 8
   m_Name: SwordBox
   m_TagString: Untagged
@@ -66,6 +67,27 @@ GameObject:
   - component: {fileID: 114584511669938474}
   m_Layer: 8
   m_Name: BottomDisarm
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!1 &1548878878384708
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4089299565207476}
+  - component: {fileID: 33133593010365322}
+  - component: {fileID: 135478256212062410}
+  - component: {fileID: 23084948307223272}
+  - component: {fileID: 54495392117918588}
+  - component: {fileID: 114281545361544096}
+  - component: {fileID: 114329216515682888}
+  m_Layer: 15
+  m_Name: ThrowHitbox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -123,6 +145,19 @@ Transform:
   m_Father: {fileID: 4192687257236190}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+--- !u!4 &4089299565207476
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1548878878384708}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 10, y: 2, z: 10}
+  m_Children: []
+  m_Father: {fileID: 4192687257236190}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4096686653670916
 Transform:
   m_ObjectHideFlags: 1
@@ -150,6 +185,7 @@ Transform:
   - {fileID: 4096686653670916}
   - {fileID: 4031367119396968}
   - {fileID: 4743805735648698}
+  - {fileID: 4089299565207476}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -179,6 +215,38 @@ Transform:
   m_Father: {fileID: 4192687257236190}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!23 &23084948307223272
+MeshRenderer:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1548878878384708}
+  m_Enabled: 0
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_Materials:
+  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_PreserveUVs: 1
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
 --- !u!23 &23322115005754002
 MeshRenderer:
   m_ObjectHideFlags: 1
@@ -346,6 +414,13 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1508091144900572}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!33 &33133593010365322
+MeshFilter:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1548878878384708}
+  m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!33 &33182299917206418
 MeshFilter:
   m_ObjectHideFlags: 1
@@ -374,6 +449,21 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1162008407893328}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!54 &54495392117918588
+Rigidbody:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1548878878384708}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 126
+  m_CollisionDetection: 1
 --- !u!54 &54525159812618168
 Rigidbody:
   m_ObjectHideFlags: 1
@@ -495,6 +585,31 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canDisarm: 0
+  startingHeight: 0
+--- !u!114 &114281545361544096
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1548878878384708}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a00b63079efb4ba5b0c360240196e31, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  killAllPlayers: 0
+  playerToKill: 0
+--- !u!114 &114329216515682888
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1548878878384708}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f6464f581531418eae1ce22dc71dffd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114354410184851088
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -520,6 +635,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canDisarm: 0
+  startingHeight: 0
 --- !u!114 &114631141639166188
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -532,6 +648,29 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rbody: {fileID: 0}
+--- !u!114 &114678843773907962
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1497047774837874}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f6464f581531418eae1ce22dc71dffd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!135 &135478256212062410
+SphereCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1548878878384708}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!136 &136589348810643932
 CapsuleCollider:
   m_ObjectHideFlags: 1

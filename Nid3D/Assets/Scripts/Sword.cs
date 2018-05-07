@@ -14,6 +14,7 @@ public class Sword : MonoBehaviour {
   private bool beingThrown;
   private GameObject swordBox;
   private GameObject playerCollider;
+  private GameObject throwCollider;
   private GameObject topDisarm;
   private GameObject bottomDisarm;
   private KillPlayer hitbox;
@@ -26,6 +27,7 @@ public class Sword : MonoBehaviour {
 
     swordBox = transform.GetChild(1).gameObject;
     playerCollider = transform.GetChild (2).gameObject;
+    throwCollider = transform.GetChild (4).gameObject;
     topDisarm = transform.GetChild (0).gameObject;
     bottomDisarm = transform.GetChild (3).gameObject;
 
@@ -35,8 +37,7 @@ public class Sword : MonoBehaviour {
     hitbox = playerCollider.GetComponent<KillPlayer> ();
     hitbox.killAllPlayers = false;
 
-    //meshRender = GetComponent<MeshRenderer> ();
-    //defaultMaterial = meshRender.material;
+    throwCollider.SetActive (false);
 
     ChangeOwnership (null);
   }
@@ -66,10 +67,12 @@ public class Sword : MonoBehaviour {
     rbody.constraints = RigidbodyConstraints.None;
     rbody.useGravity = false;
 
-    swordBox.SetActive (false);
-    playerCollider.SetActive (true);
-    topDisarm.SetActive (false);
-    bottomDisarm.SetActive (false);
+//    swordBox.SetActive (false);
+//    playerCollider.SetActive (false);
+//    topDisarm.SetActive (false);
+//    bottomDisarm.SetActive (false);
+    Activate(false);
+    throwCollider.SetActive (true);
   }
 
   void Activate(bool isActive) {
@@ -79,11 +82,19 @@ public class Sword : MonoBehaviour {
     bottomDisarm.SetActive (isActive);
   }
     
-  void OnCollisionEnter() {
+  public void StopThrowing() {
     if (beingThrown) {
       beingThrown = false;
       rbody.useGravity = true;
+      rbody.velocity = Vector3.zero;
+      rbody.angularVelocity = Vector3.zero;
+
       ChangeOwnership (null);
+      throwCollider.SetActive (false);
     }
+  }
+
+  void OnCollisionEnter() {
+    StopThrowing ();
   }
 }

@@ -44,9 +44,11 @@ public class Sword : MonoBehaviour {
 
   public void ChangeOwnership(System.Nullable<PlayerID> id) {
     thisPlayer = id;
+    rbody.drag = 0;
+    rbody.angularDrag = 0;
 
     Activate (id != null);
-
+   
     if (id != null) {
       rbody.constraints = RigidbodyConstraints.FreezeAll;
       hitbox.playerToKill = Tools.OtherPlayer((PlayerID)thisPlayer);
@@ -67,10 +69,6 @@ public class Sword : MonoBehaviour {
     rbody.constraints = RigidbodyConstraints.None;
     rbody.useGravity = false;
 
-//    swordBox.SetActive (false);
-//    playerCollider.SetActive (false);
-//    topDisarm.SetActive (false);
-//    bottomDisarm.SetActive (false);
     Activate(false);
     throwCollider.SetActive (true);
   }
@@ -81,7 +79,7 @@ public class Sword : MonoBehaviour {
     topDisarm.SetActive (isActive);
     bottomDisarm.SetActive (isActive);
   }
-    
+
   public void StopThrowing() {
     if (beingThrown) {
       beingThrown = false;
@@ -96,5 +94,14 @@ public class Sword : MonoBehaviour {
 
   void OnCollisionEnter() {
     StopThrowing ();
+  }
+
+  // stop moving if it hangs out on the ground
+  void OnCollisionStay(Collision c) {
+    if (c.impulse.y > 0) {
+      //rbody.useGravity = false;
+      rbody.angularDrag += 0.1f;
+      rbody.drag += 0.1f;
+    }
   }
 }

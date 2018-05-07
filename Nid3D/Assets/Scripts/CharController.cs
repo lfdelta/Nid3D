@@ -24,8 +24,10 @@ public class CharController : MonoBehaviour {
 
   // concerning the state of the character
 	private enum Height {Low, Mid, High};
-  private enum FSM {Fence, Stab, Run, Jump, BunnyHop,
-                   Roll, LedgeGrab, Stunned, Dead};
+  private enum FSM {Fence, Stab, Run, Jump,
+                    Crouch, Sweepkick, Roll, BunnyHop,
+                    Divekick, Punch,
+                    Stunned, Dead};
 
   public PlayerID playerid;
   public float rotationSpeed = 30;
@@ -40,8 +42,6 @@ public class CharController : MonoBehaviour {
   public float respawnDistance = 10;
   public Object swordPrefab;
   public Object shadowPrefab;
-
-  //public float swordThrowSpin;
 
   [HideInInspector] public bool isDead;
 

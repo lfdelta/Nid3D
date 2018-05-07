@@ -15,6 +15,7 @@ Luca Frez-Albrecht
 4. added a new child object (and physics layer) to the sword prefab in order to increase its kill hitbox, so that it won't rotate around an opponent while flying through the air, and so that other swords can block it while it's in the air
 5. players always LookAtLastVelocity while their opponent is dead
 6. fixed a bug wherein returning from the tryToThrowSword state would permanently mess up the sword position
+7. swords gradually accumulate drag during collisions to stop sliding down slopes
 
 
 

@@ -7,11 +7,183 @@ Name 1 & Name 2 & ...
 
 
 
+### 5/6/2018 ###
+Luca Frez-Albrecht
+1. created an About page on the main menu
+2. worked out most of the save/load preferences kinks
+3. wake up and then disable all of the menus so that user preferences are loaded on the first frame of every game
+4. added a new child object (and physics layer) to the sword prefab in order to increase its kill hitbox, so that it won't rotate around an opponent while flying through the air, and so that other swords can block it while it's in the air
+5. players always LookAtLastVelocity while their opponent is dead
+6. fixed a bug wherein returning from the tryToThrowSword state would permanently mess up the sword position
+7. swords gradually accumulate drag during collisions to stop sliding down slopes
+
+
+
+### 5/5/2018 ###
+Luca Frez-Albrecht
+1. created Main Menu scene, with level select, settings, and a quit button
+2. upon player victory, the Main Menu is loaded
+3. level select has thumbnails
+4. HUD layer with player-colored "GO!" arrows, but they only point left or right, even if the forward direction changes e.g. in Spiral
+5. read/write volume and gamepad preferences in SceneController
+6. GameController (volume), ToggleInputType (usePad), SetPlayerJoypad (padNum) all read their respective variables from the SceneController inside of the Start() function; not behaving correctly
+
+
+
+### 5/2/2018 ###
+Luca Frez-Albrecht
+1. implemented (and tested) the ability to choose a gamepad number at runtime, allowing both players to use different gamepads simultaneously
+
+
+
+### 4/22/2018 ###
+Luca Frez-Albrecht
+1. created Disarm() function in CharController to be called from SwordDisarm, as an alternative to the (less general) method of setting the sword velocity inside of DropSword()
+2. implemented ThrowSword() in CharController, in conjunction to a new OnCollisionEnter function in the Sword script which deactivates the sword once it collides with the environment
+3. shifted some of the sword-state setting into a public void Throw() in the Sword script
+4. thrown swords ignore gravity while in the air
+5. players who tryToThrowSword while in the FSM.Jump state will face their opponent
+
+
+
+### 4/20/2018 ###
+Luca Frez-Albrecht
+1. the Unity built-in horizontal/vertical layout groups don't play nice when nested, so the menu is ugly as heck, but now all controls are remappable for both players at runtime, and they can switch between keyboard and gamepad controls at will from the controls menu
+2. "default" button implemented to load default input configuration; without modifying TeamUtility's InputManager class, there is no way to restore one player's defaults without doing so for the other as well
+3. created and manipulated an "active" boolean in CheckForSwords, rather than using MonoBehaviour.enabled, so that characters can no longer pick up swords while they're dead (but the script will still accurately track swords in its collider, hopefully)
+4. if DropSword is called while a player is in FSM.Stab, they will transition to FSM.Fence to prevent them from being trapped in the Stab state, waiting for their sword animation to finish
+
+
+
+### 4/19/2018 ###
+Luca Frez-Albrecht
+1. created ToggleInputType script and a UIToggle object, allowing the player (currently just P1) to switch at runtime between the keyboard and gamepad configurations, and also hides/exposes the appropriate rebind menu buttons
+
+
+
+### 4/14/2018 ###
+Luca Frez-Albrecht
+1. GameController script now has a public AsyncLoadSceneByName function, presumably to be called from the menu--maybe this could be ported to a separate script for organizational purposes (note: this only works consistently in the built executable, where the relevant scenes are all present in memory)
+2. Behind The Scenes is now a prefab, so that it can be automatically updated in all game levels at once
+3. modified input configurations (inside the Controls menu) are now saved before opening a new scene and loaded upon entering the new scene, and are even persistent after closing and reopening the app!
+4. WorldNodeScript disables its MeshRenderer component if not in editor mode
+5. SceneController script created to handle scene transitions and to save/load input configurations; inputs are loaded at the start of each level and are saved when i) the controls menu is closed and ii) if the game is unpaused
+6. default configuration is written only the first time the game is run, and stores the InputManager's editor values for player input configurations
+
+
+
+### 4/13/2018 ###
+Luca Frez-Albrecht
+1. fixed the bug where players could disarm each other while starting at the same sword height by adding another check condition
+
+
+
+### 4/8/2018 ###
+Luca Frez-Albrecht
+1. player transitions to/from FSM.Run based upon the magnitude of their input, rather than on the player object's current velocity
+2. fixed a bug where CharInput would not detect when a player stopped holding the input above the "running" threshold
+3. players have a greater maximum velocity while running than while in other states; players who are not holding swords have their running velocity further increased
+4. CharController's sword isMoving bool is now only true if the distance between current position and target position is less than swordHeightIncrement, in addition to the original condition, which seems to fully prevent players from disarming one another when their swords both begin at the same height
+
+
+
+### 4/6/2018 ###
+Luca Frez-Albrecht
+1. removed Height.Throw from enum, replacing its behavior using the bool tryToThrowSword
+2. implemented the sword-throwing position, and inserted the ThrowSword() function into the FSM states where the player is allowed to do that
+3. set the sword to not be Active unless the player is fencing (and not trying to throw the sword) or the player is actively stabbing; in all other states their swords should not cause damage to other players
+4. moved the Sword.Activate code related to rigidbody constraints and player ineractions to Sword.ChangeOwnership so that we can deactivate the sword without allowing it to be affected by gravity, etc
+5. copied and modified CheckGrounded script into CheckForSwords, so that players can detect nearby swords which may be picked up
+6. ugh, added ANOTHER physics layer; this one is used for Player>SwordChecker object and only collides with swords
+7. new object, script, and code allowing players to pick up dropped swords
+
+
+
+### 4/4/2018 ###
+Luca Frez-Albrecht
+1. finished CharInput code to track sword-height buttons being held down
+2. bools in CharController based on player holding height buttons: tryToCrouch and tryToThrowSword
+
+
+
+### 4/3/2018 ###
+Luca Frez-Albrecht
+1. commented out Sword debug code
+2. ported PlayerControlState class definition into CharInput script, which is the only place where its values are assigned
+3. moved GetAxis commands for player inputs from FixedUpdate into Update
+4. wrote (not yet tested) code to check whether player's movement input exceeded a threshold for a given duration of time, which can be used to tell the CharController to enter the FSM.Run state; similar restructuring currently in progress for changing sword height
+
+
+
+### 3/24/2018 ###
+Luca Frez-Albrecht
+1. gave CharController's DropSword() a boolean parameter, which will later be used to determine the sword's motion based upon whether the player was killed or disarmed
+2. Sword script has (likely temporary) debug functionality which changes the renderer material while the sword is in its "can disarm other swords" state
+3. Sword prefab contains two new child objects, each one containing a SwordDisarm script which disarms any player if it collides with their sword while in the active "can disarm" state
+4. ported PlayerID OtherPlayer(PlayerID) from Sword to the Tools script
+5. created a swordHeightIncrement variable inside CharController, to define the value in only one location rather than hard-coding it throughout the script
+6. when a player is disarmed, their sword is flung behind them while rotating; values can be tweaked in side of CharController.DropSword()
+
+
+
+### 3/21/2018 ###
+Luca Frez-Albrecht
+1. restructured Sword prefab's hierarchy, thereby fixing the problem of the parent/child colliders and rigidbodies (all on different collision layers) separating upon deactivation
+2. KillPlayer script modified to allow the option to kill all players or only a particular one
+3. sword-player hitbox is now a KillPlayer script, separate from (but childed to) the main Sword script
+4. fixed a minor bug where players who were standing inside of an EndZone before it was activated would not win until they left and re-entered the trigger
+5. new WorldBoundary script which not only kills players but also destroys other game objects which leave its trigger
+6. two new physics layers, WorldBounds and (for the swords) CollideGround_DestroyOnExit, in order to jump through hoops with respect to checking player ground-collision
+7. simplified KillPlayer script, removing the functionality which was ported to WorldBoundary
+
+
+### 3/19/2018 ###
+Luca Frez-Albrecht
+1. Sword objects no longer receive shadows
+2. added a capsule trigger collider to the players' feet in order to check collisions with the ground even on slopes, using the new GroundColliders layer and CheckGrounded script
+3. automatically initialize CharInput component rather than redundantly assigning its player number in the editor
+4. further increased gravity (and jump force, to maintain jump height)
+5. players are only affected by gravity when they are not grounded, so they no longer slide while standing on sloped surfaces
+6. Sword objects disable their trigger collider and SwordBox colliders when dropped, and re-enable them when picked up
+7. players now DropSword upon death and create a new sword when respawning, but there are bugs associated with the Sword hierarchy and the relative transforms
+
+
+
+### 3/10/2018 ###
+Luca Frez-Albrecht
+1. Shadow prefab and CastShadow script to see player shadows (soon to be an ellipse texture) projected onto the ground beneath them. circumvents the directional lighting/shadow system because players' shadows would be drowned out when standing below planes which also cast shadows onto the floor
+2. shadow texture (and material) implemented and added to the prefab
+3. disabled constructed shadows because I discovered how to prevent certain objects from casting shadows. however, the shadows drawn by the engine are still not ideal, because the player models are so narrow
+
+
+
+### 3/7/2018 ###
+Luca Frez-Albrecht
+1. implemented an algorithm, based upon tracking each segment's normal vector, to ensure all WorldNodeScript bisectors are pointing in the same half-space defined by the line segments (ie inside of a spiral or outside), to prevent over-rotation of the RightOfWayWalls when interpolating between nodes
+2. sword height (the Height enum) is reset upon player respawning
+3. players can adjust their sword height while in any player state; we could alternately create a function to selective adjust the height only in certain states, but it should be allowed in more than just the FSM.Fence state
+4. EndZones are now deactivated unless their associated player has the right of way, and offer visual feedback by swapping to a neutral material while inactive
+
+
+
+### 3/5/2018 ###
+Luca Frez-Albrecht
+1. Spiral scene to test 3D maps
+2. slight modifications to WorldNodeScript and NodeTraversal to allow for node traversal in three dimensions, as opposed to only in the XZ plane
+
+
+
 ### 2/26/2018 ###
 Luca Frez-Albrecht
 1. EndZone prefab, which sends a message to the GameController when the corresponding players enters its trigger
 2. when a player enters their end zone, GameController waits a few seconds while displaying the victory message, then reloads the current scene
 3. new physics/collider layers for Players and PlayerInteractibles, ie so that the WorldBoundary doesn't check collisions with every single object in the scene for each frame, only for the players
+4. if both players are dead, their respawn positions are centered between the ROW walls, rather than centered at their previous average position, preventing one from spawning inside the walls while the other spawns outside
+5. end zones (in Linear scene) resized, and colored to match their player
+6. sword position changes continuously (but rapidly) when a player adjusts their height
+7. fixed a small bug where the victor could exit/enter the trigger to keep the message showing indefinitely
+8. NodeDebug no longer compiled for builds (it crashes the build if it tries)
+9. increased right-of-way wall size so that players can't just jump around them
 
 
 

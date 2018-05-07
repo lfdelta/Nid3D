@@ -16,9 +16,12 @@ public class TriggerColliderRepel : MonoBehaviour {
     rbody = transform.parent.parent.GetComponent<Rigidbody> (); // fencer
   }
     
-  //** be careful not to do this if there is no parent (de/activate in charcontroller drop/attach)
   //** project into XZ plane
+  // be careful not to do this if there is no parent (de/activate in charcontroller drop/attach)
   void OnTriggerEnter(Collider other) {
+    if (other.GetComponent<TriggerColliderRepel> () == null)
+      return;
+
     Rigidbody otherbody = other.transform.parent.parent.GetComponent<Rigidbody> ();
     Vector3 sword1 = transform.position;
     Vector3 sword2 = other.transform.position;

@@ -41,7 +41,8 @@ public class CharController : MonoBehaviour {
   public float respawnTime = 1;
   public float respawnDistance = 10;
   public Object swordPrefab;
-  public Object shadowPrefab;
+  public Transform swordHand;
+  //public Object shadowPrefab;
 
   [HideInInspector] public bool isDead;
 
@@ -64,6 +65,7 @@ public class CharController : MonoBehaviour {
   private bool tryToThrowSword;
   private bool lastFrameThrowSword;
   private bool tryToCrouch;
+  private bool swordFollowingHand;
 
   private Sword attachedSword;
   private float swordHeightIncrement = 5;//4;
@@ -118,14 +120,13 @@ public class CharController : MonoBehaviour {
     tryToCrouch = (controlState.heightHeldLongEnough && controlState.heightHold == -1);
 
     // handle sword height, if a sword is attached
-    if (attachedSword) {
+    if (attachedSword && !swordFollowingHand) {
       if (controlState.heightChange != 0) {
         height += controlState.heightChange;
         height = (Height)Tools.Clamp ((int)height, (int)Height.Low, (int)Height.High);
       }
 
       attachedSword.SendMessage ("Activate", playerState == FSM.Stab || (playerState == FSM.Fence && !tryToThrowSword)); // this might be very slow
-      //attachedSword.SendMessage ("Activate", playerState == FSM.Fence || playerState == FSM.Stab); // this might be very slow
 
       if (tryToThrowSword) {
         attachedSword.transform.localPosition = tryThrowSwordPos;
@@ -177,8 +178,18 @@ public class CharController : MonoBehaviour {
       break;
     }
   }
-
+    
   void ChangeState(FSM state) {
+    switch (state) {
+    case FSM.Run:
+    //case FSM.Jump:
+      ChildSwordToHand (true);
+      break;
+    default:
+      ChildSwordToHand (false);
+      break;
+    }
+
     switch (state) {
     case FSM.Fence:
       animator.SetInteger ("State", 0);
@@ -302,6 +313,26 @@ public class CharController : MonoBehaviour {
   void AttachNewSword() {
     Object s = Instantiate (swordPrefab);
     AttachSword (((GameObject)s).GetComponent<Sword>());
+  }
+
+  void ChildSwordToHand(bool useHand) {
+    if (attachedSword == null)
+      return;
+    
+    if (useHand) {
+      attachedSword.transform.parent = swordHand;
+      attachedSword.transform.localPosition = new Vector3 (-0.109963f, 0.6539122f, 0.3592776f);
+      attachedSword.transform.localRotation = Quaternion.Euler (-2.26f, 105.743f, 29.567f);
+      attachedSword.transform.localScale = new Vector3 (0.1585785f, 0.7928925f, 0.1585785f);
+      attachedSword.SendMessage ("Activate", false);
+    } else {
+      attachedSword.transform.parent = transform;
+      attachedSword.transform.localPosition = swordInitPos;
+      attachedSword.transform.localRotation = swordLocalRot;
+      attachedSword.transform.localScale = swordLocalScale;
+    }
+
+    swordFollowingHand = useHand;
   }
     
   // waits the given number of frames before calling func(arg)

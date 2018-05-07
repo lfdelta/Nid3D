@@ -7,6 +7,12 @@ Name 1 & Name 2 & ...
 
 
 
+### 5/7/2018 ###
+Luca Frez-Albrecht
+1. sword object follows hand while running, which gives visual feedback that it's deactivated
+
+
+
 ### 5/6/2018 ###
 Luca Frez-Albrecht
 1. created an About page on the main menu

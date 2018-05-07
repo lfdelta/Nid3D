@@ -916,6 +916,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 909c85526901f4829ae13258367b9b0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  active: 0
 --- !u!114 &114564980041330906
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -939,20 +940,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerid: 0
-  walkingSpeed: 4
-  runningSpeed: 10
   rotationSpeed: 30
   moveForce: 100
   jumpForce: 900
   vMaxSlope: 10
+  runSpeedScale: 1.2
+  swordlessSpeedScale: 1.2
   frictionCoefficient: 10
   dragSlope: 20
   respawnTime: 1
   respawnDistance: 10
   swordPrefab: {fileID: 1755684750533756, guid: f14c7a2092d854a3aaed21dfeea67a5e,
     type: 2}
-  shadowPrefab: {fileID: 1948002704431614, guid: 9768a174fc9ad474fa07e5f445adaf89,
-    type: 2}
+  swordHand: {fileID: 4406805764025882}
   isDead: 0
 --- !u!114 &114855255010812014
 MonoBehaviour:

@@ -47,6 +47,7 @@ public class CharController : MonoBehaviour {
   //public Object shadowPrefab;
 
   [HideInInspector] public bool isDead;
+  [HideInInspector] public bool isStunned;
   [HideInInspector] public bool canBeAffected; // by ChangePlayerStatus
 
   private bool isGrounded;
@@ -68,10 +69,11 @@ public class CharController : MonoBehaviour {
   private GameObject divekickHitbox = null;
   private Vector3 divekickLook, divekickMove;
 
+  private bool tryToCrouch;
   private bool tryToThrowSword;
   private bool lastFrameThrowSword;
-  private bool tryToCrouch;
   private bool swordFollowingHand;
+  //private bool lastSwordFollowingHand;
 
   private Sword attachedSword;
   private float swordHeightIncrement = 5;//4;
@@ -96,6 +98,7 @@ public class CharController : MonoBehaviour {
     startingHeight = Height.Mid;
     playerState = FSM.Fence;
     isDead = false;
+    isStunned = false;
     canBeAffected = true;
     controlState = new PlayerControlState ();
 
@@ -129,7 +132,7 @@ public class CharController : MonoBehaviour {
     tryToCrouch = (controlState.heightHeldLongEnough && controlState.heightHold == -1);
 
     // handle sword height, if a sword is attached
-    if (attachedSword && !swordFollowingHand) {
+    if (attachedSword) {
       if (controlState.heightChange != 0) {
         height += controlState.heightChange;
         height = (Height)Tools.Clamp ((int)height, (int)Height.Low, (int)Height.High);
@@ -138,11 +141,13 @@ public class CharController : MonoBehaviour {
       attachedSword.SendMessage ("Activate", playerState == FSM.Stab || (playerState == FSM.Fence && !tryToThrowSword)); // this might be very slow
 
       if (tryToThrowSword) {
+        if (swordFollowingHand)
+          ChildSwordToHand (false);
         attachedSword.transform.localPosition = tryThrowSwordPos;
         attachedSword.transform.localRotation = tryThrowSwordRot;
-      } else {
+      } else if (!swordFollowingHand) {
         if (lastFrameThrowSword) {
-          attachedSword.transform.localPosition = new Vector3(swordInitPos.x, SwordHeightPos(), swordInitPos.z);
+          attachedSword.transform.localPosition = new Vector3 (swordInitPos.x, SwordHeightPos (), swordInitPos.z);
           attachedSword.transform.localRotation = swordLocalRot;
         }
         Vector3 pos = attachedSword.transform.localPosition;
@@ -155,6 +160,9 @@ public class CharController : MonoBehaviour {
         attachedSword.SetDisarmStatus (isMoving, (int)startingHeight);
         if (!isMoving) // if you've finished moving, your starting height is the current height
           startingHeight = height;
+
+        if (lastFrameThrowSword && playerState == FSM.Run)
+          ChildSwordToHand (true);
       }
     } else if (controlState.heightChange == -1) { // try to pick up a sword if you aren't holding one
       Sword s = swordChecker.FirstElement();
@@ -220,10 +228,10 @@ public class CharController : MonoBehaviour {
       rbody.useGravity = false;
 
       Vector3 rvec;
-      if (!otherplayers [0].isDead)
-        rvec = Vector3.ProjectOnPlane(otherplayers [0].transform.position - transform.position, Vector3.up).normalized;
-      else
+      if (otherplayers [0].isDead || otherplayers[0].isStunned)
         rvec = controlState.moveInXZ.normalized;
+      else
+        rvec = Vector3.ProjectOnPlane(otherplayers [0].transform.position - transform.position, Vector3.up).normalized;
       float hforce = 10, yforce = 20;
       divekickMove = hforce * rvec - yforce * Vector3.up;
       divekickLook = rvec - Vector3.Project (rvec, divekickMove);
@@ -231,8 +239,9 @@ public class CharController : MonoBehaviour {
       rbody.AddForce (divekickMove, ForceMode.VelocityChange);
       break;
     case FSM.Stunned:
-      DropSword ();
+      isStunned = true;
       canBeAffected = false;
+      DropSword ();
       swordChecker.active = false;
       divekickHitbox.SetActive (false);
       stunTime = Time.time;
@@ -568,6 +577,7 @@ public class CharController : MonoBehaviour {
     if (controlState.heightChange > 0 && Time.time - stunTime >= stunMinDuration) {
       transform.localRotation = Quaternion.Euler(Vector3.zero);
       swordChecker.active = true;
+      isStunned = false;
       canBeAffected = true;
       ChangeState (FSM.Fence);
     }
@@ -606,10 +616,10 @@ public class CharController : MonoBehaviour {
         minindex = i;
       }
     }
-    if (!otherplayers [minindex].isDead)
-      PointCharacter (otherplayers [minindex].transform.position - transform.position);
-    else
+    if (otherplayers [minindex].isDead || otherplayers [minindex].isStunned)
       LookAtLastVelocity ();
+    else
+      PointCharacter (otherplayers [minindex].transform.position - transform.position);
   }
 
   void LookAtLastVelocity() {

@@ -15,6 +15,10 @@ public class SceneController : MonoBehaviour {
 
   void Awake () {
     defaultInputsPath = System.IO.Path.Combine (Application.persistentDataPath, "default_input_config.xml");
+    // copy default input configuration
+    /*TextAsset defaultfile = Resources.Load ("default_input_config.xml") as TextAsset;
+    System.IO.File.WriteAllText (defaultInputsPath, defaultfile.text);*/
+
     userPrefsPath = System.IO.Path.Combine (Application.persistentDataPath, "user_prefs.txt");
 
     // if no preferences are found, set default values
@@ -35,6 +39,10 @@ public class SceneController : MonoBehaviour {
 
     LoadInputs ();
 	}
+
+  void Start() {
+    LoadInputs ();
+  }
 	
 
 

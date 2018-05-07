@@ -18,6 +18,7 @@ Luca Frez-Albrecht
 7. Divekick objects generated at runtime, from a prefab, because they can be destroyed by the WorldBoundary when the players falls off the edge
 8. players are invulnerable to stunning and swords while in FSM.Stunned or FSM.Dead
 9. while divekicking, players follow a deterministic path and their transforms are rotated to provide visual feedback
+10. the sword's position relative to the player is basically its own state machine now
 
 
 

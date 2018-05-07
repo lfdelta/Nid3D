@@ -9,9 +9,9 @@ public class SceneController : MonoBehaviour {
   private static string defaultInputsPath;
   private static string userPrefsPath;
 
-  public float volume;
-  public bool P1usePad, P2usePad;
-  public int P1padNum, P2padNum;
+  [HideInInspector] public float volume;
+  [HideInInspector] public bool P1usePad, P2usePad;
+  [HideInInspector] public int P1padNum, P2padNum;
 
   void Awake () {
     defaultInputsPath = System.IO.Path.Combine (Application.persistentDataPath, "default_input_config.xml");
@@ -32,6 +32,8 @@ public class SceneController : MonoBehaviour {
     // if there is no default configuration, save the current configuration as the default
     if (!System.IO.File.Exists(defaultInputsPath))
       InputManager.Save (defaultInputsPath);
+
+    LoadInputs ();
 	}
 	
 
@@ -53,8 +55,8 @@ public class SceneController : MonoBehaviour {
   void SavePreferences() {
     string[] prefStr = new string[5];
     prefStr[0] = volume.ToString();
-    prefStr[1] = P1usePad.ToString ();// ? "True" : "False";
-    prefStr[2] = P2usePad.ToString();// ? "True" : "False";
+    prefStr[1] = P1usePad.ToString ();
+    prefStr[2] = P2usePad.ToString();
     prefStr[3] = P1padNum.ToString ();
     prefStr[4] = P2padNum.ToString ();
     System.IO.File.WriteAllLines (userPrefsPath, prefStr);

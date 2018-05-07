@@ -70,7 +70,7 @@ public class CharController : MonoBehaviour {
   private Vector3 swordInitPos = new Vector3 (0, 16.8f, -9.9f);
   private Quaternion swordLocalRot = Quaternion.Euler (new Vector3 (90, 0, 0));
   private Vector3 tryThrowSwordPos;
-  private Quaternion tryThrowSwordRot = Quaternion.Euler (new Vector3 (0, 0, 45));//Quaternion.identity;
+  private Quaternion tryThrowSwordRot = Quaternion.Euler (new Vector3 (0, 0, 45));
   private Vector3 swordLocalScale = new Vector3 (1, 5, 1);
   private CheckForSwords swordChecker;
 
@@ -350,7 +350,13 @@ public class CharController : MonoBehaviour {
   void ThrowSword() {
     attachedSword.transform.parent = null;
     attachedSword.Throw ();
-    attachedSword.rbody.AddForce (-20 * transform.forward, ForceMode.VelocityChange);
+
+    Vector3 throwDir = otherplayers [0].transform.position - attachedSword.transform.position;
+    throwDir = Vector3.ProjectOnPlane (throwDir, Vector3.up).normalized;
+    if (throwDir == Vector3.zero)
+      throwDir = transform.forward;
+    
+    attachedSword.rbody.AddForce (20 * throwDir, ForceMode.VelocityChange);
     attachedSword.rbody.AddTorque (-20 * attachedSword.transform.right, ForceMode.VelocityChange);
 
     attachedSword = null;
@@ -514,15 +520,4 @@ public class CharController : MonoBehaviour {
     }
     return others;
   }
-  /*GameObject[] GetOtherPlayers() {
-    Object[] allChars = Object.FindObjectsOfType(typeof(CharController));
-    GameObject[] others = new GameObject[allChars.Length - 1];
-
-    int j = 0;
-    for (int i = 0; i < allChars.Length; i++) {
-      if (allChars [i] != this)
-        others [j++] = ((CharController)allChars [i]).gameObject;
-    }
-    return others;
-  }*/
 }

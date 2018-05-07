@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-//using UnityEngine.SceneManagement;
 using TeamUtility.IO;
 
 public class GameController : NodeTraversal {
@@ -54,6 +53,12 @@ public class GameController : NodeTraversal {
 
     ROWp1 = HUD.transform.GetChild (0).gameObject;
     ROWp2 = HUD.transform.GetChild (1).gameObject;
+
+    // wake up the menus, so that Start is called and they load the preferences
+    // disable them again in the first Update
+    for (int i = 0; i < otherPanels.Length; i++) {
+      otherPanels [i].SetActive (true);
+    }
 	}
 
   void Start () {
@@ -66,14 +71,7 @@ public class GameController : NodeTraversal {
     SendAvgPlayerPositionAndNode ();
     SendRightOfWay ();
 
-    sceneControl.LoadInputs ();
     SetVolume(sceneControl.volume);
-
-    // wake up the menus, so that Start is called and they load the preferences
-    // disable them again in the first Update
-    for (int i = 0; i < otherPanels.Length; i++) {
-      otherPanels [i].SetActive (true);
-    }
   }
 
   void Update() {
@@ -117,7 +115,6 @@ public class GameController : NodeTraversal {
 
 
   // * this function is meant to be called by the CharController upon player death and revival
-  // * parameter should be a 2-element list of the form {PlayerID, bool}
   // update rightOfWay and camera targets based upon player death or revival
   void PlayerIsAlive(PlayerAlive pinfo) {
     if (!pinfo.alive)

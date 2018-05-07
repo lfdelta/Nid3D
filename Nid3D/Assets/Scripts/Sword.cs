@@ -5,10 +5,6 @@ using TeamUtility.IO;
 
 public class Sword : MonoBehaviour {
 
-  //public Material disarmMaterial;
-  //[HideInInspector] public MeshRenderer meshRender;
-  //[HideInInspector] public Material defaultMaterial;
-
   [HideInInspector] public System.Nullable<PlayerID> thisPlayer;
   [HideInInspector] public Rigidbody rbody;
   private bool beingThrown;
@@ -18,6 +14,7 @@ public class Sword : MonoBehaviour {
   private GameObject topDisarm;
   private GameObject bottomDisarm;
   private KillPlayer hitbox;
+  private KillPlayer throwHitbox;
   private SwordDisarm topDisarmScript;
   private SwordDisarm bottomDisarmScript;
 
@@ -36,6 +33,8 @@ public class Sword : MonoBehaviour {
 
     hitbox = playerCollider.GetComponent<KillPlayer> ();
     hitbox.killAllPlayers = false;
+    throwHitbox = throwCollider.GetComponent<KillPlayer> ();
+    throwHitbox.killAllPlayers = false;
 
     throwCollider.SetActive (false);
 
@@ -51,7 +50,9 @@ public class Sword : MonoBehaviour {
    
     if (id != null) {
       rbody.constraints = RigidbodyConstraints.FreezeAll;
-      hitbox.playerToKill = Tools.OtherPlayer((PlayerID)thisPlayer);
+      PlayerID opponent = Tools.OtherPlayer((PlayerID)thisPlayer);
+      hitbox.playerToKill = opponent;
+      throwHitbox.playerToKill = opponent;
     } else {
       rbody.constraints = RigidbodyConstraints.None;
     }
@@ -99,7 +100,6 @@ public class Sword : MonoBehaviour {
   // stop moving if it hangs out on the ground
   void OnCollisionStay(Collision c) {
     if (c.impulse.y > 0) {
-      //rbody.useGravity = false;
       rbody.angularDrag += 0.1f;
       rbody.drag += 0.1f;
     }

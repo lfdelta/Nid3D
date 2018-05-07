@@ -13,8 +13,8 @@ public class Sword : MonoBehaviour {
   private GameObject throwCollider;
   private GameObject topDisarm;
   private GameObject bottomDisarm;
-  private KillPlayer hitbox;
-  private KillPlayer throwHitbox;
+  private ChangePlayerStatus hitbox;
+  private ChangePlayerStatus throwHitbox;
   private SwordDisarm topDisarmScript;
   private SwordDisarm bottomDisarmScript;
 
@@ -31,10 +31,12 @@ public class Sword : MonoBehaviour {
     topDisarmScript = topDisarm.GetComponent<SwordDisarm> ();
     bottomDisarmScript = bottomDisarm.GetComponent<SwordDisarm> ();
 
-    hitbox = playerCollider.GetComponent<KillPlayer> ();
-    hitbox.killAllPlayers = false;
-    throwHitbox = throwCollider.GetComponent<KillPlayer> ();
-    throwHitbox.killAllPlayers = false;
+    hitbox = playerCollider.GetComponent<ChangePlayerStatus> ();
+    hitbox.affectAllPlayers = false;
+    hitbox.killVStun = true;
+    throwHitbox = throwCollider.GetComponent<ChangePlayerStatus> ();
+    throwHitbox.affectAllPlayers = false;
+    hitbox.killVStun = true;
 
     throwCollider.SetActive (false);
 
@@ -51,8 +53,8 @@ public class Sword : MonoBehaviour {
     if (id != null) {
       rbody.constraints = RigidbodyConstraints.FreezeAll;
       PlayerID opponent = Tools.OtherPlayer((PlayerID)thisPlayer);
-      hitbox.playerToKill = opponent;
-      throwHitbox.playerToKill = opponent;
+      hitbox.playerToAffect = opponent;
+      throwHitbox.playerToAffect = opponent;
     } else {
       rbody.constraints = RigidbodyConstraints.None;
     }

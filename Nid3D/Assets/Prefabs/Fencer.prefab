@@ -948,8 +948,11 @@ MonoBehaviour:
   swordlessSpeedScale: 1.2
   frictionCoefficient: 10
   dragSlope: 20
+  stunMinDuration: 0.5
   respawnTime: 1
   respawnDistance: 10
+  divekickPrefab: {fileID: 1360427286990300, guid: 2c7bf9bdd3b7f4e8087869bc01a4b774,
+    type: 2}
   swordPrefab: {fileID: 1755684750533756, guid: f14c7a2092d854a3aaed21dfeea67a5e,
     type: 2}
   swordHand: {fileID: 4406805764025882}

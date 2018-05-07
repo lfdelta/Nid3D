@@ -10,6 +10,14 @@ Name 1 & Name 2 & ...
 ### 5/7/2018 ###
 Luca Frez-Albrecht
 1. sword object follows hand while running, which gives visual feedback that it's deactivated
+2. further generalized KillPlayer script to ChangePlayerStatus, including a toggle between killing and stunning them
+3. made the Fencer2 material blue ([244,155,65] -> [92,188,255]) for contrast with Fencer1
+4. made the Game Walls material red ([51,190,217] -> [255,0,0]) for contrast with both players
+5. created Stun(), DoStunned(), and ChangeState(FSM.Stunned) code in the style of player death
+6. created a Divekick hitbox as a child to the Player prefab, using a ChangePlayerStatus component, to stun opponents
+7. Divekick objects generated at runtime, from a prefab, because they can be destroyed by the WorldBoundary when the players falls off the edge
+8. players are invulnerable to stunning and swords while in FSM.Stunned or FSM.Dead
+9. while divekicking, players follow a deterministic path and their transforms are rotated to provide visual feedback
 
 
 

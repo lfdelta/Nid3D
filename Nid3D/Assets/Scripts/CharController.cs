@@ -38,13 +38,16 @@ public class CharController : MonoBehaviour {
   public float swordlessSpeedScale = 1.2f;
   public float frictionCoefficient = 10;
   public float dragSlope = 20;
+  public float stunMinDuration = 0.5f;
   public float respawnTime = 1;
   public float respawnDistance = 10;
+  public Object divekickPrefab;
   public Object swordPrefab;
   public Transform swordHand;
   //public Object shadowPrefab;
 
   [HideInInspector] public bool isDead;
+  [HideInInspector] public bool canBeAffected; // by ChangePlayerStatus
 
   private bool isGrounded;
   private Vector3 vXZ;
@@ -59,8 +62,11 @@ public class CharController : MonoBehaviour {
   private PlayerControlState controlState;
   //private GameObject[] otherplayers;
   private CharController[] otherplayers;
-  private float deathTime, stabTime;
+  private float deathTime, stabTime, stunTime;
   private GameController gameController;
+
+  private GameObject divekickHitbox = null;
+  private Vector3 divekickLook, divekickMove;
 
   private bool tryToThrowSword;
   private bool lastFrameThrowSword;
@@ -90,11 +96,14 @@ public class CharController : MonoBehaviour {
     startingHeight = Height.Mid;
     playerState = FSM.Fence;
     isDead = false;
+    canBeAffected = true;
     controlState = new PlayerControlState ();
 
     otherplayers = GetOtherPlayers ();
 
     gameController = FindObjectOfType<GameController>();
+
+    GenerateDivekick ();
 
     swordChecker = GetComponentInChildren<CheckForSwords> ();
     AttachNewSword ();
@@ -158,10 +167,6 @@ public class CharController : MonoBehaviour {
       LookAtNearestPlayer();
       DoFence ();
       break;
-    case FSM.Stab:
-      LookAtNearestPlayer();
-      DoStab ();
-      break;
     case FSM.Run:
       LookAtLastVelocity ();
       DoRun ();
@@ -173,6 +178,17 @@ public class CharController : MonoBehaviour {
         LookAtLastVelocity ();
       DoJump ();
       break;
+    case FSM.Stab:
+      LookAtNearestPlayer();
+      DoStab ();
+      break;
+    case FSM.Divekick:
+      //LookAtNearestPlayer ();
+      DoDivekick ();
+      break;
+    case FSM.Stunned:
+      DoStunned ();
+      break;
     case FSM.Dead:
       DoDead ();
       break;
@@ -180,38 +196,59 @@ public class CharController : MonoBehaviour {
   }
     
   void ChangeState(FSM state) {
-    switch (state) {
-    case FSM.Run:
-    //case FSM.Jump:
-      ChildSwordToHand (true);
-      break;
-    default:
+    if (playerState == FSM.Run)
       ChildSwordToHand (false);
-      break;
-    }
 
     switch (state) {
     case FSM.Fence:
       animator.SetInteger ("State", 0);
       //animator.Play ("FenceIdle");
       break;
-    case FSM.Stab:
-      stabTime = Time.time;
-      break;
     case FSM.Run:
       animator.SetInteger ("State", 1);
       //animator.Play ("Run");
+      ChildSwordToHand(true);
       break;
     case FSM.Jump:
       rbody.AddForce (jumpForce * Vector3.up);
       break;
+    case FSM.Stab:
+      stabTime = Time.time;
+      break;
+    case FSM.Divekick:
+      divekickHitbox.SetActive (true);
+      rbody.useGravity = false;
+
+      Vector3 rvec;
+      if (!otherplayers [0].isDead)
+        rvec = Vector3.ProjectOnPlane(otherplayers [0].transform.position - transform.position, Vector3.up).normalized;
+      else
+        rvec = controlState.moveInXZ.normalized;
+      float hforce = 10, yforce = 20;
+      divekickMove = hforce * rvec - yforce * Vector3.up;
+      divekickLook = rvec - Vector3.Project (rvec, divekickMove);
+      rbody.AddForce (-rbody.velocity, ForceMode.VelocityChange);
+      rbody.AddForce (divekickMove, ForceMode.VelocityChange);
+      break;
+    case FSM.Stunned:
+      DropSword ();
+      canBeAffected = false;
+      swordChecker.active = false;
+      divekickHitbox.SetActive (false);
+      stunTime = Time.time;
+      transform.position = new Vector3 (transform.position.x, transform.position.y + 1, transform.position.z);
+      transform.localRotation = Quaternion.AngleAxis (90, transform.right);
+      break;
     case FSM.Dead:
       isDead = true;
+      canBeAffected = false;
       rbody.velocity = Vector3.zero;
       deathTime = Time.time;
       capsule.enabled = false;
       meshRender.enabled = false;
       swordChecker.active = false;
+      if (divekickHitbox)
+        divekickHitbox.SetActive (false);
       StartCoroutine(DelayVoidFunction(1, DropSword));
       gameController.SendMessage ("PlayerIsAlive", new PlayerAlive(playerid, false));
       break;
@@ -224,7 +261,11 @@ public class CharController : MonoBehaviour {
 
 
 
-  // Die() and Respawn() exist to be called externally via SendMessage
+  // Stun(), Die(), and Respawn() exist to be called externally via SendMessage
+  void Stun() {
+    ChangeState (FSM.Stunned);
+  }
+
   void Die () {
     // handle all state-transition factors in ChangeState
     ChangeState (FSM.Dead);
@@ -233,11 +274,13 @@ public class CharController : MonoBehaviour {
   void Respawn (Vector3 spawnLoc) {
     // handle state-transition factors here, because there is no FSM.Respawn
     isDead = false;
+    canBeAffected = true;
     transform.position = spawnLoc;
     rbody.velocity = Vector3.zero;
     capsule.enabled = true;
     meshRender.enabled = true;
-    AttachNewSword();
+    AttachNewSword ();
+    GenerateDivekick ();
     height = Height.Mid;
     gameController.SendMessage ("PlayerIsAlive", new PlayerAlive(playerid, true));
     ChangeState (FSM.Fence);
@@ -313,6 +356,26 @@ public class CharController : MonoBehaviour {
   void AttachNewSword() {
     Object s = Instantiate (swordPrefab);
     AttachSword (((GameObject)s).GetComponent<Sword>());
+  }
+
+  void GenerateDivekick() {
+    if (divekickHitbox != null)
+      return;
+    
+    Object d = Instantiate(divekickPrefab);
+    divekickHitbox = (GameObject)d;
+
+    divekickHitbox.transform.parent = transform;
+    divekickHitbox.transform.localPosition = Vector3.zero;
+    divekickHitbox.transform.localRotation = Quaternion.Euler (Vector3.zero);
+    divekickHitbox.transform.localScale = new Vector3 (10, 10, 10);
+
+    ChangePlayerStatus dkick = divekickHitbox.GetComponent<ChangePlayerStatus> ();
+    dkick.affectAllPlayers = false;
+    dkick.playerToAffect = Tools.OtherPlayer (playerid);
+    dkick.killVStun = false;
+
+    divekickHitbox.SetActive (false);
   }
 
   void ChildSwordToHand(bool useHand) {
@@ -481,8 +544,33 @@ public class CharController : MonoBehaviour {
     if (isGrounded)
       ChangeState (controlState.running ? FSM.Run : FSM.Fence);
 
-    if (controlState.attack && tryToThrowSword && attachedSword)
-      ThrowSword ();
+    if (controlState.attack) {
+      if (tryToThrowSword && attachedSword)
+        ThrowSword ();
+      else
+        ChangeState (FSM.Divekick);
+    }
+  }
+
+  void DoDivekick() {
+    transform.rotation = Quaternion.LookRotation (-divekickLook, -divekickMove);
+
+    if (isGrounded || rbody.velocity.y >= 0) {
+      divekickHitbox.SetActive (false);
+      rbody.useGravity = true;
+      ChangeState (FSM.Fence);
+    }
+  }
+
+  void DoStunned() {
+    MoveXZ (Vector3.zero);
+
+    if (controlState.heightChange > 0 && Time.time - stunTime >= stunMinDuration) {
+      transform.localRotation = Quaternion.Euler(Vector3.zero);
+      swordChecker.active = true;
+      canBeAffected = true;
+      ChangeState (FSM.Fence);
+    }
   }
     
   void DoDead() {

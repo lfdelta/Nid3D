@@ -568,11 +568,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1732898481525130}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a00b63079efb4ba5b0c360240196e31, type: 3}
+  m_Script: {fileID: 11500000, guid: af8febb0b2b6643e3ac4118a544abee2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  killAllPlayers: 0
-  playerToKill: 0
+  affectAllPlayers: 0
+  playerToAffect: 0
+  killVStun: 1
 --- !u!114 &114261005067582438
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -594,11 +595,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1548878878384708}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a00b63079efb4ba5b0c360240196e31, type: 3}
+  m_Script: {fileID: 11500000, guid: af8febb0b2b6643e3ac4118a544abee2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  killAllPlayers: 0
-  playerToKill: 0
+  affectAllPlayers: 0
+  playerToAffect: 0
+  killVStun: 1
 --- !u!114 &114329216515682888
 MonoBehaviour:
   m_ObjectHideFlags: 1

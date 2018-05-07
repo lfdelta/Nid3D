@@ -19,6 +19,7 @@ Luca Frez-Albrecht
 8. players are invulnerable to stunning and swords while in FSM.Stunned or FSM.Dead
 9. while divekicking, players follow a deterministic path and their transforms are rotated to provide visual feedback
 10. the sword's position relative to the player is basically its own state machine now
+11. fixed a bug where the player would immediately enter FSM.Fence, or something of that sort, when jumping off a sloped surface, preventing the player from divekicking
 
 
 

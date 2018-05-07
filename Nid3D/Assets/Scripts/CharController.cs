@@ -218,6 +218,7 @@ public class CharController : MonoBehaviour {
       ChildSwordToHand(true);
       break;
     case FSM.Jump:
+      isGrounded = false;
       rbody.AddForce (jumpForce * Vector3.up);
       break;
     case FSM.Stab:
